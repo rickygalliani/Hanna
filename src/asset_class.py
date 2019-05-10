@@ -11,8 +11,7 @@ class AssetClass:
 
     def __init__(self,
                  name,
-                 target_percentage,
-                 holdings=None):
+                 target_percentage):
         self.name = name
         self.target_percentage = target_percentage
         self.holdings = 0.0

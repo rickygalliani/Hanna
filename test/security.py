@@ -6,7 +6,7 @@ from src.security import Security
 
 import unittest
 
-# Usage: python -m unittest test.security
+# Usage: python3 -m unittest --verbose test.security
 
 class SecurityTest(unittest.TestCase):
 
