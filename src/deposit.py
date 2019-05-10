@@ -1,8 +1,8 @@
 # Ricky Galliani
 # Minerva
-# portfolio_deposit.py
+# deposit.py
 
-from purchase import Purchase
+from src.purchase import Purchase
 
 import json
 

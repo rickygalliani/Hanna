@@ -2,7 +2,7 @@
 # Minerva
 # security.py
 
-from robinhood_holding import RobinhoodHolding
+from src.robinhood_holding import RobinhoodHolding
 
 import json
 

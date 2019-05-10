@@ -2,9 +2,9 @@
 # Minerva
 # portfolio.py
 
-from asset_class import AssetClass
-from deposit import Deposit
-from security import Security
+from src.asset_class import AssetClass
+from src.deposit import Deposit
+from src.security import Security
 
 import json
 

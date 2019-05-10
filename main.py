@@ -1,9 +1,9 @@
 # Ricky Galliani
-# rebalancer.py
+# main.py
 
-from asset_class import AssetClass
-from security import Security
-from load import (
+from src.asset_class import AssetClass
+from src.security import Security
+from src.load import (
     load_credentials,
     load_portfolio_config,
     load_robinhood_holdings

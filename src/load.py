@@ -2,10 +2,10 @@
 # Minerva
 # load.py
 
-from asset_class import AssetClass
-from portfolio import Portfolio
-from robinhood_holding import RobinhoodHolding
-from security import Security
+from src.asset_class import AssetClass
+from src.portfolio import Portfolio
+from src.robinhood_holding import RobinhoodHolding
+from src.security import Security
 
 import os
 import json
@@ -63,7 +63,7 @@ def load_robinhood_holdings(username, password):
     """
     # client = r.login(username, password)
     # robinhood_resp = r.build_holdings().values()
-    robinhood_resp = json.load(open('test/response1.json', 'r'))
+    robinhood_resp = json.load(open('test/data/response1.json', 'r'))
     holdings = []
     for s in robinhood_resp:
         holdings.append(

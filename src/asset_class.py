@@ -2,8 +2,8 @@
 # Minerva
 # asset_class.py
 
-from purchase import Purchase
-from robinhood_holding import RobinhoodHolding
+from src.purchase import Purchase
+from src.robinhood_holding import RobinhoodHolding
 
 import json
 
