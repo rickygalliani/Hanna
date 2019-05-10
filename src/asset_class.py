@@ -65,7 +65,7 @@ class AssetClass:
         security = self.get_security(robinhood_holding.id)
         security.update(robinhood_holding)
 
-    def plan_deposit(self, deposit):
+    def plan_deposit(self, budget):
         """
         Uses a Dynamic Program to determine how to optimally spend the budget
         on the given securities. This is the well known Unbounded Knapsack
@@ -77,15 +77,15 @@ class AssetClass:
                 for s in self.securities.values()
             ]
 
-        deposit_cents = int(deposit * 100)
-        if deposit_cents < 0:
+        budget_cents = int(budget * 100)
+        if budget_cents < 0:
             return no_purchases()
 
         securities_cents = [s.with_cents() for s in self.securities.values()]
 
         # Purchase at T[i] maximizes expenditure with budget i
-        T = [0 for x in range(deposit_cents + 1)]
-        for i in range(deposit_cents + 1):
+        T = [0 for x in range(budget_cents + 1)]
+        for i in range(budget_cents + 1):
             for j, s in enumerate(securities_cents):
                 j_id = s.id
                 j_price = s.price

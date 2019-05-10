@@ -25,7 +25,12 @@ class Deposit:
 
     def for_display(self):
         out = ["\n\nRecommended Purchases:"]
-        for asset_class_name, purchases in self.purchases.items():
+        ac_purchases = sorted(
+            self.purchases.items(),
+            key=lambda x: self.get_asset_class_expenditures(x[0]),
+            reverse=True
+        )
+        for asset_class_name, purchases in ac_purchases:
             out.append("\n\n{}".format(asset_class_name))
             ac_total = 0.0
             for purchase in purchases:
@@ -46,3 +51,10 @@ class Deposit:
         else:
             self.purchases[asset_class_name] = [purchase]
         self.total += purchase.total
+
+    def get_asset_class_expenditures(self, asset_class_name):
+        """
+        Returns the total expenditures in the given asset class.
+        """
+        ps = self.purchases[asset_class_name]
+        return sum(p.total for p in ps)

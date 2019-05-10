@@ -40,7 +40,8 @@ class Portfolio:
             sep
         ]
         total_pct = 0.0
-        for ac in self.asset_classes.values():
+        acs = self.asset_classes.values()
+        for ac in sorted(acs, key=lambda x: x.holdings, reverse=True):
             pct = self.get_asset_class_percentage(ac.name)
             total_pct += pct
             hold = "${:,.2f}".format(ac.holdings).ljust(hold_len)
