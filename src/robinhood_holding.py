@@ -1,6 +1,6 @@
 # Ricky Galliani
-# Minerva
-# robinhood_holding.py
+# Hanna
+# src/robinhood_holding.py
 
 import json
 

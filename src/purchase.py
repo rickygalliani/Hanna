@@ -1,6 +1,6 @@
 # Ricky Galliani
-# Minerva
-# purchase.py
+# Hanna
+# src/purchase.py
 
 import json
 

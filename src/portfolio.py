@@ -1,6 +1,6 @@
 # Ricky Galliani
-# Minerva
-# portfolio.py
+# Hanna
+# src/portfolio.py
 
 from src.asset_class import AssetClass
 from src.deposit import Deposit
@@ -18,13 +18,11 @@ class Portfolio:
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        p = {
+        return {
             'asset_classes': 
-                [ac.to_dict() for ac in self.asset_classes.values()]
+                [ac.to_dict() for ac in self.asset_classes.values()],
+            'total_holdings': self.total_holdings
         }
-        if self.total_holdings:
-            p['total_holdings'] = self.total_holdings
-        return p
 
     def for_display(self):
         ac_len = 25

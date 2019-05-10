@@ -1,6 +1,6 @@
 # Ricky Galliani
-# Minerva
-# load.py
+# Hanna
+# src/load.py
 
 from src.asset_class import AssetClass
 from src.portfolio import Portfolio

@@ -1,6 +1,6 @@
 # Ricky Galliani
-# Minerva
-# deposit.py
+# Hanna
+# src/deposit.py
 
 from src.purchase import Purchase
 
@@ -17,7 +17,10 @@ class Deposit:
 
     def to_dict(self):
         return {
-            'purchases': [p.to_dict() for p in self.purchases.values()]
+            'purchases': dict(
+                [(ac, [p.to_dict() for p in ps])
+                for (ac, ps) in self.purchases.items()]
+            )
         }
 
     def for_display(self):

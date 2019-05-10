@@ -1,6 +1,6 @@
 # Ricky Galliani
-# Minerva
-# security.py
+# Hanna
+# src/security.py
 
 from src.robinhood_holding import RobinhoodHolding
 
@@ -18,22 +18,19 @@ class Security:
         self.name = name
         self.price = price
         self.quantity = quantity
-        self.holdings = holdings
+        self.holdings = holdings        
 
     def __repr__(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        sec = { 'id': self.id }
-        if self.name:
-            sec['name'] = self.name
-        if self.price:
-            sec['price'] = self.price
-        if self.quantity:
-            sec['quantity'] = self.quantity
-        if self.holdings:
-            sec['holdings'] = self.holdings
-        return sec
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': self.price,
+            'quantity': self.quantity,
+            'holdings': self.holdings
+        }
 
     def with_cents(self):
         """

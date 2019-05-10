@@ -1,6 +1,6 @@
 # Ricky Galliani
-# Minerva
-# asset_class.py
+# Hanna
+# src/asset_class.py
 
 from src.purchase import Purchase
 from src.robinhood_holding import RobinhoodHolding
@@ -25,10 +25,9 @@ class AssetClass:
         ac = {
             'name': self.name,
             'target_percentage': self.target_percentage,
-            'securities': [s.to_dict() for s in self.securities.values()]
+            'securities': [s.to_dict() for s in self.securities.values()],
+            'holdings': self.holdings
         }
-        if self.holdings:
-            ac['holdings'] = self.holdings
         return ac
 
     def add_security(self, security):
