@@ -24,7 +24,7 @@ class Deposit:
         }
 
     def for_display(self):
-        out = ["\n\nRecommended Purchases:"]
+        out = ['\n\nPurchases:']
         ac_purchases = sorted(
             self.purchases.items(),
             key=lambda x: self.get_asset_class_expenditures(x[0]),
@@ -32,14 +32,8 @@ class Deposit:
         )
         for asset_class_name, purchases in ac_purchases:
             out.append("\n\n{}".format(asset_class_name))
-            ac_total = 0.0
             for purchase in purchases:
                 out.append(purchase.for_display())
-                ac_total += purchase.total
-            out.append(
-                "\n\tAsset Class Expenditures: ${:,.2f}".format(ac_total)
-            )
-        out.append("\n\nTotal Expenditures: {}".format(round(self.total, 2)))
         return ''.join(out)
 
     def add_purchase(self, asset_class_name, purchase):

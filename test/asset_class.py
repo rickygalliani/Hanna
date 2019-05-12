@@ -9,7 +9,7 @@ from src.security import Security
 
 import unittest
 
-# Usage: python -m unittest --verbose test.asset_class
+# Usage: python3 -m unittest --verbose test.asset_class
 
 class AssetClassTest(unittest.TestCase):
 
@@ -22,7 +22,7 @@ class AssetClassTest(unittest.TestCase):
     def test_equality(self):
         ac1 = AssetClass('ac', target_percentage=1.0)
         ac2 = AssetClass('ac', target_percentage=1.0)
-        sec = Security('sec', 'sec_name', 100.0, 1, 100.0)    
+        sec = Security('sec', 1, 100.0)    
         ac1.add_security(sec)
         ac2.add_security(sec)
         self.assertEqual(ac1, ac2)
@@ -36,7 +36,7 @@ class AssetClassTest(unittest.TestCase):
 
     def test_add_security_with_holdings(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec = Security('sec', price=10.0, quantity=3, holdings=30.0)
+        sec = Security('sec', 'sec_name', 3, 10.0, 0.0)
         ac.add_security(sec)
         self.assertEqual(ac.securities[sec.id], sec)
         self.assertEqual(ac.holdings, 30.0)
@@ -55,6 +55,15 @@ class AssetClassTest(unittest.TestCase):
         sec = Security('sec')
         ac.add_security(sec)
         self.assertEqual(ac.get_security('sec'), sec)
+
+    def test_add_security_with_buy(self):
+        ac = AssetClass('ac', target_percentage=1.0)
+        ac.add_security(Security('sec', 'sec_name', 1, 34.0, 0.0))
+        ac.add_security(Security('sec', 'sec_name', 2, 33.0, 34.0))
+        ac_check = AssetClass('ac', target_percentage=1.0)
+        ac_check.add_security(Security('sec', 'sec_name', 1, 34.0, 0.0))
+        ac_check.add_security(Security('sec', 'sec_name', 2, 33.0, 34.0))
+        self.assertEqual(ac, ac_check)
 
     def test_update(self):
         ac = AssetClass('ac', target_percentage=0.5)
@@ -78,27 +87,27 @@ class AssetClassTest(unittest.TestCase):
 
     def test_plan_deposit_1(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec1', 'sec1_name', 33.0, 1, 33.0)
-        sec2 = Security('sec2', 'sec2_name', 49.0, 1, 49.0)
+        sec1 = Security('sec1', 'sec1_name', 1, 33.0, 0.0)
+        sec2 = Security('sec2', 'sec2_name', 1, 49.0, 0.0)
         ac.add_security(sec1)
         ac.add_security(sec2)
         purchases = ac.plan_deposit(100)
-        p1 = Purchase('sec1', 'sec1_name', 33.0, 3)
-        p2 = Purchase('sec2', 'sec2_name', 49.0, 0)
-        self.assertEqual(purchases[0], p1)
-        self.assertEqual(purchases[1], p2)
+        p1 = Purchase('sec1', 'sec1_name', 3, 33.0)
+        p2 = Purchase('sec2', 'sec2_name', 0, 49.0)
+        self.assertEqual(purchases['sec1'], p1)
+        self.assertEqual(purchases['sec2'], p2)
 
     def test_plan_deposit_2(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec1', 'sec1_name', 33.0, 1, 33.0)
-        sec2 = Security('sec2', 'sec2_name', 49.0, 1, 49.0)
+        sec1 = Security('sec1', 'sec1_name', 1, 33.0, 0.0)
+        sec2 = Security('sec2', 'sec2_name', 1, 49.0, 33.0)
         ac.add_security(sec1)
         ac.add_security(sec2)
         purchases = ac.plan_deposit(98.5)
-        p1 = Purchase('sec1', 'sec1_name', 33.0, 0)
-        p2 = Purchase('sec2', 'sec2_name', 49.0, 2)
-        self.assertEqual(purchases[0], p1)
-        self.assertEqual(purchases[1], p2)
+        p1 = Purchase('sec1', 'sec1_name', 0, 33.0)
+        p2 = Purchase('sec2', 'sec2_name', 2, 49.0)
+        self.assertEqual(purchases['sec1'], p1)
+        self.assertEqual(purchases['sec2'], p2)
 
 if __name__ == '__main__':
     unittest.main()

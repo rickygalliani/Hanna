@@ -33,13 +33,25 @@ class AssetClass:
         }
         return ac
 
+    def add_holdings(self, new_holdings):
+        """
+        Adds the given holdings to this asset class.
+        """
+        if self.holdings:
+            self.holdings += new_holdings
+        else:
+            self.holdings = new_holdings
+
     def add_security(self, security):
         """
         Adds the given security to this asset class.
         """
-        self.securities[security.id] = security
-        if security.holdings:
-            self.holdings += security.holdings
+        if security.quantity and security.price:
+            self.add_holdings(security.price * security.quantity)
+        if security.id not in self.securities:
+            self.securities[security.id] = security
+        elif security.quantity and security.price:
+            self.securities[security.id].buy(security.quantity, security.price)
 
     def contains_security(self, security_id):
         """
@@ -75,22 +87,23 @@ class AssetClass:
         Knapsack problem.
         """
         def no_purchases():
-            return [
-                Purchase(s.id, s.name, s.price, 0)
-                for s in self.securities.values()
-            ]
+            return dict([
+                (s_id, Purchase(s.id, s.name, 0, s.price))
+                for (s_id, s) in self.securities.items()
+            ])
 
         budget_cents = int(budget * 100)
         if budget_cents < 0:
             return no_purchases()
 
-        securities_cents = [s.with_cents() for s in self.securities.values()]
+        securities_cents = dict([
+            (s_id, s.with_cents()) for (s_id, s) in self.securities.items()
+        ])
 
         # Purchase at T[i] maximizes expenditure with budget i
         T = [0 for x in range(budget_cents + 1)]
         for i in range(budget_cents + 1):
-            for j, s in enumerate(securities_cents):
-                j_id = s.id
+            for j, (j_id, s) in enumerate(securities_cents.items()):
                 j_price = s.price
                 # Check if budget of i allows for a purchase of j
                 if j_price <= i:
@@ -107,18 +120,18 @@ class AssetClass:
         while T[i]:
             exp_i = T[i]  # Optimal amount spent at budget i
             # Find last security purchased
-            for j, sec in enumerate(securities_cents):
-                j_price = sec.price
+            for j, (j_id, sec_j) in enumerate(securities_cents.items()):
+                j_price = sec_j.price
                 # If buying security j brought us to optimal expenditures at
                 # budget i
                 if T[exp_i - j_price] + j_price == exp_i:
-                    prev = purchases[j]
-                    purchases[j] = Purchase(
+                    prev = purchases[j_id]
+                    purchases[j_id] = Purchase(
                         prev.security_id,
                         prev.security_name,
-                        prev.price,
-                        prev.quantity + 1
+                        prev.quantity + 1,
+                        prev.price
                     )
                     break
-            i = exp_i - securities_cents[j].price + 1
+            i = exp_i - securities_cents[j_id].price + 1
         return purchases

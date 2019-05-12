@@ -31,12 +31,11 @@ class Portfolio:
         tgt_pct_len = 20
         sep = '\n\t' + '-' * (ac_len + hold_len + pct_len + tgt_pct_len)
         out = [
-            '\n\nPortfolio:',
-            '\n\n\t',
+            '\n\nPortfolio:\n\n\t',
             'Asset Class'.ljust(ac_len),
-            'Holdings'.ljust(hold_len),
-            'Percentage'.ljust(pct_len),
             'Target Percentage'.ljust(tgt_pct_len),
+            'Percentage'.ljust(pct_len),
+            'Holdings'.ljust(hold_len),
             sep
         ]
         total_pct = 0.0
@@ -44,25 +43,24 @@ class Portfolio:
         for ac in sorted(acs, key=lambda x: x.holdings, reverse=True):
             pct = self.get_asset_class_percentage(ac.name)
             total_pct += pct
-            hold = "${:,.2f}".format(ac.holdings).ljust(hold_len)
-            pct_str = "{}%".format(str(round(pct * 100, 2))).ljust(pct_len)
-            tgt_pct = "{}%".format(
-                str(round(ac.target_percentage * 100, 2))).ljust(tgt_pct_len)
-            out.append("\n\t{name}{hold}{pct_str}{tgt_pct}".format(
+            tgt_pct = "{}%".format(str(round(ac.target_percentage * 100, 2)))
+            pct_str = "{}%".format(str(round(pct * 100, 2)))
+            hold = "${:,.2f}".format(ac.holdings)
+            out.append("\n\t{name}{tgt_pct}{pct_str}{hold}".format(
                 name=ac.name.ljust(ac_len),
-                hold=hold,
-                pct_str=pct_str,
-                tgt_pct=tgt_pct
+                tgt_pct=tgt_pct.ljust(tgt_pct_len),
+                pct_str=pct_str.ljust(pct_len),
+                hold=hold.ljust(hold_len),
             ))
-        tot_hold = "${:,.2f}".format(self.total_holdings).ljust(hold_len)
-        tot_pct = "{}%".format(str(round(total_pct * 100, 2))).ljust(pct_len)
+        tot_pct = "{}%".format(str(round(total_pct * 100, 2)))
+        tot_hold = "${:,.2f}".format(self.total_holdings)
         out += [
             sep,
-            "\n\t{name}{hold}{pct_str}{tgt_pct}".format(
+            "\n\t{name}{tgt_pct}{pct_str}{hold}".format(
                 name="Total".ljust(ac_len),
-                hold=tot_hold,
-                pct_str=tot_pct,
-                tgt_pct="100%"
+                tgt_pct="100%".ljust(tgt_pct_len),
+                pct_str=tot_pct.ljust(pct_len),
+                hold=tot_hold.ljust(hold_len),
             ),
         ]
         out.append('\n')
@@ -201,8 +199,24 @@ class Portfolio:
             final_budget = budget + rollover
             ac_purchases = ac.plan_deposit(final_budget)
             ac_total = 0.0
-            for purchase in ac_purchases:
+            for sec_id, purchase in ac_purchases.items():
                 deposit.add_purchase(ac.name, purchase)
                 ac_total += purchase.total
             rollover = final_budget - ac_total
         return deposit
+
+    def make_deposit(self, deposit):
+        """
+        Makes all the purchases in the given deposit, updating the state of
+        this portfolio.
+        """
+        for (ac_name, purchases) in deposit.purchases.items():
+            ac = self.get_asset_class(ac_name)
+            for p in purchases:
+                sec = Security(
+                    p.security_id,
+                    p.security_name,
+                    p.quantity,
+                    p.price
+                )
+                ac.add_security(sec)

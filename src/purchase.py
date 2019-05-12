@@ -6,12 +6,12 @@ import json
 
 class Purchase:
 
-    def __init__(self, security_id, security_name, price, quantity):
+    def __init__(self, security_id, security_name, quantity, price):
         self.security_id = security_id
         self.security_name = security_name
-        self.price = price
         self.quantity = quantity
-        self.total = self.price * self.quantity
+        self.price = price
+        self.total = self.quantity * self.price
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -23,8 +23,8 @@ class Purchase:
         return {
             'security_id': self.security_id,
             'security_name': self.security_name,
-            'price': self.price,
             'quantity': self.quantity,
+            'price': self.price,
             'total': self.total
         }
 

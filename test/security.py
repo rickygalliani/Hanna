@@ -13,12 +13,12 @@ class SecurityTest(unittest.TestCase):
 
     def test_inequality(self):
         sec1 = Security('sec')
-        sec2 = Security('sec', 'sec_name', 100.0, 1, 100.0)
+        sec2 = Security('sec', 'sec_name', 1, 100.0, 100.0)
         self.assertNotEqual(sec1, sec2)
 
     def test_equality(self):
-        sec1 = Security('sec', 'sec_name', 100.0, 1, 100.0)
-        sec2 = Security('sec', 'sec_name', 100.0, 1, 100.0)
+        sec1 = Security('sec', 'sec_name', 1, 100.0, 100.0)
+        sec2 = Security('sec', 'sec_name', 1, 100.0, 100.0)
         self.assertEqual(sec1, sec2)
 
     def test_with_cents(self):
@@ -40,7 +40,7 @@ class SecurityTest(unittest.TestCase):
             holding_type='etp'
         )
         sec.update(rh)
-        sec_check = Security('sec', 'sec_name', 50.0, 1, 50.0)
+        sec_check = Security('sec', 'sec_name', 1, 50.0, 50.0)
         self.assertEqual(sec, sec_check)
 
 if __name__ == '__main__':
