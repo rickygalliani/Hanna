@@ -46,5 +46,7 @@ if __name__ == '__main__':
 
     log.info(portfolio.for_display())
 
+    print(portfolio)
+
     deposit = portfolio.plan_deposit(amount)
     log.info(deposit.for_display())

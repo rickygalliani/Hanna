@@ -13,6 +13,9 @@ class Purchase:
         self.quantity = quantity
         self.total = self.price * self.quantity
 
+    def __eq__(self, other):
+        return self.to_dict() == other.to_dict()
+
     def __repr__(self):
         return json.dumps(self.to_dict())
 

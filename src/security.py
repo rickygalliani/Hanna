@@ -20,6 +20,9 @@ class Security:
         self.quantity = quantity
         self.holdings = holdings        
 
+    def __eq__(self, other):
+        return self.to_dict() == other.to_dict()
+
     def __repr__(self):
         return json.dumps(self.to_dict())
 

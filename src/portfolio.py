@@ -18,9 +18,9 @@ class Portfolio:
         return json.dumps(self.to_dict())
 
     def to_dict(self):
+        acs = dict([(a, c.to_dict()) for (a, c) in self.asset_classes.items()])
         return {
-            'asset_classes': 
-                [ac.to_dict() for ac in self.asset_classes.values()],
+            'asset_classes': acs,
             'total_holdings': self.total_holdings
         }
 

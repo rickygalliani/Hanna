@@ -17,14 +17,18 @@ class AssetClass:
         self.holdings = 0.0
         self.securities = {}
 
+    def __eq__(self, other):
+        return self.to_dict() == other.to_dict()
+
     def __repr__(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
+        secs = dict([(d, s.to_dict()) for (d, s) in self.securities.items()])
         ac = {
             'name': self.name,
             'target_percentage': self.target_percentage,
-            'securities': [s.to_dict() for s in self.securities.values()],
+            'securities': secs,
             'holdings': self.holdings
         }
         return ac
@@ -67,8 +71,8 @@ class AssetClass:
     def plan_deposit(self, budget):
         """
         Uses a Dynamic Program to determine how to optimally spend the budget
-        on the given securities. This is the well known Unbounded Knapsack
-        problem.
+        on the asset class's securities. This is the well known Unbounded
+        Knapsack problem.
         """
         def no_purchases():
             return [
