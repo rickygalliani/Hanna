@@ -14,6 +14,9 @@ class Portfolio:
         self.asset_classes = {}
         self.value = 0.0
 
+    def __eq__(self, other):
+        return self.to_dict() == other.to_dict()
+
     def __repr__(self):
         return json.dumps(self.to_dict())
 
@@ -85,6 +88,26 @@ class Portfolio:
             )
         )
 
+    def contains_security(self, security_id):
+        """
+        Returns whether the portfolio contains the given security.
+        """
+        return any([
+            a.contains_security(security_id)
+            for a in self.asset_classes.values()
+        ])
+
+    def get_asset_class_for_security(self, security_id):
+        """
+        Returns the asset class object containing the given security.
+        """
+        for ac in self.asset_classes.values():
+            if ac.contains_security(security_id):
+                return ac
+        raise Exception(
+            "Portfolio does not contain security {}.".format(security_id)
+        )
+
     def get_asset_class_percentage(self, asset_class_name):
         """
         Returns the percentage of the portfolio invested in the given asset
@@ -92,6 +115,15 @@ class Portfolio:
         """
         ac = self.get_asset_class(asset_class_name)
         return ac.value / self.value
+
+    def get_security_percentage(self, security_id):
+        """
+        Returns the percentage of this portfolio invested in the given
+        security.
+        """
+        ac = self.get_asset_class_for_security(security_id)
+        hol = ac.get_holding(security_id)
+        return hol.value / self.value
 
     def get_asset_class_target_value(self, asset_class_name):
         """
@@ -132,34 +164,6 @@ class Portfolio:
         # Remove deposit's value from portfolio
         self.value -= deposit
         return ac_budgets
-
-    def contains_security(self, security_id):
-        """
-        Returns whether the portfolio contains the given security.
-        """
-        return any([
-            a.contains_security(security_id)
-            for a in self.asset_classes.values()
-        ])
-
-    def get_asset_class_for_security(self, security_id):
-        """
-        Returns the asset class object containing the given security.
-        """
-        for ac in self.asset_classes.values():
-            if ac.contains_security(security_id):
-                return ac
-        raise Exception(
-            "Portfolio does not contain security {}.".format(security_id)
-        )
-
-    def get_security_percentage(self, security_id):
-        """
-        Returns the percentage of this portfolio invested in the given
-        security.
-        """
-        sec = get_asset_class_for_security(security_id).get_security()
-        return sec.value / self.value
 
     def update(self, robinhood_holdings):
         """
