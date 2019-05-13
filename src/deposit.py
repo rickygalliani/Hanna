@@ -12,6 +12,9 @@ class Deposit:
         self.total = 0.0  # Total spent on all purchases in deposit
         self.purchases = {}
 
+    def __eq__(self, other):
+        return self.to_dict() == other.to_dict()
+
     def __repr__(self):
         return json.dumps(self.to_dict())
 
