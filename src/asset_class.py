@@ -2,6 +2,7 @@
 # Hanna
 # src/asset_class.py
 
+from src.holding import Holding
 from src.purchase import Purchase
 from src.robinhood_holding import RobinhoodHolding
 
@@ -9,13 +10,12 @@ import json
 
 class AssetClass:
 
-    def __init__(self,
-                 name,
-                 target_percentage):
+    def __init__(self, name, target_percentage):
         self.name = name
         self.target_percentage = target_percentage
-        self.holdings = 0.0
-        self.securities = {}
+        self.securities = {}  # Financial products in asset class
+        self.holdings = {}  # Actual holdings of the above financial products
+        self.value = 0.0
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -25,60 +25,109 @@ class AssetClass:
 
     def to_dict(self):
         secs = dict([(d, s.to_dict()) for (d, s) in self.securities.items()])
+        hols = dict([(d, h.to_dict()) for (d, h) in self.holdings.items()])
         ac = {
             'name': self.name,
             'target_percentage': self.target_percentage,
             'securities': secs,
-            'holdings': self.holdings
+            'holdings': hols,
+            'value': self.value
         }
         return ac
 
-    def add_holdings(self, new_holdings):
+    def add_value(self, new_value):
         """
-        Adds the given holdings to this asset class.
+        Adds the given value to this asset class.
         """
-        if self.holdings:
-            self.holdings += new_holdings
+        if self.value:
+            self.value += new_value
         else:
-            self.holdings = new_holdings
+            self.value = new_value
 
     def add_security(self, security):
         """
         Adds the given security to this asset class.
         """
-        if security.quantity and security.price:
-            self.add_holdings(security.price * security.quantity)
         if security.id not in self.securities:
             self.securities[security.id] = security
-        elif security.quantity and security.price:
-            self.securities[security.id].buy(security.quantity, security.price)
+        else:
+            if security.name:
+                self.securities[security.id].name = security.name
+            if security.price:
+                self.securities[security.id].price = security.price
 
     def contains_security(self, security_id):
         """
-        Returns whether this asset class contains the given security.
+        Returns True if this asset class contains the given security.
         """
         return security_id in self.securities
 
     def get_security(self, security_id):
         """
-        Returns the Security object for the given security id.
+        Returns the security for the given security id.
         """
         if security_id in self.securities:
             return self.securities[security_id]
         else:
-            raise Exception("{} is not in the '{}' asset class.".format(
-                security_id,
-                self.name
-            ))
+            raise Exception(
+                "{} is not in the '{}' asset class's securities.".format(
+                    security_id,
+                    self.name
+                )
+            )
+
+    def add_holding(self, security, num_shares):
+        """
+        Adds num_shares of the given security to the holdings of this asset
+        class.
+        """
+        value = num_shares * security.price
+        self.add_value(value)
+        if security.id not in self.holdings:
+            holding = Holding(security.id, num_shares, value)
+            self.holdings[security.id] = holding
+        else:
+            self.holdings[security.id].buy(num_shares, security.price)
+
+    def contains_holding(self, security_id):
+        """
+        Returns True if this asset class contains a holding of the given
+        security.
+        """
+        return security_id in self.holdings
+
+    def get_holding(self, security_id):
+        """
+        Returns this asset class's holdings of the given security.
+        """
+        if security_id in self.holdings:
+            return self.holdings[security_id]
+        else:
+            raise Exception(
+                "{} is not in the '{}' asset class's holdings.".format(
+                    security_id,
+                    self.name
+                )
+            )
 
     def update(self, robinhood_holding):
         """
         Updates this asset class with the given Robinhood holding.
         """
         assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.holdings += robinhood_holding.equity
-        security = self.get_security(robinhood_holding.id)
+        self.value += robinhood_holding.equity
+        sec_id = robinhood_holding.id
+        security = self.get_security(sec_id)
         security.update(robinhood_holding)
+        if sec_id in self.holdings:
+            holding = self.get_holding(sec_id)
+            holding.update(robinhood_holding)
+        else:
+            self.holdings[sec_id] = Holding(
+                sec_id,
+                robinhood_holding.quantity,
+                robinhood_holding.equity
+            )
 
     def plan_deposit(self, budget):
         """
@@ -129,7 +178,7 @@ class AssetClass:
                     purchases[j_id] = Purchase(
                         prev.security_id,
                         prev.security_name,
-                        prev.quantity + 1,
+                        prev.num_shares + 1,
                         prev.price
                     )
                     break

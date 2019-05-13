@@ -1,7 +1,7 @@
-1. Add validation function to check portfolio config
-2. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-3. Figure out how to use Robinhood API to determine how much cash is sitting in account
-4. flake8 everything
-5. Write tests for Portfolio
-6. Look into type support for python 3
-7. Split Security into a Security and a Holding class. Holding stores holding data (num_shares, equity), Security stores current price
+1. Split Security into a Security and a Holding class. Holding stores holding data (num_shares, equity), Security stores current price 
+2. Write tests for Portfolio
+3. Add validation function to check portfolio config
+4. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+5. Figure out how to use Robinhood API to determine how much cash is sitting in account
+6. flake8 everything
+7. Look into type support for python 3

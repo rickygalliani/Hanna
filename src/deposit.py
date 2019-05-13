@@ -44,11 +44,11 @@ class Deposit:
             self.purchases[asset_class_name] += [purchase]
         else:
             self.purchases[asset_class_name] = [purchase]
-        self.total += purchase.total
+        self.total += purchase.cost
 
     def get_asset_class_expenditures(self, asset_class_name):
         """
         Returns the total expenditures in the given asset class.
         """
         ps = self.purchases[asset_class_name]
-        return sum(p.total for p in ps)
+        return sum(p.cost for p in ps)
