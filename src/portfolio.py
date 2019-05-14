@@ -2,13 +2,13 @@
 # Hanna
 # src/portfolio.py
 
-from src.asset_class import AssetClass
 from src.deposit import Deposit
 from src.security import Security
 
 from prettytable import PrettyTable
 
 import json
+
 
 class Portfolio:
 

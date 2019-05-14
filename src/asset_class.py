@@ -8,6 +8,7 @@ from src.robinhood_holding import RobinhoodHolding
 
 import json
 
+
 class AssetClass:
 
     def __init__(self, name, target_percentage):

@@ -2,11 +2,10 @@
 # Hanna
 # src/deposit.py
 
-from src.purchase import Purchase
-
 from prettytable import PrettyTable
 
 import json
+
 
 class Deposit:
 
@@ -24,7 +23,7 @@ class Deposit:
         return {
             'purchases': dict(
                 [(ac, [p.to_dict() for p in ps])
-                for (ac, ps) in self.purchases.items()]
+                 for (ac, ps) in self.purchases.items()]
             )
         }
 

@@ -12,6 +12,7 @@ import json
 
 import robin_stocks as r
 
+
 def load_credentials():
     """
     Loads the target investment portfolio credentials from the credentials
@@ -36,7 +37,7 @@ def load_portfolio_config():
     co = open(config_file, 'r')
     portfolio_config = json.load(co)
     co.close()
-    
+
     portfolio = Portfolio()
     total_target_pct = 0.0
     for a in portfolio_config:
@@ -44,15 +45,15 @@ def load_portfolio_config():
         assert('name' in a)
         assert('target_percentage' in a)
         assert('securities' in a)
-        
+
         ac_target_pct = float(a['target_percentage'])
         ac = AssetClass(a['name'], ac_target_pct)
         total_target_pct += ac_target_pct
         for sec_id in a['securities']:
             ac.add_security(Security(sec_id))
-        
+
         portfolio.add_asset_class(ac)
-    
+
     assert(abs(total_target_pct) - 1.0 < 1e-10)
     return portfolio
 

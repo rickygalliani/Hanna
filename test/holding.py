@@ -9,6 +9,7 @@ import unittest
 
 # Usage: python3 -m unittest --verbose test.holding
 
+
 class HoldingTest(unittest.TestCase):
 
     def test_inequality(self):
@@ -54,6 +55,7 @@ class HoldingTest(unittest.TestCase):
         h.buy(2, 101)
         self.assertEqual(h.num_shares, 3)
         self.assertEqual(h.value, 302.0)
+
 
 if __name__ == '__main__':
     unittest.main()

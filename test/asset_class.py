@@ -12,6 +12,7 @@ import unittest
 
 # Usage: python3 -m unittest --verbose test.asset_class
 
+
 class AssetClassTest(unittest.TestCase):
 
     def test_inequality(self):
@@ -23,7 +24,7 @@ class AssetClassTest(unittest.TestCase):
     def test_equality(self):
         ac1 = AssetClass('ac', target_percentage=1.0)
         ac2 = AssetClass('ac', target_percentage=1.0)
-        sec = Security('sec', 1, 100.0)    
+        sec = Security('sec', 1, 100.0)
         ac1.add_security(sec)
         ac2.add_security(sec)
         self.assertEqual(ac1, ac2)
@@ -92,7 +93,7 @@ class AssetClassTest(unittest.TestCase):
 
     def test_update(self):
         ac = AssetClass('ac', target_percentage=0.5)
-        sec = Security('sec')    
+        sec = Security('sec')
         ac.add_security(sec)
         rh = RobinhoodHolding(
             holding_id='sec',
@@ -135,6 +136,7 @@ class AssetClassTest(unittest.TestCase):
         p2 = Purchase('sec2', 'sec2_name', 2, 49.0)
         self.assertEqual(purchases['sec1'], p1)
         self.assertEqual(purchases['sec2'], p2)
+
 
 if __name__ == '__main__':
     unittest.main()

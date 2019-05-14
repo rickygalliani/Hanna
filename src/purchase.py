@@ -4,6 +4,7 @@
 
 import json
 
+
 class Purchase:
 
     def __init__(self, security_id, security_name, num_shares, price):

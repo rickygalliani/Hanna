@@ -8,6 +8,7 @@ import unittest
 
 # Usage: python3 -m unittest --verbose test.purchase
 
+
 class PurchaseTest(unittest.TestCase):
 
     def test_inequality(self):
@@ -19,6 +20,7 @@ class PurchaseTest(unittest.TestCase):
         p1 = Purchase('sec', 'sec_name', 5, 10.0)
         p2 = Purchase('sec', 'sec_name', 5, 10.0)
         self.assertEqual(p1, p2)
+
 
 if __name__ == '__main__':
     unittest.main()

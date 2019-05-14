@@ -6,6 +6,7 @@ from src.robinhood_holding import RobinhoodHolding
 
 import json
 
+
 class Holding:
 
     def __init__(self, security_id, num_shares, value):

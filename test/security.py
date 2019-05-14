@@ -9,6 +9,7 @@ import unittest
 
 # Usage: python3 -m unittest --verbose test.security
 
+
 class SecurityTest(unittest.TestCase):
 
     def test_inequality(self):
@@ -42,6 +43,7 @@ class SecurityTest(unittest.TestCase):
         sec.update(rh)
         sec_check = Security('sec', 'sec_name', 50.0)
         self.assertEqual(sec, sec_check)
+
 
 if __name__ == '__main__':
     unittest.main()

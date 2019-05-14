@@ -13,6 +13,7 @@ import unittest
 
 # Usage: python3 -m unittest --verbose test.portfolio
 
+
 class PortfolioTest(unittest.TestCase):
 
     def test_inequality(self):
@@ -190,6 +191,7 @@ class PortfolioTest(unittest.TestCase):
         d.add_purchase('ac', Purchase('sec', 'sec_name', 1, 10.0))
         p.make_deposit(d)
         self.assertEqual(p.value, 10.0)
+
 
 if __name__ == '__main__':
     unittest.main()

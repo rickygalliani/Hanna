@@ -4,6 +4,7 @@
 
 import json
 
+
 class RobinhoodHolding:
 
     def __init__(self,

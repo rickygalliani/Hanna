@@ -6,12 +6,13 @@ from src.robinhood_holding import RobinhoodHolding
 
 import json
 
+
 class Security:
 
     def __init__(self, security_id, name=None, price=None):
         self.id = security_id
         self.name = name
-        self.price = price  
+        self.price = price
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
