@@ -31,7 +31,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     amount = float(sys.argv[1])
-    log.info("Deposit Amount: ${}".format(amount))
+    log.info("Deposit Amount: ${:,.2f}".format(amount))
 
     portfolio = load_portfolio_config()
     log.info("Loaded portfolio configuration...")

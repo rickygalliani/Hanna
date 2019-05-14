@@ -4,6 +4,8 @@
 
 from src.purchase import Purchase
 
+from prettytable import PrettyTable
+
 import json
 
 class Deposit:
@@ -27,17 +29,30 @@ class Deposit:
         }
 
     def for_display(self):
-        out = ['\n\nPurchases:']
-        ac_purchases = sorted(
+        p_sec = PrettyTable([
+            'Asset Class',
+            'Security',
+            'Shares',
+            'Price',
+            'Cost'
+        ])
+        p_ac = PrettyTable(['Asset Class', 'Expenditures'])
+        sorted_acs = sorted(
             self.purchases.items(),
             key=lambda x: self.get_asset_class_expenditures(x[0]),
             reverse=True
         )
-        for asset_class_name, purchases in ac_purchases:
-            out.append("\n\n{}".format(asset_class_name))
-            for purchase in purchases:
-                out.append(purchase.for_display())
-        return ''.join(out)
+        for ac_name, purchases in sorted_acs:
+            exp = "${:,.2f}".format(self.get_asset_class_expenditures(ac_name))
+            p_ac.add_row([ac_name, exp])
+            sorted_ps = sorted(purchases, key=lambda x: x.cost, reverse=True)
+            for purchase in sorted_ps:
+                name = purchase.security_name
+                shares = purchase.num_shares
+                price = "${:,.2f}".format(purchase.price)
+                cost = "${:,.2f}".format(purchase.num_shares * purchase.price)
+                p_sec.add_row([ac_name, name, shares, price, cost])
+        return "\n{}\n{}".format(p_sec, p_ac)
 
     def add_purchase(self, asset_class_name, purchase):
         """

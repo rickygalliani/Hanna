@@ -27,15 +27,3 @@ class Purchase:
             'price': self.price,
             'cost': self.cost
         }
-
-    def for_display(self):
-        return ("\n\t{}"
-                "\n\t\t- Quantity: {}"
-                "\n\t\t- Price: ${:,.2f}"
-                "\n\t\t- Cost: ${:,.2f}""".format(
-                self.security_name,
-                self.num_shares,
-                self.price,
-                self.cost
-            )
-        )
