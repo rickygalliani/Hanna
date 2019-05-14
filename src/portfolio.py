@@ -6,6 +6,8 @@ from src.asset_class import AssetClass
 from src.deposit import Deposit
 from src.security import Security
 
+from prettytable import PrettyTable
+
 import json
 
 class Portfolio:
@@ -28,46 +30,21 @@ class Portfolio:
         }
 
     def for_display(self):
-        ac_len = 25
-        val_len = 20
-        pct_len = 18
-        tgt_pct_len = 20
-        sep = '\n\t' + '-' * (ac_len + val_len + pct_len + tgt_pct_len)
-        out = [
-            '\n\nPortfolio:\n\n\t',
-            'Asset Class'.ljust(ac_len),
-            'Target Percentage'.ljust(tgt_pct_len),
-            'Percentage'.ljust(pct_len),
-            'Holdings'.ljust(val_len),
-            sep
-        ]
+        cols = ['Asset Class', 'Target Percentage', 'Percentage', 'Value']
+        p = PrettyTable(cols)
         total_pct = 0.0
         acs = self.asset_classes.values()
         for ac in sorted(acs, key=lambda x: x.value, reverse=True):
             pct = self.get_asset_class_percentage(ac.name)
             total_pct += pct
-            tgt_pct = "{}%".format(str(round(ac.target_percentage * 100, 2)))
-            pct_str = "{}%".format(str(round(pct * 100, 2)))
-            val = "${:,.2f}".format(ac.value)
-            out.append("\n\t{name}{tgt_pct}{pct_str}{val}".format(
-                name=ac.name.ljust(ac_len),
-                tgt_pct=tgt_pct.ljust(tgt_pct_len),
-                pct_str=pct_str.ljust(pct_len),
-                val=val.ljust(val_len),
-            ))
-        tot_pct = "{}%".format(str(round(total_pct * 100, 2)))
-        tot_val = "${:,.2f}".format(self.value)
-        out += [
-            sep,
-            "\n\t{name}{tgt_pct}{pct_str}{val}".format(
-                name="Total".ljust(ac_len),
-                tgt_pct="100%".ljust(tgt_pct_len),
-                pct_str=tot_pct.ljust(pct_len),
-                val=tot_val.ljust(val_len),
-            ),
-        ]
-        out.append('\n')
-        return ''.join(out)
+            tgt_pct_str = "{}%".format(round(ac.target_percentage * 100, 2))
+            pct_str = "{}%".format(round(pct * 100, 2))
+            val_str = "${:,.2f}".format(ac.value)
+            p.add_row([ac.name, tgt_pct_str, pct_str, val_str])
+        tot_pct_str = "{}%".format(round(total_pct * 100, 2))
+        tot_val_str = "${:,.2f}".format(self.value)
+        p.add_row(['Total', '100%', tot_pct_str, tot_val_str])
+        return "\n{}".format(p)
 
     def add_asset_class(self, asset_class):
         """
