@@ -167,8 +167,13 @@ class Portfolio:
         """
         # Compute purchases necessary to rebalance portfolio
         deposit = Deposit()
+        budgets = sorted(
+            self.get_asset_class_budgets(amount).items(),
+            key=lambda x: x[1],
+            reverse=True
+        )
         rollover = 0.0  # Rollover allocations not spent in previous classes
-        for (ac_name, budget) in self.get_asset_class_budgets(amount).items():
+        for (ac_name, budget) in budgets:
             ac = self.get_asset_class(ac_name)
             final_budget = budget + rollover
             ac_purchases = ac.plan_deposit(final_budget)
