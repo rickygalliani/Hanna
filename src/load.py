@@ -64,7 +64,7 @@ def load_robinhood_holdings(username, password):
     """
     # client = r.login(username, password)
     # robinhood_resp = r.build_holdings().values()
-    robinhood_resp = json.load(open('test/data/response1.json', 'r'))
+    robinhood_resp = json.load(open('test/data/response2.json', 'r'))
     holdings = []
     for s in robinhood_resp:
         holdings.append(
