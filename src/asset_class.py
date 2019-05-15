@@ -12,11 +12,11 @@ import json
 class AssetClass:
 
     def __init__(self, name, target_percentage):
-        self.name = name
-        self.target_percentage = target_percentage
-        self.securities = {}  # Financial products in asset class
-        self.holdings = {}  # Actual holdings of the above financial products
-        self.value = 0.0
+        self.__name = name
+        self.__target_percentage = target_percentage
+        self.__securities = {}
+        self.__holdings = {}
+        self.__value = 0.0
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -24,15 +24,28 @@ class AssetClass:
     def __repr__(self):
         return json.dumps(self.to_dict())
 
+    def get_name(self):
+        return self.__name
+
+    def get_target_percentage(self):
+        return self.__target_percentage
+
+    def get_securities(self):
+        return self.__securities.values()
+
+    def get_holdings(self):
+        return self.__holdings.values()
+
+    def get_value(self):
+        return self.__value
+
     def to_dict(self):
-        secs = dict([(d, s.to_dict()) for (d, s) in self.securities.items()])
-        hols = dict([(d, h.to_dict()) for (d, h) in self.holdings.items()])
         ac = {
-            'name': self.name,
-            'target_percentage': self.target_percentage,
-            'securities': secs,
-            'holdings': hols,
-            'value': self.value
+            'name': self.get_name(),
+            'target_percentage': self.get_target_percentage(),
+            'securities': [s.to_dict() for s in self.get_securities()],
+            'holdings': [h.to_dict() for h in self.get_holdings()],
+            'value': self.get_value()
         }
         return ac
 
@@ -40,45 +53,47 @@ class AssetClass:
         """
         Adds the given value to this asset class.
         """
-        if self.value:
-            self.value += new_value
+        if self.__value:
+            self.__value += new_value
         else:
-            self.value = new_value
+            self.__value = new_value
+
+    def contains_security(self, security_id):
+        """
+        Returns True if this asset class contains the given security.
+        """
+        return security_id in self.__securities
 
     def add_security(self, security):
         """
         Adds the given security to this asset class.
         """
         sec_id = security.get_id()
-        if sec_id not in self.securities:
-            self.securities[sec_id] = security
+        if not self.contains_security(sec_id):
+            self.__securities[sec_id] = security
         else:
-            sec_name = security.get_name()
-            if sec_name:
-                self.securities[sec_id].set_name(sec_name)
-            sec_price = security.get_price()
-            if sec_price:
-                self.securities[sec_id].set_price(sec_price)
-
-    def contains_security(self, security_id):
-        """
-        Returns True if this asset class contains the given security.
-        """
-        return security_id in self.securities
+            self.__securities[sec_id] = security
 
     def get_security(self, security_id):
         """
         Returns the security for the given security id.
         """
-        if security_id in self.securities:
-            return self.securities[security_id]
+        if self.contains_security(security_id):
+            return self.__securities[security_id]
         else:
             raise Exception(
                 "{} is not in the '{}' asset class's securities.".format(
                     security_id,
-                    self.name
+                    self.get_name()
                 )
             )
+
+    def contains_holding(self, security_id):
+        """
+        Returns True if this asset class contains a holding of the given
+        security.
+        """
+        return security_id in self.__holdings
 
     def add_holding(self, security, num_shares):
         """
@@ -88,30 +103,22 @@ class AssetClass:
         value = num_shares * security.get_price()
         self.add_value(value)
         sec_id = security.get_id()
-        if sec_id not in self.holdings:
-            holding = Holding(sec_id, num_shares, value)
-            self.holdings[sec_id] = holding
+        if not self.contains_holding(sec_id):
+            self.__holdings[sec_id] = Holding(sec_id, num_shares, value)
         else:
-            self.holdings[sec_id].buy(num_shares, security.get_price())
-
-    def contains_holding(self, security_id):
-        """
-        Returns True if this asset class contains a holding of the given
-        security.
-        """
-        return security_id in self.holdings
+            self.__holdings[sec_id].buy(num_shares, security.get_price())
 
     def get_holding(self, security_id):
         """
         Returns this asset class's holdings of the given security.
         """
-        if security_id in self.holdings:
-            return self.holdings[security_id]
+        if self.contains_holding(security_id):
+            return self.__holdings[security_id]
         else:
             raise Exception(
                 "{} is not in the '{}' asset class's holdings.".format(
                     security_id,
-                    self.name
+                    self.get_name()
                 )
             )
 
@@ -120,15 +127,14 @@ class AssetClass:
         Updates this asset class with the given Robinhood holding.
         """
         assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.value += robinhood_holding.equity
+        self.__value += robinhood_holding.equity
         sec_id = robinhood_holding.id
         security = self.get_security(sec_id)
         security.update(robinhood_holding)
-        if sec_id in self.holdings:
-            holding = self.get_holding(sec_id)
-            holding.update(robinhood_holding)
+        if self.contains_holding(sec_id):
+            self.get_holding(sec_id).update(robinhood_holding)
         else:
-            self.holdings[sec_id] = Holding(
+            self.__holdings[sec_id] = Holding(
                 sec_id,
                 robinhood_holding.quantity,
                 robinhood_holding.equity
@@ -142,8 +148,9 @@ class AssetClass:
         """
         def no_purchases():
             return dict([
-                (s_id, Purchase(s_id, s.get_name(), 0, s.get_price()))
-                for (s_id, s) in self.securities.items()
+                (s.get_id(),
+                 Purchase(s.get_id(), s.get_name(), 0, s.get_price()))
+                for s in self.get_securities()
             ])
 
         budget_cents = int(budget * 100)
@@ -151,7 +158,7 @@ class AssetClass:
             return no_purchases()
 
         securities_cents = dict([
-            (s_id, s.with_cents()) for (s_id, s) in self.securities.items()
+            (s.get_id(), s.with_cents()) for s in self.get_securities()
         ])
 
         # Purchase at T[i] maximizes expenditure with budget i

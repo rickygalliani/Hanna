@@ -1,6 +1,9 @@
-1. Add cash into display
-2. Add security tickers into portfolio config
-2. Add validation function to check portfolio config
-3. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-4. Figure out how to use Robinhood API to determine how much cash is sitting in account
-5. Look into type support for python 3
+1. Finish adding getters/setters
+2. Add cash into display
+3. Get pre-push commit hook working
+4. Add security tickers into portfolio config
+5. Add validation function to check portfolio config
+6. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+7. Figure out how to use Robinhood API to determine how much cash is sitting in account
+8. Look into type support for python 3
+9. Add README documentation

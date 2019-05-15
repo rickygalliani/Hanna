@@ -38,26 +38,27 @@ class Portfolio:
         sec_tot_pct = 0.0
         sec_tot_value = 0.0
         acs = self.asset_classes.values()
-        for ac in sorted(acs, key=lambda x: x.value, reverse=True):
-            ac_pct = self.get_asset_class_percentage(ac.name)
+        for ac in sorted(acs, key=lambda x: x.get_value(), reverse=True):
+            ac_name = ac.get_name()
+            ac_pct = self.get_asset_class_percentage(ac_name)
             ac_tot_pct += ac_pct
-            tgt_pct_str = "{}%".format(round(ac.target_percentage * 100, 2))
-            pct_str = "{}%".format(round(ac_pct * 100, 2))
-            val_str = "${:,.2f}".format(ac.value)
-            p_ac.add_row([ac.name, tgt_pct_str, pct_str, val_str])
-            hols = [(h, self.get_security_percentage(h)) for h in ac.holdings]
-            for h, h_pct in sorted(hols, key=lambda x: x[1], reverse=True):
-                hol = ac.holdings[h]
-                sec_tot_pct += h_pct
-                sec_tot_value += hol.value
-                sec = ac.get_security(h).get_name()
+            tgt_pct_str = '{:.1%}'.format(ac.get_target_percentage())
+            pct_str = '{:.1%}'.format(ac_pct)
+            val_str = "${:,.2f}".format(ac.get_value())
+            p_ac.add_row([ac_name, tgt_pct_str, pct_str, val_str])
+            hs = [(h, self.get_security_value(h.id)) for h in ac.get_holdings()]
+            for hol, hol_val in sorted(hs, key=lambda h: h[1], reverse=True):
+                sec = ac.get_security(hol.id).get_name()
+                h_pct = self.get_security_percentage(hol.id)
                 h_shares = hol.num_shares
-                h_pct_str = "{}%".format(round(h_pct * 100, 2))
-                h_val_str = "${:,.2f}".format(hol.value)
-                p_sec.add_row([ac.name, sec, h_shares, h_pct_str, h_val_str])
-        ac_tot_pct_str = "{}%".format(round(ac_tot_pct * 100, 2))
+                sec_tot_pct += h_pct
+                sec_tot_value += hol_val
+                h_pct_str = '{:.1%}'.format(h_pct)
+                h_val_str = "${:,.2f}".format(hol_val)
+                p_sec.add_row([ac_name, sec, h_shares, h_pct_str, h_val_str])
+        ac_tot_pct_str = '{:.1%}'.format(ac_tot_pct)
         ac_tot_val_str = "${:,.2f}".format(self.value)
-        sec_tot_pct_str = "{}%".format(round(sec_tot_pct * 100, 2))
+        sec_tot_pct_str = '{:.1%}'.format(sec_tot_pct)
         sec_tot_val_str = "${:,.2f}".format(sec_tot_value)
         p_ac.add_row(['Total', '100%', ac_tot_pct_str, ac_tot_val_str])
         p_sec.add_row(['Total', '-', '-', sec_tot_pct_str, sec_tot_val_str])
@@ -67,8 +68,8 @@ class Portfolio:
         """
         Adds the given asset class to this portfolio.
         """
-        self.asset_classes[asset_class.name] = asset_class
-        self.value += asset_class.value
+        self.asset_classes[asset_class.get_name()] = asset_class
+        self.value += asset_class.get_value()
 
     def get_asset_class(self, asset_class_name):
         """
@@ -102,29 +103,39 @@ class Portfolio:
             "Portfolio does not contain security {}.".format(security_id)
         )
 
+    def get_asset_class_value(self, asset_class_name):
+        """
+        Returns the value invested in the given asset class.
+        """
+        return self.get_asset_class(asset_class_name).get_value()
+
     def get_asset_class_percentage(self, asset_class_name):
         """
         Returns the percentage of the portfolio invested in the given asset
         class.
         """
-        ac = self.get_asset_class(asset_class_name)
-        return ac.value / self.value
+        return self.get_asset_class_value(asset_class_name) / self.value
+
+    def get_security_value(self, security_id):
+        """
+        Returns the value invested in the given security.
+        """
+        ac = self.get_asset_class_for_security(security_id)
+        return ac.get_holding(security_id).value
 
     def get_security_percentage(self, security_id):
         """
         Returns the percentage of this portfolio invested in the given
         security.
         """
-        ac = self.get_asset_class_for_security(security_id)
-        hol = ac.get_holding(security_id)
-        return hol.value / self.value
+        return self.get_security_value(security_id) / self.value
 
     def get_asset_class_target_value(self, asset_class_name):
         """
         Returns the amount that should be invested in the given asset class.
         """
         ac = self.get_asset_class(asset_class_name)
-        return self.value * ac.target_percentage
+        return self.value * ac.get_target_percentage()
 
     def get_asset_class_target_deviation(self, asset_class_name):
         """
@@ -133,7 +144,7 @@ class Portfolio:
         """
         ac = self.get_asset_class(asset_class_name)
         target = self.get_asset_class_target_value(asset_class_name)
-        return ac.value - target
+        return ac.get_value() - target
 
     def get_asset_class_budgets(self, deposit):
         """
@@ -196,7 +207,7 @@ class Portfolio:
             ac_purchases = ac.plan_deposit(final_budget)
             ac_total = 0.0
             for sec_id, purchase in ac_purchases.items():
-                deposit.add_purchase(ac.name, purchase)
+                deposit.add_purchase(ac_name, purchase)
                 ac_total += purchase.cost
             rollover = final_budget - ac_total
         return deposit

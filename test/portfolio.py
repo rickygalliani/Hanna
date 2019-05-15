@@ -59,6 +59,10 @@ class PortfolioTest(unittest.TestCase):
         ac.add_security(sec)
         self.assertEqual(p.get_asset_class_for_security('sec'), ac)
 
+    def test_get_asset_class_value(self):
+        # TODO
+        self.assertTrue(True)
+
     def test_get_asset_class_percentage(self):
         p = Portfolio()
         sec = Security('sec', 'sec_name', 10.0)
@@ -72,6 +76,10 @@ class PortfolioTest(unittest.TestCase):
         p.add_asset_class(ac2)
         self.assertEqual(p.get_asset_class_percentage('ac1'), 0.2)
         self.assertEqual(p.get_asset_class_percentage('ac2'), 0.8)
+
+    def test_get_security_value(self):
+        # TODO
+        self.assertTrue(True)
 
     def test_get_security_percentage(self):
         p = Portfolio()

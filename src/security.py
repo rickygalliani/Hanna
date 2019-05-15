@@ -11,8 +11,8 @@ class Security:
 
     def __init__(self, security_id, name=None, price=None):
         self.__id = security_id  # no setter method
-        self.set_name(name)
-        self.set_price(price)
+        self.__name = name
+        self.__price = price
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -28,12 +28,6 @@ class Security:
 
     def get_price(self):
         return self.__price
-
-    def set_name(self, new_name):
-        self.__name = new_name
-
-    def set_price(self, new_price):
-        self.__price = new_price
 
     def to_dict(self):
         return {
@@ -58,5 +52,5 @@ class Security:
         Updates this security with given Robinhood holding data.
         """
         assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.set_name(robinhood_holding.name)
-        self.set_price(robinhood_holding.price)
+        self.__name = robinhood_holding.name
+        self.__price = robinhood_holding.price
