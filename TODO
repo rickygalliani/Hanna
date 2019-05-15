@@ -1,5 +1,5 @@
-1. Add validation function to check portfolio config
-2. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-3. Figure out how to use Robinhood API to determine how much cash is sitting in account
-4. flake8 everything
+1. Add cash into display
+2. Add validation function to check portfolio config
+3. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+4. Figure out how to use Robinhood API to determine how much cash is sitting in account
 5. Look into type support for python 3

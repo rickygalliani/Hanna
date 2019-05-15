@@ -30,21 +30,38 @@ class Portfolio:
         }
 
     def for_display(self):
-        cols = ['Asset Class', 'Target Percentage', 'Percentage', 'Value']
-        p = PrettyTable(cols)
-        total_pct = 0.0
+        ac_cols = ['Asset Class', 'Target Percentage', 'Percentage', 'Value']
+        sec_cols = ['Asset Class', 'Security', 'Shares', 'Percentage', 'Value']
+        p_ac = PrettyTable(ac_cols)
+        p_sec = PrettyTable(sec_cols)
+        ac_tot_pct = 0.0
+        sec_tot_pct = 0.0
+        sec_tot_value = 0.0
         acs = self.asset_classes.values()
         for ac in sorted(acs, key=lambda x: x.value, reverse=True):
-            pct = self.get_asset_class_percentage(ac.name)
-            total_pct += pct
+            ac_pct = self.get_asset_class_percentage(ac.name)
+            ac_tot_pct += ac_pct
             tgt_pct_str = "{}%".format(round(ac.target_percentage * 100, 2))
-            pct_str = "{}%".format(round(pct * 100, 2))
+            pct_str = "{}%".format(round(ac_pct * 100, 2))
             val_str = "${:,.2f}".format(ac.value)
-            p.add_row([ac.name, tgt_pct_str, pct_str, val_str])
-        tot_pct_str = "{}%".format(round(total_pct * 100, 2))
-        tot_val_str = "${:,.2f}".format(self.value)
-        p.add_row(['Total', '100%', tot_pct_str, tot_val_str])
-        return "\n{}".format(p)
+            p_ac.add_row([ac.name, tgt_pct_str, pct_str, val_str])
+            hols = [(h, self.get_security_percentage(h)) for h in ac.holdings]
+            for h, h_pct in sorted(hols, key=lambda x: x[1], reverse=True):
+                hol = ac.holdings[h]
+                sec_tot_pct += h_pct
+                sec_tot_value += hol.value
+                sec = ac.get_security(h).name
+                h_shares = hol.num_shares
+                h_pct_str = "{}%".format(round(h_pct * 100, 2))
+                h_val_str = "${:,.2f}".format(hol.value)
+                p_sec.add_row([ac.name, sec, h_shares, h_pct_str, h_val_str])
+        ac_tot_pct_str = "{}%".format(round(ac_tot_pct * 100, 2))
+        ac_tot_val_str = "${:,.2f}".format(self.value)
+        sec_tot_pct_str = "{}%".format(round(sec_tot_pct * 100, 2))
+        sec_tot_val_str = "${:,.2f}".format(sec_tot_value)
+        p_ac.add_row(['Total', '100%', ac_tot_pct_str, ac_tot_val_str])
+        p_sec.add_row(['Total', '-', '-', sec_tot_pct_str, sec_tot_val_str])
+        return "\n{}\n{}".format(p_ac, p_sec)
 
     def add_asset_class(self, asset_class):
         """

@@ -28,6 +28,7 @@ class Deposit:
         }
 
     def for_display(self):
+        p_ac = PrettyTable(['Asset Class', 'Expenditures'])
         p_sec = PrettyTable([
             'Asset Class',
             'Security',
@@ -35,7 +36,6 @@ class Deposit:
             'Price',
             'Cost'
         ])
-        p_ac = PrettyTable(['Asset Class', 'Expenditures'])
         sorted_acs = sorted(
             self.purchases.items(),
             key=lambda x: self.get_asset_class_expenditures(x[0]),
@@ -51,7 +51,7 @@ class Deposit:
                 price = "${:,.2f}".format(purchase.price)
                 cost = "${:,.2f}".format(purchase.num_shares * purchase.price)
                 p_sec.add_row([ac_name, name, shares, price, cost])
-        return "\n{}\n{}".format(p_sec, p_ac)
+        return "\n{}\n{}".format(p_ac, p_sec)
 
     def add_purchase(self, asset_class_name, purchase):
         """
