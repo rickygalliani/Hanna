@@ -49,13 +49,16 @@ class AssetClass:
         """
         Adds the given security to this asset class.
         """
-        if security.id not in self.securities:
-            self.securities[security.id] = security
+        sec_id = security.get_id()
+        if sec_id not in self.securities:
+            self.securities[sec_id] = security
         else:
-            if security.name:
-                self.securities[security.id].name = security.name
-            if security.price:
-                self.securities[security.id].price = security.price
+            sec_name = security.get_name()
+            if sec_name:
+                self.securities[sec_id].set_name(sec_name)
+            sec_price = security.get_price()
+            if sec_price:
+                self.securities[sec_id].set_price(sec_price)
 
     def contains_security(self, security_id):
         """
@@ -82,13 +85,14 @@ class AssetClass:
         Adds num_shares of the given security to the holdings of this asset
         class.
         """
-        value = num_shares * security.price
+        value = num_shares * security.get_price()
         self.add_value(value)
-        if security.id not in self.holdings:
-            holding = Holding(security.id, num_shares, value)
-            self.holdings[security.id] = holding
+        sec_id = security.get_id()
+        if sec_id not in self.holdings:
+            holding = Holding(sec_id, num_shares, value)
+            self.holdings[sec_id] = holding
         else:
-            self.holdings[security.id].buy(num_shares, security.price)
+            self.holdings[sec_id].buy(num_shares, security.get_price())
 
     def contains_holding(self, security_id):
         """
@@ -138,7 +142,7 @@ class AssetClass:
         """
         def no_purchases():
             return dict([
-                (s_id, Purchase(s.id, s.name, 0, s.price))
+                (s_id, Purchase(s_id, s.get_name(), 0, s.get_price()))
                 for (s_id, s) in self.securities.items()
             ])
 
@@ -154,7 +158,7 @@ class AssetClass:
         T = [0 for x in range(budget_cents + 1)]
         for i in range(budget_cents + 1):
             for j, (j_id, s) in enumerate(securities_cents.items()):
-                j_price = s.price
+                j_price = s.get_price()
                 # Check if budget of i allows for a purchase of j
                 if j_price <= i:
                     # Check if buying it increases expenditures
@@ -171,7 +175,7 @@ class AssetClass:
             exp_i = T[i]  # Optimal amount spent at budget i
             # Find last security purchased
             for j, (j_id, sec_j) in enumerate(securities_cents.items()):
-                j_price = sec_j.price
+                j_price = sec_j.get_price()
                 # If buying security j brought us to optimal expenditures at
                 # budget i
                 if T[exp_i - j_price] + j_price == exp_i:
@@ -183,5 +187,5 @@ class AssetClass:
                         prev.price
                     )
                     break
-            i = exp_i - securities_cents[j_id].price + 1
+            i = exp_i - securities_cents[j_id].get_price() + 1
         return purchases

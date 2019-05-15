@@ -24,7 +24,7 @@ class SecurityTest(unittest.TestCase):
 
     def test_with_cents(self):
         sec = Security('sec', price=167).with_cents()
-        self.assertEqual(sec.price, 16700)
+        self.assertEqual(sec.get_price(), 16700)
 
     def test_update(self):
         sec = Security('sec')

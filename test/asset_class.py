@@ -43,8 +43,8 @@ class AssetClassTest(unittest.TestCase):
         ac = AssetClass('ac', target_percentage=1.0)
         ac.add_security(Security('sec', 'old_name', 25.0))
         ac.add_security(Security('sec', 'sec_name', 15.0))
-        self.assertEqual(ac.securities['sec'].name, 'sec_name')
-        self.assertEqual(ac.securities['sec'].price, 15.0)
+        self.assertEqual(ac.securities['sec'].get_name(), 'sec_name')
+        self.assertEqual(ac.securities['sec'].get_price(), 15.0)
 
     def test_contains_security_false(self):
         ac = AssetClass('ac', target_percentage=1.0)
@@ -65,7 +65,7 @@ class AssetClassTest(unittest.TestCase):
         ac = AssetClass('ac', target_percentage=1.0)
         sec = Security('sec', price=5.0)
         ac.add_holding(sec, 3)
-        self.assertEqual(ac.holdings[sec.id], Holding('sec', 3, 15.0))
+        self.assertEqual(ac.holdings[sec.get_id()], Holding('sec', 3, 15.0))
         self.assertEqual(ac.value, 15.0)
 
     def test_add_holding_update(self):

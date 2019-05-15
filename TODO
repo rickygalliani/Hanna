@@ -1,4 +1,5 @@
 1. Add cash into display
+2. Add security tickers into portfolio config
 2. Add validation function to check portfolio config
 3. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
 4. Figure out how to use Robinhood API to determine how much cash is sitting in account

@@ -50,7 +50,7 @@ class Portfolio:
                 hol = ac.holdings[h]
                 sec_tot_pct += h_pct
                 sec_tot_value += hol.value
-                sec = ac.get_security(h).name
+                sec = ac.get_security(h).get_name()
                 h_shares = hol.num_shares
                 h_pct_str = "{}%".format(round(h_pct * 100, 2))
                 h_val_str = "${:,.2f}".format(hol.value)
