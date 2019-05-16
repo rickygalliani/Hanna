@@ -25,12 +25,12 @@ class HoldingTest(unittest.TestCase):
     def test_add_shares(self):
         h = Holding('sec', 1, 15.0)
         h.add_shares(5)
-        self.assertEqual(h.num_shares, 6)
+        self.assertEqual(h.get_num_shares(), 6)
 
     def test_add_value(self):
         h = Holding('sec', 1, 15.0)
         h.add_value(55.0)
-        self.assertEqual(h.value, 70.0)
+        self.assertEqual(h.get_value(), 70.0)
 
     def test_update(self):
         h = Holding('sec', 1, 10.0)
@@ -53,9 +53,8 @@ class HoldingTest(unittest.TestCase):
     def test_buy(self):
         h = Holding('sec', 1, 100.0)
         h.buy(2, 101)
-        self.assertEqual(h.num_shares, 3)
-        self.assertEqual(h.value, 302.0)
-
+        self.assertEqual(h.get_num_shares(), 3)
+        self.assertEqual(h.get_value(), 302.0)
 
 if __name__ == '__main__':
     unittest.main()

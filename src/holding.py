@@ -10,9 +10,9 @@ import json
 class Holding:
 
     def __init__(self, security_id, num_shares, value):
-        self.id = security_id
-        self.num_shares = num_shares
-        self.value = value
+        self.__id = security_id
+        self.__num_shares = num_shares
+        self.__value = value
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -20,39 +20,35 @@ class Holding:
     def __repr__(self):
         return json.dumps(self.to_dict())
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'num_shares': self.num_shares,
-            'value': self.value
-        }
+    def get_id(self):
+        return self.__id
+
+    def get_num_shares(self):
+        return self.__num_shares
+
+    def get_value(self):
+        return self.__value
 
     def add_shares(self, num_shares):
-        """
-        Adds the given number of shares to this holding.
-        """
-        if self.num_shares:
-            self.num_shares += num_shares
-        else:
-            self.num_shares = num_shares
+        self.__num_shares += num_shares
 
     def add_value(self, new_value):
-        """
-        Adds the given value to this holding.
-        """
-        if self.value:
-            self.value += new_value
-        else:
-            self.value = new_value
+        self.__value += new_value
+
+    def to_dict(self):
+        return {
+            'id': self.get_id(),
+            'num_shares': self.get_num_shares(),
+            'value': self.get_value()
+        }
 
     def update(self, robinhood_holding):
         """
         Updates this holding with given Robinhood holding data.
         """
         assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.name = robinhood_holding.name
-        self.num_shares = robinhood_holding.quantity
-        self.value = robinhood_holding.equity
+        self.__num_shares = robinhood_holding.get_quantity()
+        self.__value = robinhood_holding.get_equity()
 
     def buy(self, num_shares, price):
         """

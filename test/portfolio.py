@@ -189,9 +189,9 @@ class PortfolioTest(unittest.TestCase):
         deposit = p.plan_deposit(30.0)
         p1 = [Purchase('sec1', 'sec1_name', 1, 10.0)]
         p2 = [Purchase('sec2', 'sec2_name', 1, 20.0)]
-        self.assertEqual(deposit.total, 30.0)
-        self.assertEqual(deposit.purchases['ac1'], p1)
-        self.assertEqual(deposit.purchases['ac2'], p2)
+        self.assertEqual(deposit.get_total(), 30.0)
+        self.assertEqual(deposit.get_purchases_for_asset_class('ac1'), p1)
+        self.assertEqual(deposit.get_purchases_for_asset_class('ac2'), p2)
 
     def test_make_deposit(self):
         p = Portfolio()

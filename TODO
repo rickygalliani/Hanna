@@ -1,11 +1,11 @@
-1. Finish adding getters/setters
-2. Add total expenditures to deposit for_display()
-3. Add wash sale protection and add in new ETFs
-3. Add cash into display
-4. Get pre-push commit hook working
+1. Add total expenditures to deposit for_display()
+2. Add wash sale protection and add in new ETFs
+3. Add tests for for_display() functions and finish other "TODO" tests
+4. Add cash into display
 5. Add security tickers into portfolio config
-6. Add validation function to check portfolio config
-7. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-8. Figure out how to use Robinhood API to determine how much cash is sitting in account
-9. Look into type support for python 3
-10. Add README documentation
+6. Get pre-push commit hook working
+7. Add validation function to check portfolio config
+8. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+9. Figure out how to use Robinhood API to determine how much cash is sitting in account
+10. Look into type support for python 3
+11. Add README documentation

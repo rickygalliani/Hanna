@@ -52,5 +52,5 @@ class Security:
         Updates this security with given Robinhood holding data.
         """
         assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.__name = robinhood_holding.name
-        self.__price = robinhood_holding.price
+        self.__name = robinhood_holding.get_name()
+        self.__price = robinhood_holding.get_price()

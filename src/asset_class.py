@@ -127,8 +127,8 @@ class AssetClass:
         Updates this asset class with the given Robinhood holding.
         """
         assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.__value += robinhood_holding.equity
-        sec_id = robinhood_holding.id
+        self.__value += robinhood_holding.get_equity()
+        sec_id = robinhood_holding.get_id()
         security = self.get_security(sec_id)
         security.update(robinhood_holding)
         if self.contains_holding(sec_id):
@@ -136,8 +136,8 @@ class AssetClass:
         else:
             self.__holdings[sec_id] = Holding(
                 sec_id,
-                robinhood_holding.quantity,
-                robinhood_holding.equity
+                robinhood_holding.get_quantity(),
+                robinhood_holding.get_equity()
             )
 
     def plan_deposit(self, budget):
@@ -187,12 +187,10 @@ class AssetClass:
                 # budget i
                 if T[exp_i - j_price] + j_price == exp_i:
                     prev = purchases[j_id]
-                    purchases[j_id] = Purchase(
-                        prev.security_id,
-                        prev.security_name,
-                        prev.num_shares + 1,
-                        prev.price
-                    )
+                    purchases[j_id] = Purchase(prev.get_security_id(),
+                                               prev.get_security_name(),
+                                               prev.get_num_shares() + 1,
+                                               prev.get_price())
                     break
             i = exp_i - securities_cents[j_id].get_price() + 1
         return purchases

@@ -109,7 +109,7 @@ class AssetClassTest(unittest.TestCase):
         )
         ac.update(rh)
         hol = Holding('sec', 1, 40.0)
-        self.assertEqual(ac.get_value(), rh.equity)
+        self.assertEqual(ac.get_value(), rh.get_equity())
         self.assertEqual(ac.get_security('sec'), sec)
         self.assertEqual(ac.get_holding('sec'), hol)
 
