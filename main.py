@@ -44,10 +44,10 @@ if __name__ == '__main__':
     portfolio.update(robinhood_holdings)
     log.info("Updated portfolio with Robinhood holdings data...")
 
-    log.info(portfolio.for_display())
+    log.info("Portfolio before deposit:{}".format(portfolio.for_display()))
 
     deposit = portfolio.plan_deposit(amount)
-    log.info(deposit.for_display())
+    log.info("Deposit:{}".format(deposit.for_display()))
 
     portfolio.make_deposit(deposit)
-    log.info(portfolio.for_display())
+    log.info("Portfolio after deposit:{}".format(portfolio.for_display()))

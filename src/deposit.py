@@ -40,6 +40,9 @@ class Deposit:
             'Price',
             'Cost'
         ])
+        p_ac.title = 'Expenditures per Asset Class'
+        p_sec.title = 'Purchases'
+        sec_total = 0.0
         acs = [
             (ac, self.get_asset_class_expenditures(ac))
             for ac in self.get_involved_asset_classes()
@@ -51,11 +54,15 @@ class Deposit:
             ps = self.get_purchases_for_asset_class(ac_name)
             sorted_ps = sorted(ps, key=lambda x: x.get_cost(), reverse=True)
             for purchase in sorted_ps:
+                p_cost = purchase.get_cost()
+                sec_total += p_cost
                 name = purchase.get_security_name()
                 shares = purchase.get_num_shares()
                 price = "${:,.2f}".format(purchase.get_price())
-                cost = "${:,.2f}".format(purchase.get_cost())
+                cost = "${:,.2f}".format(p_cost)
                 p_sec.add_row([ac_name, name, shares, price, cost])
+        p_ac.add_row(['Total', "${:,.2f}".format(self.get_total())])
+        p_sec.add_row(['Total', '-', '-', '-', "${:,.2f}".format(sec_total)])
         return "\n{}\n{}".format(p_ac, p_sec)
 
     def add_purchase(self, asset_class_name, purchase):

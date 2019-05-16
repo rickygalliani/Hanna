@@ -40,6 +40,8 @@ class Portfolio:
         sec_cols = ['Asset Class', 'Security', 'Shares', 'Percentage', 'Value']
         p_ac = PrettyTable(ac_cols)
         p_sec = PrettyTable(sec_cols)
+        p_ac.title = 'Portfolio Asset Classes'
+        p_sec.title = 'Portfolio Securities'
         ac_tot_pct = 0.0
         sec_tot_pct = 0.0
         sec_tot_value = 0.0

@@ -1,3 +1,4 @@
+PTable==0.9.2
 certifi==2019.3.9
 chardet==3.0.4
 cycler==0.10.0
@@ -5,7 +6,6 @@ idna==2.8
 matplotlib==1.5.3
 numpy==1.11.3
 opencv-python==3.2.0.6
-prettytable==0.7.2
 pyparsing==2.1.10
 python-dateutil==2.6.0
 pytz==2016.10
