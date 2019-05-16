@@ -40,8 +40,8 @@ class PortfolioTest(unittest.TestCase):
         ac.add_security(sec)
         ac.add_holding(sec, 3)
         p.add_asset_class(ac)
-        self.assertEqual(p.value, 30.0)
-        self.assertTrue('ac' in p.asset_classes)
+        self.assertEqual(p.get_value(), 30.0)
+        self.assertTrue('ac' in p.get_asset_class_names())
 
     def test_contains_security_false(self):
         p = Portfolio()
@@ -172,7 +172,7 @@ class PortfolioTest(unittest.TestCase):
             holding_type='etp'
         )
         p.update([rh1, rh2])
-        self.assertEqual(p.value, 30.0)
+        self.assertEqual(p.get_value(), 30.0)
 
     def test_plan_deposit(self):
         p = Portfolio()
@@ -202,7 +202,7 @@ class PortfolioTest(unittest.TestCase):
         d = Deposit()
         d.add_purchase('ac', Purchase('sec', 'sec_name', 1, 10.0))
         p.make_deposit(d)
-        self.assertEqual(p.value, 10.0)
+        self.assertEqual(p.get_value(), 10.0)
 
 
 if __name__ == '__main__':

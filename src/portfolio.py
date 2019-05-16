@@ -22,6 +22,9 @@ class Portfolio:
     def __repr__(self):
         return json.dumps(self.to_dict())
 
+    def get_asset_class_names(self):
+        return self.__asset_classes.keys()
+
     def get_asset_classes(self):
         return self.__asset_classes.values()
 
@@ -36,7 +39,7 @@ class Portfolio:
 
     def to_dict(self):
         acs = [(ac.to_dict()) for ac in self.get_asset_classes()]
-        return {'asset_classes': acs, 'value': self.get_value}
+        return {'asset_classes': acs, 'value': self.get_value()}
 
     def for_display(self):
         ac_cols = ['Asset Class', 'Target Percentage', 'Percentage', 'Value']
