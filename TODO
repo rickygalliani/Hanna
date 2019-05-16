@@ -1,5 +1,6 @@
 1. Finish adding getters/setters
 2. Add total expenditures to deposit for_display()
+3. Add wash sale protection and add in new ETFs
 3. Add cash into display
 4. Get pre-push commit hook working
 5. Add security tickers into portfolio config

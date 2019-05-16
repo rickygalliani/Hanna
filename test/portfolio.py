@@ -29,6 +29,10 @@ class PortfolioTest(unittest.TestCase):
         p2.add_asset_class(AssetClass('ac', 1.0))
         self.assertEqual(p1, p2)
 
+    def test_contains_asset_class(self):
+        # TODO
+        self.assertTrue(True)
+
     def test_get_asset_class(self):
         p = Portfolio()
         ac = AssetClass('ac', 1.0)

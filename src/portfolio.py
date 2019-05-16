@@ -13,8 +13,8 @@ import json
 class Portfolio:
 
     def __init__(self):
-        self.asset_classes = {}
-        self.value = 0.0
+        self.__asset_classes = {}
+        self.__value = 0.0
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -22,12 +22,21 @@ class Portfolio:
     def __repr__(self):
         return json.dumps(self.to_dict())
 
+    def get_asset_classes(self):
+        return self.__asset_classes.values()
+
+    def get_value(self):
+        return self.__value
+
+    def add_value(self, amount):
+        self.__value += amount
+
+    def subtract_value(self, amount):
+        self.__value -= amount
+
     def to_dict(self):
-        acs = dict([(a, c.to_dict()) for (a, c) in self.asset_classes.items()])
-        return {
-            'asset_classes': acs,
-            'value': self.value
-        }
+        acs = [(ac.to_dict()) for ac in self.get_asset_classes()]
+        return {'asset_classes': acs, 'value': self.get_value}
 
     def for_display(self):
         ac_cols = ['Asset Class', 'Target Percentage', 'Percentage', 'Value']
@@ -37,7 +46,7 @@ class Portfolio:
         ac_tot_pct = 0.0
         sec_tot_pct = 0.0
         sec_tot_value = 0.0
-        acs = self.asset_classes.values()
+        acs = self.get_asset_classes()
         for ac in sorted(acs, key=lambda x: x.get_value(), reverse=True):
             ac_name = ac.get_name()
             ac_pct = self.get_asset_class_percentage(ac_name)
@@ -57,26 +66,33 @@ class Portfolio:
                 h_val_str = "${:,.2f}".format(hol_val)
                 p_sec.add_row([ac_name, sec, h_shares, h_pct_str, h_val_str])
         ac_tot_pct_str = '{:.1%}'.format(ac_tot_pct)
-        ac_tot_val_str = "${:,.2f}".format(self.value)
+        ac_tot_val_str = "${:,.2f}".format(self.get_value())
         sec_tot_pct_str = '{:.1%}'.format(sec_tot_pct)
         sec_tot_val_str = "${:,.2f}".format(sec_tot_value)
         p_ac.add_row(['Total', '100%', ac_tot_pct_str, ac_tot_val_str])
         p_sec.add_row(['Total', '-', '-', sec_tot_pct_str, sec_tot_val_str])
         return "\n{}\n{}".format(p_ac, p_sec)
 
+    def contains_asset_class(self, asset_class_name):
+        """
+        Returns True if this portfolio contains an asset class with the given
+        name.
+        """
+        return asset_class_name in self.__asset_classes
+
     def add_asset_class(self, asset_class):
         """
         Adds the given asset class to this portfolio.
         """
-        self.asset_classes[asset_class.get_name()] = asset_class
-        self.value += asset_class.get_value()
+        self.__asset_classes[asset_class.get_name()] = asset_class
+        self.__value += asset_class.get_value()
 
     def get_asset_class(self, asset_class_name):
         """
         Retrieves the asset class instance with the given name.
         """
-        if asset_class_name in self.asset_classes:
-            return self.asset_classes[asset_class_name]
+        if self.contains_asset_class(asset_class_name):
+            return self.__asset_classes[asset_class_name]
         raise Exception(
             "Portfolio does not contain a '{}' asset class.".format(
                 asset_class_name
@@ -88,15 +104,14 @@ class Portfolio:
         Returns whether the portfolio contains the given security.
         """
         return any([
-            a.contains_security(security_id)
-            for a in self.asset_classes.values()
+            a.contains_security(security_id) for a in self.get_asset_classes()
         ])
 
     def get_asset_class_for_security(self, security_id):
         """
         Returns the asset class object containing the given security.
         """
-        for ac in self.asset_classes.values():
+        for ac in self.get_asset_classes():
             if ac.contains_security(security_id):
                 return ac
         raise Exception(
@@ -114,7 +129,7 @@ class Portfolio:
         Returns the percentage of the portfolio invested in the given asset
         class.
         """
-        return self.get_asset_class_value(asset_class_name) / self.value
+        return self.get_asset_class_value(asset_class_name) / self.get_value()
 
     def get_security_value(self, security_id):
         """
@@ -128,14 +143,14 @@ class Portfolio:
         Returns the percentage of this portfolio invested in the given
         security.
         """
-        return self.get_security_value(security_id) / self.value
+        return self.get_security_value(security_id) / self.get_value()
 
     def get_asset_class_target_value(self, asset_class_name):
         """
         Returns the amount that should be invested in the given asset class.
         """
         ac = self.get_asset_class(asset_class_name)
-        return self.value * ac.get_target_percentage()
+        return self.get_value() * ac.get_target_percentage()
 
     def get_asset_class_target_deviation(self, asset_class_name):
         """
@@ -152,13 +167,16 @@ class Portfolio:
         for a given deposit.
         """
         # Temporarily pretend our portfolio has deposit's value added to it
-        self.value += deposit
+        self.add_value(deposit)
         remaining_value = deposit
-        ac_budgets = dict([(n, 0.0) for (n, ac) in self.asset_classes.items()])
-        ac_devs = [
-            (n, self.get_asset_class_target_deviation(n))
-            for (n, ac) in self.asset_classes.items()
-        ]
+        ac_budgets = dict([
+            (ac.get_name(), 0.0) for ac in self.get_asset_classes()
+        ])
+        ac_devs = []
+        for ac in self.get_asset_classes():
+            ac_name = ac.get_name()
+            ac_dev = self.get_asset_class_target_deviation(ac.get_name())
+            ac_devs.append((ac_name, ac_dev))
         ac_devs.sort(key=lambda x: x[1])
         for (n, ac_dev) in ac_devs:
             ac_budget = max(0, -1.0 * ac_dev)
@@ -167,7 +185,7 @@ class Portfolio:
             ac_budgets[n] = ac_budget
             remaining_value -= ac_budget
         # Remove deposit's value from portfolio
-        self.value -= deposit
+        self.subtract_value(deposit)
         return ac_budgets
 
     def update(self, robinhood_holdings):
@@ -177,7 +195,7 @@ class Portfolio:
         """
         for rh in robinhood_holdings:
             # Add equity in this holding to portfolio total
-            self.value += rh.equity
+            self.add_value(rh.equity)
 
             # Update asset class data (and relevant underlying security data)
             if self.contains_security(rh.id):
@@ -220,6 +238,6 @@ class Portfolio:
         for (ac_name, purchases) in deposit.purchases.items():
             ac = self.get_asset_class(ac_name)
             for p in purchases:
-                self.value += p.cost
+                self.add_value(p.cost)
                 sec = Security(p.security_id, p.security_name, p.price)
                 ac.add_holding(sec, p.num_shares)
