@@ -37,7 +37,15 @@ class Portfolio:
 
     def for_display(self):
         ac_cols = ['Asset Class', 'Target Percentage', 'Percentage', 'Value']
-        sec_cols = ['Asset Class', 'Security', 'Shares', 'Percentage', 'Value']
+        sec_cols = [
+            'Asset Class',
+            'Security',
+            'Symbol',
+            'Shares',
+            'Restricted',
+            'Percentage',
+            'Value'
+        ]
         p_ac = PrettyTable(ac_cols)
         p_sec = PrettyTable(sec_cols)
         p_ac.title = 'Portfolio Asset Classes'
@@ -60,20 +68,27 @@ class Portfolio:
             ]
             for hol, hol_val in sorted(hs, key=lambda h: h[1], reverse=True):
                 hol_id = hol.get_id()
-                sec = ac.get_security(hol_id).get_name()
-                h_pct = self.get_security_percentage(hol_id)
-                h_shares = hol.get_num_shares()
-                sec_tot_pct += h_pct
+                s = ac.get_security(hol_id)
+                hol_pct = self.get_security_percentage(hol_id)
+                sec_tot_pct += hol_pct
                 sec_tot_value += hol_val
-                h_pct_str = '{:.1%}'.format(h_pct)
-                h_val_str = "${:,.2f}".format(hol_val)
-                p_sec.add_row([ac_name, sec, h_shares, h_pct_str, h_val_str])
+                p_sec.add_row([
+                    ac_name,
+                    s.get_name(),
+                    s.get_symbol(),
+                    hol.get_num_shares(),
+                    s.get_buy_restricted(),
+                    "{:.1%}".format(hol_pct),
+                    "${:,.2f}".format(hol_val)
+                ])
         ac_tot_pct_str = '{:.1%}'.format(ac_tot_pct)
         ac_tot_val_str = "${:,.2f}".format(self.get_value())
         sec_tot_pct_str = '{:.1%}'.format(sec_tot_pct)
         sec_tot_val_str = "${:,.2f}".format(sec_tot_value)
         p_ac.add_row(['Total', '100%', ac_tot_pct_str, ac_tot_val_str])
-        p_sec.add_row(['Total', '-', '-', sec_tot_pct_str, sec_tot_val_str])
+        p_sec.add_row([
+            'Total', '-', '-', '-', '-', sec_tot_pct_str, sec_tot_val_str
+        ])
         return "\n{}\n{}".format(p_ac, p_sec)
 
     def add_value(self, amount):
@@ -81,6 +96,13 @@ class Portfolio:
 
     def subtract_value(self, amount):
         self.__value -= amount
+
+    def get_all_security_symbols(self):
+        symbols = []
+        for ac in self.get_asset_classes():
+            for sec in ac.get_securities():
+                symbols.append(sec.get_symbol())
+        return symbols
 
     def add_asset_class(self, asset_class):
         self.__asset_classes[asset_class.get_name()] = asset_class
@@ -194,24 +216,21 @@ class Portfolio:
         self.subtract_value(deposit)
         return ac_budgets
 
-    def update(self, robinhood_holdings):
+    def update(self, robinhood_holdings, security_info):
         """
         Updates this portfolio (and its underlying asset classes and
         securities) with the given Robinhood holdings.
         """
-        for rh in robinhood_holdings:
-            # Add equity in this holding to portfolio total
-            self.add_value(rh.get_equity())
-
-            # Update asset class data (and relevant underlying security data)
-            rh_id = rh.get_id()
-            if self.contains_security(rh_id):
-                ac = self.get_asset_class_for_security(rh_id)
-                ac.update(rh)
-            else:
-                # TODO: handle case where user has holdings not in portfolio
-                #       config
-                pass
+        for ac in self.get_asset_classes():
+            for sec in ac.get_securities():
+                sec_id = sec.get_id()
+                sec_symbol = sec.get_symbol()
+                sec_info = security_info[sec_symbol]
+                ac.update_security(sec_id, sec_info)
+                if sec_id in robinhood_holdings:
+                    holding_info = robinhood_holdings[sec_id]
+                    self.add_value(holding_info['equity'])
+                    ac.update_holding(sec_id, holding_info)
 
     def plan_deposit(self, amount):
         """
@@ -229,9 +248,9 @@ class Portfolio:
         for (ac_name, budget) in budgets:
             ac = self.get_asset_class(ac_name)
             final_budget = budget + rollover
-            ac_purchases = ac.plan_deposit(final_budget)
+            ac_purchases = ac.plan_purchases(final_budget)
             ac_total = 0.0
-            for sec_id, purchase in ac_purchases.items():
+            for purchase in ac_purchases.values():
                 deposit.add_purchase(ac_name, purchase)
                 ac_total += purchase.get_cost()
             rollover = final_budget - ac_total
@@ -247,7 +266,4 @@ class Portfolio:
             purchases = deposit.get_purchases_for_asset_class(ac_name)
             for p in purchases:
                 self.add_value(p.get_cost())
-                sec = Security(p.get_security_id(),
-                               p.get_security_name(),
-                               p.get_price())
-                ac.add_holding(sec, p.get_num_shares())
+                ac.add_holding(p.get_security(), p.get_num_shares())

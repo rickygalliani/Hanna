@@ -4,7 +4,6 @@
 
 from src.holding import Holding
 from src.purchase import Purchase
-from src.robinhood_holding import RobinhoodHolding
 
 import json
 
@@ -122,25 +121,30 @@ class AssetClass:
                 )
             )
 
-    def update(self, robinhood_holding):
+    def update_security(self, security_id, security_info):
         """
-        Updates this asset class with the given Robinhood holding.
+        Updates the given security with name and latest price data.
         """
-        assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.__value += robinhood_holding.get_equity()
-        sec_id = robinhood_holding.get_id()
-        security = self.get_security(sec_id)
-        security.update(robinhood_holding)
-        if self.contains_holding(sec_id):
-            self.get_holding(sec_id).update(robinhood_holding)
-        else:
-            self.__holdings[sec_id] = Holding(
-                sec_id,
-                robinhood_holding.get_quantity(),
-                robinhood_holding.get_equity()
-            )
+        sec = self.get_security(security_id)
+        sec.set_name(security_info['name'])
+        sec.set_price(security_info['price'])
 
-    def plan_deposit(self, budget):
+    def update_holding(self, security, holding_info):
+        """
+        Updates the given holding with new holding data.
+        """
+        hol_shares = holding_info['quantity']
+        hol_value = holding_info['equity']
+        self.__value += hol_value
+        sec_id = holding_info['id']
+        if self.contains_holding(sec_id):
+            hol = self.get_holding(sec_id)
+            hol.set_num_shares(hol_shares)
+            hol.set_value(hol_value)
+        else:
+            self.__holdings[sec_id] = Holding(sec_id, hol_shares, hol_value)
+
+    def plan_purchases(self, budget):
         """
         Uses a Dynamic Program to determine how to optimally spend the budget
         on the asset class's securities. This is the well known Unbounded
@@ -148,9 +152,8 @@ class AssetClass:
         """
         def no_purchases():
             return dict([
-                (s.get_id(),
-                 Purchase(s.get_id(), s.get_name(), 0, s.get_price()))
-                for s in self.get_securities()
+                (s.get_id(), Purchase(s, 0))
+                for s in self.get_securities() if not s.get_buy_restricted()
             ])
 
         budget_cents = int(budget * 100)
@@ -158,7 +161,8 @@ class AssetClass:
             return no_purchases()
 
         securities_cents = dict([
-            (s.get_id(), s.with_cents()) for s in self.get_securities()
+            (s.get_id(), s.with_cents())
+            for s in self.get_securities() if not s.get_buy_restricted()
         ])
 
         # Purchase at T[i] maximizes expenditure with budget i
@@ -187,10 +191,8 @@ class AssetClass:
                 # budget i
                 if T[exp_i - j_price] + j_price == exp_i:
                     prev = purchases[j_id]
-                    purchases[j_id] = Purchase(prev.get_security_id(),
-                                               prev.get_security_name(),
-                                               prev.get_num_shares() + 1,
-                                               prev.get_price())
+                    purchases[j_id] = Purchase(prev.get_security(),
+                                               prev.get_num_shares() + 1)
                     break
             i = exp_i - securities_cents[j_id].get_price() + 1
         return purchases

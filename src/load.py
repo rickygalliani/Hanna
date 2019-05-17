@@ -4,7 +4,6 @@
 
 from src.asset_class import AssetClass
 from src.portfolio import Portfolio
-from src.robinhood_holding import RobinhoodHolding
 from src.security import Security
 
 import os
@@ -33,7 +32,7 @@ def load_portfolio_config():
     securities underlying those asset classes) from the portfolio config.
     """
     # Read portfolio configuration
-    config_file = os.path.join(os.getcwd(), 'config', 'portfolio_config.json')
+    config_file = os.path.join(os.getcwd(), 'config', 'portfolio.json')
     co = open(config_file, 'r')
     portfolio_config = json.load(co)
     co.close()
@@ -45,40 +44,60 @@ def load_portfolio_config():
         assert('name' in a)
         assert('target_percentage' in a)
         assert('securities' in a)
+        assert('buy_restrictions' in a)
 
         ac_target_pct = float(a['target_percentage'])
         ac = AssetClass(a['name'], ac_target_pct)
         total_target_pct += ac_target_pct
-        for sec_id in a['securities']:
-            ac.add_security(Security(sec_id))
-
+        for s_symbol, s_id in a['securities'].items():
+            print("a = {}".format(a))
+            s = Security(s_id,
+                         s_symbol,
+                         buy_restricted=s_symbol in a['buy_restrictions'])
+            ac.add_security(s)
         portfolio.add_asset_class(ac)
 
     assert(abs(total_target_pct) - 1.0 < 1e-10)
     return portfolio
 
 
-def load_robinhood_holdings(username, password):
+def load_holding_info():
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
-    # client = r.login(username, password)
     # robinhood_resp = r.build_holdings().values()
-    robinhood_resp = json.load(open('test/data/response2.json', 'r'))
-    holdings = []
+    robinhood_resp = json.load(open('test/data/holdings.json', 'r'))
+    holdings = {}
     for s in robinhood_resp:
-        holdings.append(
-            RobinhoodHolding(
-                s['id'],
-                s['name'],
-                float(s['price']),
-                int(float(s['quantity'])),
-                float(s['average_buy_price']),
-                float(s['equity']),
-                float(s['percentage']),
-                float(s['percent_change']),
-                float(s['equity_change']),
-                s['type']
-            )
-        )
+        s_id = s['id']
+        holdings[s_id] = {
+            'id': s_id,
+            'name': s['name'],
+            'price': float(s['price']),
+            'quantity': int(float(s['quantity'])),
+            'average_buy_price': float(s['average_buy_price']),
+            'equity': float(s['equity']),
+            'percentage': float(s['percentage']),
+            'percent_change': float(s['percent_change']),
+            'equity_change': float(s['equity_change']),
+            'type': s['type']
+        }
     return holdings
+
+
+def load_security_info(security_symbols):
+    """
+    Hits the Robinhood API to pull down security information like the latest
+    price and the full security name.
+    """
+    holding_info = json.load(open('test/data/security_info.json', 'r'))
+    for (security, info) in holding_info.items():
+        info['price'] = float(info['price'][0])
+    # holding_info = {}
+    # for sec_sym in security_symbols:
+    #     holding_info[sec_sym] = {
+    #         'name': r.get_name_by_symbol(sec_sym),
+    #         'price': r.get_latest_price(sec_sym)
+    #     }
+    return holding_info
+

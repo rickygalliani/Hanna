@@ -3,6 +3,7 @@
 # test/purchase.py
 
 from src.purchase import Purchase
+from src.security import Security
 
 import unittest
 
@@ -12,13 +13,13 @@ import unittest
 class PurchaseTest(unittest.TestCase):
 
     def test_inequality(self):
-        p1 = Purchase('sec', 'sec_name', 5, 10.0)
-        p2 = Purchase('sec', 'sec_name', 6, 10.0)
+        p1 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 5)
+        p2 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 6)
         self.assertNotEqual(p1, p2)
 
     def test_equality(self):
-        p1 = Purchase('sec', 'sec_name', 5, 10.0)
-        p2 = Purchase('sec', 'sec_name', 5, 10.0)
+        p1 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 5)
+        p2 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 5)
         self.assertEqual(p1, p2)
 
 

@@ -7,13 +7,15 @@ from src.security import Security
 from src.load import (
     load_credentials,
     load_portfolio_config,
-    load_robinhood_holdings
+    load_holding_info,
+    load_security_info
 )
 
 from random import shuffle
 
 import json
 import logging
+import robin_stocks as r
 import sys
 
 
@@ -37,11 +39,13 @@ if __name__ == '__main__':
     log.info("Loaded portfolio configuration...")
 
     # Populate asset classes and securities with holdings data
-    username, password = load_credentials()
-    robinhood_holdings = load_robinhood_holdings(username, password)
+    user, password = load_credentials()
+    # client = r.login(username, password)
+    robinhood_holdings = load_holding_info()
+    security_info = load_security_info(portfolio.get_all_security_symbols())
     log.info("Pulled Robinhood holdings data...")
 
-    portfolio.update(robinhood_holdings)
+    portfolio.update(robinhood_holdings, security_info)
     log.info("Updated portfolio with Robinhood holdings data...")
 
     log.info("Portfolio before deposit:{}".format(portfolio.for_display()))

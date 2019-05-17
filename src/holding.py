@@ -2,8 +2,6 @@
 # Hanna
 # src/holdingclass Security:
 
-from src.robinhood_holding import RobinhoodHolding
-
 import json
 
 
@@ -29,11 +27,11 @@ class Holding:
     def get_value(self):
         return self.__value
 
-    def add_shares(self, num_shares):
-        self.__num_shares += num_shares
+    def set_num_shares(self, num_shares):
+        self.__num_shares = num_shares
 
-    def add_value(self, new_value):
-        self.__value += new_value
+    def set_value(self, value):
+        self.__value = value
 
     def to_dict(self):
         return {
@@ -42,18 +40,10 @@ class Holding:
             'value': self.get_value()
         }
 
-    def update(self, robinhood_holding):
-        """
-        Updates this holding with given Robinhood holding data.
-        """
-        assert(isinstance(robinhood_holding, RobinhoodHolding))
-        self.__num_shares = robinhood_holding.get_quantity()
-        self.__value = robinhood_holding.get_equity()
-
     def buy(self, num_shares, price):
         """
         Buys the specified quantity of this holding at the specified price,
         updating the state of this security.
         """
-        self.add_shares(num_shares)
-        self.add_value(price * num_shares)
+        self.set_num_shares(self.get_num_shares() + num_shares)
+        self.set_value(self.get_value() + price * num_shares)

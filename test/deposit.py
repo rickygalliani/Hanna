@@ -4,6 +4,7 @@
 
 from src.deposit import Deposit
 from src.purchase import Purchase
+from src.security import Security
 
 import unittest
 
@@ -14,12 +15,14 @@ class DepositTest(unittest.TestCase):
 
     def test_inequality(self):
         d1 = Deposit()
-        d1.add_purchase('ac', Purchase('sec', 'sec_name', 5, 10.0))
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
+        d1.add_purchase('ac', Purchase(sec, 5))
         d2 = Deposit()
         self.assertNotEqual(d1, d2)
 
     def test_equality(self):
-        pur = Purchase('sec', 'sec_name', 5, 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0, False)
+        pur = Purchase(sec, 5)
         d1 = Deposit()
         d1.add_purchase('ac', pur)
         d2 = Deposit()
@@ -32,15 +35,18 @@ class DepositTest(unittest.TestCase):
 
     def test_add_purchase(self):
         d = Deposit()
-        pur = Purchase('sec', 'sec_name', 5, 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
+        pur = Purchase(sec, 5)
         d.add_purchase('ac', pur)
         self.assertEqual(d.get_total(), 50.0)
         self.assertTrue(pur in d.get_purchases_for_asset_class('ac'))
 
     def test_get_asset_class_expenditures(self):
         d = Deposit()
-        d.add_purchase('ac', Purchase('sec1', 'sec1_name', 5, 10.0))
-        d.add_purchase('ac', Purchase('sec2', 'sec2_name', 10, 5.0))
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 10.0, False)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 5.0, False)
+        d.add_purchase('ac', Purchase(sec1, 5))
+        d.add_purchase('ac', Purchase(sec2, 10))
         self.assertEqual(d.get_asset_class_expenditures('ac'), 100.0)
 
 

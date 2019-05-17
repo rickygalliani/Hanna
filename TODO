@@ -1,8 +1,8 @@
-1. Add total expenditures to deposit for_display()
-2. Add wash sale protection and add in new ETFs
+1. Unit test everything
+2. Add securities that don't have any holdings yet as holdings in the asset class with 0 value, 0 shares
 3. Add tests for for_display() functions and finish other "TODO" tests
-4. Add cash into display
-5. Add security tickers into portfolio config
+4. Add total shares into display
+5. Add cash into display
 6. Get pre-push commit hook working
 7. Add validation function to check portfolio config
 8. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials

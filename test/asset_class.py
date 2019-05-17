@@ -18,13 +18,13 @@ class AssetClassTest(unittest.TestCase):
     def test_inequality(self):
         ac1 = AssetClass('ac', target_percentage=1.0)
         ac2 = AssetClass('ac', target_percentage=1.0)
-        ac2.add_security(Security('sec'))
+        ac2.add_security(Security('sec', 'SEC'))
         self.assertNotEqual(ac1, ac2)
 
     def test_equality(self):
         ac1 = AssetClass('ac', target_percentage=1.0)
         ac2 = AssetClass('ac', target_percentage=1.0)
-        sec = Security('sec', 1, 100.0)
+        sec = Security('sec', 'SEC', 1, 100.0)
         ac1.add_security(sec)
         ac2.add_security(sec)
         self.assertEqual(ac1, ac2)
@@ -36,13 +36,13 @@ class AssetClassTest(unittest.TestCase):
 
     def test_add_security_new(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.add_security(Security('sec'))
-        self.assertEqual(ac.get_security('sec'), Security('sec'))
+        ac.add_security(Security('sec', 'SEC'))
+        self.assertEqual(ac.get_security('sec'), Security('sec', 'SEC'))
 
     def test_add_security_update(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.add_security(Security('sec', 'old_name', 25.0))
-        ac.add_security(Security('sec', 'sec_name', 15.0))
+        ac.add_security(Security('sec', 'SEC', 'old_name', 25.0))
+        ac.add_security(Security('sec', 'SEC', 'sec_name', 15.0))
         self.assertEqual(ac.get_security('sec').get_name(), 'sec_name')
         self.assertEqual(ac.get_security('sec').get_price(), 15.0)
 
@@ -52,27 +52,27 @@ class AssetClassTest(unittest.TestCase):
 
     def test_contains_security_true(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.add_security(Security('sec'))
+        ac.add_security(Security('sec', 'SEC'))
         self.assertTrue(ac.contains_security('sec'))
 
     def test_get_security(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec = Security('sec')
+        sec = Security('sec', 'SEC')
         ac.add_security(sec)
         self.assertEqual(ac.get_security('sec'), sec)
 
     def test_add_holding_new(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec = Security('sec', price=5.0)
+        sec = Security('sec', 'SEC', price=5.0)
         ac.add_holding(sec, 3)
         self.assertEqual(ac.get_holding('sec'), Holding('sec', 3, 15.0))
         self.assertEqual(ac.get_value(), 15.0)
 
     def test_add_holding_update(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec', price=5.0)
+        sec1 = Security('sec', 'SEC', price=5.0)
         ac.add_holding(sec1, 3)
-        sec2 = Security('sec', price=10.0)
+        sec2 = Security('sec', 'SEC', price=10.0)
         ac.add_holding(sec2, 3)
         self.assertEqual(ac.get_holding('sec'), Holding('sec', 6, 45.0))
         self.assertEqual(ac.get_value(), 45.0)
@@ -83,17 +83,17 @@ class AssetClassTest(unittest.TestCase):
 
     def test_contains_holding_true(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.add_holding(Security('sec', 'sec_name', 15.0), 3)
+        ac.add_holding(Security('sec', 'SEC', 'sec_name', 15.0), 3)
         self.assertTrue(ac.contains_holding('sec'))
 
     def test_get_holding(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.add_holding(Security('sec', 'sec_name', 15.0), 3)
+        ac.add_holding(Security('sec', 'SEC', 'sec_name', 15.0), 3)
         self.assertEqual(ac.get_holding('sec'), Holding('sec', 3, 45.0))
 
     def test_update(self):
         ac = AssetClass('ac', target_percentage=0.5)
-        sec = Security('sec')
+        sec = Security('sec', 'SEC')
         ac.add_security(sec)
         rh = RobinhoodHolding(
             holding_id='sec',
@@ -113,30 +113,40 @@ class AssetClassTest(unittest.TestCase):
         self.assertEqual(ac.get_security('sec'), sec)
         self.assertEqual(ac.get_holding('sec'), hol)
 
-    def test_plan_deposit_1(self):
+    def test_plan_purchases_knapsack_test_1(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec1', 'sec1_name', 33.0)
-        sec2 = Security('sec2', 'sec2_name', 49.0)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, False)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, False)
         ac.add_security(sec1)
         ac.add_security(sec2)
-        purchases = ac.plan_deposit(100)
-        p1 = Purchase('sec1', 'sec1_name', 3, 33.0)
-        p2 = Purchase('sec2', 'sec2_name', 0, 49.0)
+        purchases = ac.plan_purchases(100)
+        p1 = Purchase(sec1, 3)
+        p2 = Purchase(sec2, 0)
         self.assertEqual(purchases['sec1'], p1)
         self.assertEqual(purchases['sec2'], p2)
 
-    def test_plan_deposit_2(self):
+    def test_plan_purchases_knapsack_test_2(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec1', 'sec1_name', 33.0)
-        sec2 = Security('sec2', 'sec2_name', 49.0)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, False)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, False)
         ac.add_security(sec1)
         ac.add_security(sec2)
-        purchases = ac.plan_deposit(98.5)
-        p1 = Purchase('sec1', 'sec1_name', 0, 33.0)
-        p2 = Purchase('sec2', 'sec2_name', 2, 49.0)
+        purchases = ac.plan_purchases(98.5)
+        p1 = Purchase(sec1, 0)
+        p2 = Purchase(sec2, 2)
         self.assertEqual(purchases['sec1'], p1)
         self.assertEqual(purchases['sec2'], p2)
 
+    def test_plan_purchases_buy_restricted_test_1(self):
+        ac = AssetClass('ac', target_percentage=1.0)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, False)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, True)
+        ac.add_security(sec1)
+        ac.add_security(sec2)
+        purchases = ac.plan_purchases(98.5)
+        p1 = Purchase(sec1, 2)
+        self.assertEqual(len(purchases), 1)
+        self.assertEqual(purchases['sec1'], p1)
 
 if __name__ == '__main__':
     unittest.main()

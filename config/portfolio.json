@@ -1,0 +1,72 @@
+[
+    {
+        "name": "US Stocks",
+        "target_percentage": 0.35,
+        "securities": {
+            "VTI": "18226051-6bfa-4c56-bd9a-d7575f0245c1",
+            "SCHB": "f6bafe63-eb6f-4923-a3eb-d7f6b02dc5eb",
+            "ITOT": "a8f520dd-3426-43f6-b8a8-9988485c28a1",
+            "VTHR": "0612ed26-427c-48ac-b87d-32a81849d6c8"
+        },
+        "buy_restrictions": [
+            "VTI",
+            "SCHB"
+        ]
+    },
+    {
+        "name": "Foreign Stocks",
+        "target_percentage": 0.27,
+        "securities": {
+            "VEA": "8cbd9cce-48dc-4b57-97d4-665bc78fdf99",
+            "SCHF": "2b6e1db1-f405-461e-a11c-4475c657872e",
+            "IXUS": "b3f97125-728e-4227-a767-9b8f89316569",
+            "EFA": "c787074b-0abb-4940-846b-dbee221dd10f"
+        },
+        "buy_restrictions": [
+            "VEA",
+            "SCHF"
+        ]
+    },
+    {
+        "name": "Emerging Markets",
+        "target_percentage": 0.18,
+        "securities": {
+            "VWO": "49335ec7-8b86-4021-b656-6e45c37da4ed",
+            "IEMG": "fd3bd9ea-bed1-47c3-b939-7058c93d8a20",
+            "SCHE": "57d462bc-c8ff-4bc2-977d-10451e8c4188",
+            "SPEM": "05ece289-0a7c-40d6-a1df-32b51cca0bc8"
+        },
+        "buy_restrictions": [
+            "VWO",
+            "IEMG"
+        ]
+    },
+    {
+        "name": "Dividend Stocks",
+        "target_percentage": 0.09,
+        "securities": {
+            "VIG": "27222ed1-7ffd-4ce3-adab-782171ca21be",
+            "SCHD": "2a2a190b-64c0-46e7-a667-2e557ae1649e",
+            "DVY": "16c398c8-77ab-4677-9c6a-031eb84a814a",
+            "VYM": "d58d5d4e-5631-4ec8-a1d3-edd189454503"
+        },
+        "buy_restrictions": [
+            "VIG",
+            "SCHD"
+        ]
+    },
+    {
+        "name": "Bonds",
+        "target_percentage": 0.11,
+        "securities": {
+            "TFI": "94489816-796b-4397-a792-f89543a3f9fb",
+            "VTEB": "2b15d7b5-ab23-465d-b634-a11be51577f8",
+            "MUB": "6529ff56-7653-4c02-8f69-02c36dd6858f",
+            "SHM": "8ce76927-bd09-4386-b84e-33bf4b4d45d9"
+        },
+        "buy_restrictions": [
+            "TFI",
+            "VTEB"
+        ]
+    }
+]

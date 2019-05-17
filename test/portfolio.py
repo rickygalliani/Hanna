@@ -29,6 +29,10 @@ class PortfolioTest(unittest.TestCase):
         p2.add_asset_class(AssetClass('ac', 1.0))
         self.assertEqual(p1, p2)
 
+    def test_get_all_security_symbols(self):
+        # TODO
+        self.assertTrue(True)
+
     def test_contains_asset_class(self):
         # TODO
         self.assertTrue(True)
@@ -36,7 +40,7 @@ class PortfolioTest(unittest.TestCase):
     def test_get_asset_class(self):
         p = Portfolio()
         ac = AssetClass('ac', 1.0)
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac.add_security(sec)
         ac.add_holding(sec, 3)
         p.add_asset_class(ac)
@@ -51,7 +55,7 @@ class PortfolioTest(unittest.TestCase):
         p = Portfolio()
         ac = AssetClass('ac', 1.0)
         p.add_asset_class(ac)
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac.add_security(sec)
         self.assertTrue(p.contains_security('sec'))
 
@@ -59,7 +63,7 @@ class PortfolioTest(unittest.TestCase):
         p = Portfolio()
         ac = AssetClass('ac', 1.0)
         p.add_asset_class(ac)
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac.add_security(sec)
         self.assertEqual(p.get_asset_class_for_security('sec'), ac)
 
@@ -69,7 +73,7 @@ class PortfolioTest(unittest.TestCase):
 
     def test_get_asset_class_percentage(self):
         p = Portfolio()
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac1 = AssetClass('ac1', 0.2)
         ac1.add_security(sec)
         ac1.add_holding(sec, 2)
@@ -87,7 +91,7 @@ class PortfolioTest(unittest.TestCase):
 
     def test_get_security_percentage(self):
         p = Portfolio()
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac = AssetClass('ac', 0.2)
         ac.add_security(sec)
         ac.add_holding(sec, 2)
@@ -96,7 +100,7 @@ class PortfolioTest(unittest.TestCase):
 
     def test_get_asset_class_target_value(self):
         p = Portfolio()
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac1 = AssetClass('ac1', 0.2)
         ac1.add_security(sec)
         ac1.add_holding(sec, 2)
@@ -110,7 +114,7 @@ class PortfolioTest(unittest.TestCase):
 
     def test_get_asset_class_target_deviation(self):
         p = Portfolio()
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac1 = AssetClass('ac1', 0.15)
         ac1.add_security(sec)
         ac1.add_holding(sec, 2)
@@ -124,7 +128,7 @@ class PortfolioTest(unittest.TestCase):
 
     def test_get_asset_class_budgets(self):
         p = Portfolio()
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
         ac1 = AssetClass('ac1', 0.15)
         ac1.add_security(sec)
         ac1.add_holding(sec, 2)
@@ -139,8 +143,8 @@ class PortfolioTest(unittest.TestCase):
 
     def test_update(self):
         p = Portfolio()
-        sec1 = Security('sec1', 'sec_name', 10.0)
-        sec2 = Security('sec2', 'sec_name', 20.0)
+        sec1 = Security('sec1', 'SEC1', 'sec_name', 10.0)
+        sec2 = Security('sec2', 'SEC2', 'sec_name', 20.0)
         ac1 = AssetClass('ac1', 0.4)
         ac1.add_security(sec1)
         ac2 = AssetClass('ac2', 0.6)
@@ -176,8 +180,8 @@ class PortfolioTest(unittest.TestCase):
 
     def test_plan_deposit(self):
         p = Portfolio()
-        sec1 = Security('sec1', 'sec1_name', 10.0)
-        sec2 = Security('sec2', 'sec2_name', 20.0)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 10.0, False)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 20.0, False)
         ac1 = AssetClass('ac1', 0.4)
         ac1.add_security(sec1)
         ac1.add_holding(sec1, 3)
@@ -187,20 +191,20 @@ class PortfolioTest(unittest.TestCase):
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
         deposit = p.plan_deposit(30.0)
-        p1 = [Purchase('sec1', 'sec1_name', 1, 10.0)]
-        p2 = [Purchase('sec2', 'sec2_name', 1, 20.0)]
+        p1 = [Purchase(sec1, 1)]
+        p2 = [Purchase(sec2, 1)]
         self.assertEqual(deposit.get_total(), 30.0)
         self.assertEqual(deposit.get_purchases_for_asset_class('ac1'), p1)
         self.assertEqual(deposit.get_purchases_for_asset_class('ac2'), p2)
 
     def test_make_deposit(self):
         p = Portfolio()
-        sec = Security('sec', 'sec_name', 10.0)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0, False)
         ac = AssetClass('ac', 1.0)
         ac.add_security(sec)
         p.add_asset_class(ac)
         d = Deposit()
-        d.add_purchase('ac', Purchase('sec', 'sec_name', 1, 10.0))
+        d.add_purchase('ac', Purchase(sec, 1))
         p.make_deposit(d)
         self.assertEqual(p.get_value(), 10.0)
 
