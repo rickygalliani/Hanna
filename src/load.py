@@ -67,7 +67,7 @@ def load_security_info(security_symbols):
     """
     holding_info = json.load(open('test/data/security_info.json', 'r'))
     for (security, info) in holding_info.items():
-        info['price'] = float(info['price'][0])
+        info['price'] = float(info['price'])
     # holding_info = {}
     # for sec_sym in security_symbols:
     #     holding_info[sec_sym] = {
@@ -82,7 +82,7 @@ def load_holding_info():
     Hits the Robinhood API to pull down user's holdings data.
     """
     # robinhood_resp = r.build_holdings().values()
-    robinhood_resp = json.load(open('test/data/holdings.json', 'r'))
+    robinhood_resp = json.load(open('test/data/holding_info.json', 'r'))
     holdings = {}
     for s in robinhood_resp:
         s_id = s['id']

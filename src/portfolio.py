@@ -63,12 +63,12 @@ class Portfolio:
             val_str = "${:,.2f}".format(ac.get_value())
             p_ac.add_row([ac_name, tgt_pct_str, pct_str, val_str])
             hs = [
-                (h, self.get_security_value(h.get_id())) for h
+                (h, self.get_security_value(h.get_security().get_id())) for h
                 in ac.get_holdings()
             ]
             for hol, hol_val in sorted(hs, key=lambda h: h[1], reverse=True):
-                hol_id = hol.get_id()
-                s = ac.get_security(hol_id)
+                s = hol.get_security()
+                hol_id = s.get_id()
                 hol_pct = self.get_security_percentage(hol_id)
                 sec_tot_pct += hol_pct
                 sec_tot_value += hol_val
@@ -230,7 +230,7 @@ class Portfolio:
                 if sec_id in holding_info:
                     hol_info = holding_info[sec_id]
                     self.add_value(hol_info['equity'])
-                    ac.update_holding(sec_id, hol_info)
+                    ac.update_holding(sec, hol_info)
 
     def plan_deposit(self, amount):
         """
@@ -266,4 +266,4 @@ class Portfolio:
             purchases = deposit.get_purchases_for_asset_class(ac_name)
             for p in purchases:
                 self.add_value(p.get_cost())
-                ac.add_holding(p.get_security(), p.get_num_shares())
+                ac.buy(p.get_security(), p.get_num_shares())

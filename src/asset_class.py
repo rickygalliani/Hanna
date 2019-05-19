@@ -94,19 +94,6 @@ class AssetClass:
         """
         return security_id in self.__holdings
 
-    def add_holding(self, security, num_shares):
-        """
-        Adds num_shares of the given security to the holdings of this asset
-        class.
-        """
-        value = num_shares * security.get_price()
-        self.add_value(value)
-        sec_id = security.get_id()
-        if not self.contains_holding(sec_id):
-            self.__holdings[sec_id] = Holding(security, num_shares, value)
-        else:
-            self.__holdings[sec_id].buy(num_shares, security.get_price())
-
     def get_holding(self, security_id):
         """
         Returns this asset class's holdings of the given security.
@@ -142,7 +129,20 @@ class AssetClass:
             hol.set_num_shares(hol_shares)
             hol.set_value(hol_value)
         else:
-            self.__holdings[sec_id] = Holding(sec_id, hol_shares, hol_value)
+            self.__holdings[sec_id] = Holding(security, hol_shares, hol_value)
+
+    def buy(self, security, num_shares):
+        """
+        Adds num_shares of the given security to the holdings of this asset
+        class.
+        """
+        value = num_shares * security.get_price()
+        self.add_value(value)
+        sec_id = security.get_id()
+        if not self.contains_holding(sec_id):
+            self.__holdings[sec_id] = Holding(security, num_shares, value)
+        else:
+            self.__holdings[sec_id].buy(num_shares, security.get_price())
 
     def plan_purchases(self, budget):
         """
