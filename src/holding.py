@@ -7,8 +7,8 @@ import json
 
 class Holding:
 
-    def __init__(self, security_id, num_shares, value):
-        self.__id = security_id
+    def __init__(self, security, num_shares, value):
+        self.__security = security
         self.__num_shares = num_shares
         self.__value = value
 
@@ -18,8 +18,8 @@ class Holding:
     def __repr__(self):
         return json.dumps(self.to_dict())
 
-    def get_id(self):
-        return self.__id
+    def get_security(self):
+        return self.__security
 
     def get_num_shares(self):
         return self.__num_shares
@@ -35,7 +35,7 @@ class Holding:
 
     def to_dict(self):
         return {
-            'id': self.get_id(),
+            'security': self.get_security().to_dict(),
             'num_shares': self.get_num_shares(),
             'value': self.get_value()
         }

@@ -1,122 +1,82 @@
 {
     "SCHB": {
         "name": "Schwab US Broad Market ETF",
-        "price": [
-            "69.240000"
-        ]
+        "price": 69.240000
     },
     "IXUS": {
         "name": "iShares Core MSCI Total International Stock ETF",
-        "price": [
-            "57.670000"
-        ]
+        "price": 57.670000
     },
     "VEA": {
         "name": "Vanguard FTSE Developed Markets ETF",
-        "price": [
-            "40.900000"
-        ]
+        "price": 40.900000
     },
     "SCHD": {
         "name": "Schwab US Dividend Equity ETF",
-        "price": [
-            "52.330000"
-        ]
+        "price": 52.330000
     },
     "TFI": {
         "name": "SPDR Nuveen Barclays Municipal Bond ETF",
-        "price": [
-            "49.860000"
-        ]
+        "price": 49.860000
     },
     "SPEM": {
         "name": "SPDR Portfolio Emerging Markets ETF",
-        "price": [
-            "34.420000"
-        ]
+        "price": 34.420000
     },
     "ITOT": {
         "name": "iShares Core S&P Total US Stock Market ETF",
-        "price": [
-            "65.550000"
-        ]
+        "price": 65.550000
     },
     "VTI": {
         "name": "Vanguard Total Stock Market ETF",
-        "price": [
-            "147.380000"
-        ]
+        "price": 147.38000
     },
     "SCHF": {
         "name": "Schwab International Equity ETF",
-        "price": [
-            "31.360000"
-        ]
+        "price": 31.360000
     },
     "VTHR": {
         "name": "Vanguard Russell 3000 ETF",
-        "price": [
-            "131.720000"
-        ]
+        "price": 131.72000
     },
     "SHM": {
         "name": "SPDR Nuveen Barclays Short Term Municipal Bond ETF",
-        "price": [
-            "48.585000"
-        ]
+        "price": 48.585000
     },
     "MUB": {
         "name": "iShares National Muni Bond ETF",
-        "price": [
-            "112.380000"
-        ]
+        "price": 112.38000
     },
     "IEMG": {
         "name": "iShares Core MSCI Emerging Markets ETF",
-        "price": [
-            "49.420000"
-        ]
+        "price": 49.420000
     },
     "VWO": {
         "name": "Vanguard FTSE Emerging Markets Fund",
-        "price": [
-            "40.850000"
-        ]
+        "price": 40.850000
     },
     "VTEB": {
         "name": "Vanguard Tax-Exempt Bond ETF",
-        "price": [
-            "52.700000"
-        ]
+        "price": 52.700000
     },
     "EFA": {
         "name": "iShares MSCI EAFE ETF",
-        "price": [
-            "65.200000"
-        ]
+        "price": 65.200000
     },
     "SCHE": {
         "name": "Schwab Emerging Markets Equity fund",
-        "price": [
-            "25.170000"
-        ]
+        "price": 25.170000
     },
     "VYM": {
         "name": "Vanguard High Dividend Yield ETF",
-        "price": [
-            "86.270000"
-        ]
+        "price": 86.270000
     },
     "DVY": {
         "name": "iShares Dow Jones Select Dividend ETF",
-        "price": [
-            "98.620000"
-        ]
+        "price": 98.620000
     },
     "VIG": {
         "name": "Vanguard Dividend Appreciation ETF",
-        "price": [
-            "111.900000"
-        ]
+        "price": 111.90000"
     }
 }

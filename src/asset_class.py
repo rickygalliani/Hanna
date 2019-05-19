@@ -103,7 +103,7 @@ class AssetClass:
         self.add_value(value)
         sec_id = security.get_id()
         if not self.contains_holding(sec_id):
-            self.__holdings[sec_id] = Holding(sec_id, num_shares, value)
+            self.__holdings[sec_id] = Holding(security, num_shares, value)
         else:
             self.__holdings[sec_id].buy(num_shares, security.get_price())
 

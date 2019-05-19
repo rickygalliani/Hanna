@@ -5,7 +5,6 @@
 from src.asset_class import AssetClass
 from src.holding import Holding
 from src.purchase import Purchase
-from src.robinhood_holding import RobinhoodHolding
 from src.security import Security
 
 import unittest
@@ -65,17 +64,17 @@ class AssetClassTest(unittest.TestCase):
         ac = AssetClass('ac', target_percentage=1.0)
         sec = Security('sec', 'SEC', price=5.0)
         ac.add_holding(sec, 3)
-        self.assertEqual(ac.get_holding('sec'), Holding('sec', 3, 15.0))
+        self.assertEqual(ac.get_holding('sec'), Holding(sec, 3, 15.0))
         self.assertEqual(ac.get_value(), 15.0)
 
     def test_add_holding_update(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec', 'SEC', price=5.0)
-        ac.add_holding(sec1, 3)
-        sec2 = Security('sec', 'SEC', price=10.0)
-        ac.add_holding(sec2, 3)
-        self.assertEqual(ac.get_holding('sec'), Holding('sec', 6, 45.0))
-        self.assertEqual(ac.get_value(), 45.0)
+        sec = Security('sec', 'SEC', price=5.0)
+        ac.add_holding(sec, 3)
+        sec.set_price(15.0)
+        ac.add_holding(sec, 3)
+        self.assertEqual(ac.get_holding('sec'), Holding(sec, 6, 60.0))
+        self.assertEqual(ac.get_value(), 60.0)
 
     def test_contains_holding_false(self):
         ac = AssetClass('ac', target_percentage=1.0)
@@ -88,35 +87,42 @@ class AssetClassTest(unittest.TestCase):
 
     def test_get_holding(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.add_holding(Security('sec', 'SEC', 'sec_name', 15.0), 3)
-        self.assertEqual(ac.get_holding('sec'), Holding('sec', 3, 45.0))
+        sec = Security('sec', 'SEC', 'sec_name', 15.0)
+        ac.add_holding(sec, 3)
+        self.assertEqual(ac.get_holding('sec'), Holding(sec, 3, 45.0))
 
-    def test_update(self):
+    def test_update_security(self):
         ac = AssetClass('ac', target_percentage=0.5)
         sec = Security('sec', 'SEC')
         ac.add_security(sec)
-        rh = RobinhoodHolding(
-            holding_id='sec',
-            name='sec_name',
-            price=40.0,
-            quantity=1,
-            average_buy_price=40.0,
-            equity=40.0,
-            percentage=40.0,
-            percent_change=0.0,
-            equity_change=0.0,
-            holding_type='etp'
-        )
-        ac.update(rh)
-        hol = Holding('sec', 1, 40.0)
-        self.assertEqual(ac.get_value(), rh.get_equity())
+        sec_info = {"name": "Security A", "price": 100.0}
+        ac.update_security('sec', sec_info)
         self.assertEqual(ac.get_security('sec'), sec)
-        self.assertEqual(ac.get_holding('sec'), hol)
+
+    def test_update_holding(self):
+        ac = AssetClass('ac', target_percentage=0.5)
+        sec = Security('sec', 'SEC', 'sec_name', 40.0, 0)
+        ac.add_security(sec)
+        holding_info = {
+            'id': 'sec',
+            'name': 'sec_name',
+            'price': 40.0,
+            'quantity': 5,
+            'average_buy_price': 40.0,
+            'equity': 200.0,
+            'percentage': 40.0,
+            'percent_change': 0.0,
+            'equity_change': 0.0,
+            'holding_type': 'etp'
+        }
+        ac.add_holding(sec, 1)
+        ac.update_holding(sec, holding_info)
+        self.assertEqual(ac.get_holding('sec'), Holding(sec, 5, 200))
 
     def test_plan_purchases_knapsack_test_1(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, False)
-        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, False)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, 0)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, 0)
         ac.add_security(sec1)
         ac.add_security(sec2)
         purchases = ac.plan_purchases(100)
@@ -127,8 +133,8 @@ class AssetClassTest(unittest.TestCase):
 
     def test_plan_purchases_knapsack_test_2(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, False)
-        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, False)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, 0)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, 0)
         ac.add_security(sec1)
         ac.add_security(sec2)
         purchases = ac.plan_purchases(98.5)
@@ -139,8 +145,8 @@ class AssetClassTest(unittest.TestCase):
 
     def test_plan_purchases_buy_restricted_test_1(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, False)
-        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, True)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 33.0, 0)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 49.0, 1)
         ac.add_security(sec1)
         ac.add_security(sec2)
         purchases = ac.plan_purchases(98.5)

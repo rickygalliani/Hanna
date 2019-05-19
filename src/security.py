@@ -12,7 +12,7 @@ class Security:
                  symbol,
                  name=None,
                  price=None,
-                 buy_restricted=True):
+                 buy_restricted=1):
         self.__id = security_id
         self.__symbol = symbol
         self.__name = name
@@ -64,5 +64,6 @@ class Security:
             self.get_id(),
             self.get_symbol(),
             self.get_name(),
-            int(self.get_price() * 100)
+            int(self.get_price() * 100),
+            self.get_buy_restricted()
         )

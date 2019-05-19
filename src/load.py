@@ -50,7 +50,6 @@ def load_portfolio_config():
         ac = AssetClass(a['name'], ac_target_pct)
         total_target_pct += ac_target_pct
         for s_symbol, s_id in a['securities'].items():
-            print("a = {}".format(a))
             s = Security(s_id,
                          s_symbol,
                          buy_restricted=s_symbol in a['buy_restrictions'])
@@ -59,6 +58,23 @@ def load_portfolio_config():
 
     assert(abs(total_target_pct) - 1.0 < 1e-10)
     return portfolio
+
+
+def load_security_info(security_symbols):
+    """
+    Hits the Robinhood API to pull down security information like the latest
+    price and the full security name.
+    """
+    holding_info = json.load(open('test/data/security_info.json', 'r'))
+    for (security, info) in holding_info.items():
+        info['price'] = float(info['price'][0])
+    # holding_info = {}
+    # for sec_sym in security_symbols:
+    #     holding_info[sec_sym] = {
+    #         'name': r.get_name_by_symbol(sec_sym),
+    #         'price': r.get_latest_price(sec_sym)
+    #     }
+    return holding_info
 
 
 def load_holding_info():
@@ -83,21 +99,3 @@ def load_holding_info():
             'type': s['type']
         }
     return holdings
-
-
-def load_security_info(security_symbols):
-    """
-    Hits the Robinhood API to pull down security information like the latest
-    price and the full security name.
-    """
-    holding_info = json.load(open('test/data/security_info.json', 'r'))
-    for (security, info) in holding_info.items():
-        info['price'] = float(info['price'][0])
-    # holding_info = {}
-    # for sec_sym in security_symbols:
-    #     holding_info[sec_sym] = {
-    #         'name': r.get_name_by_symbol(sec_sym),
-    #         'price': r.get_latest_price(sec_sym)
-    #     }
-    return holding_info
-
