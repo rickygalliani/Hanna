@@ -71,7 +71,33 @@ class AssetClass:
         if not self.contains_security(sec_id):
             self.__securities[sec_id] = security
         else:
-            self.__securities[sec_id] = security
+            raise Exception(
+                "{} was already added to the '{}' asset class.".format(
+                    sec_id,
+                    self.get_name()
+                )
+            )  
+
+    def add_holding(self, holding):
+        """
+        Adds the given holding to this asset class.
+
+        1) HS / HH -> user already added holding and security, raise error
+        2) !HS / HH -> impossible in theory, raise error
+        3) HS / !HH -> good use case
+        4) !HS / !HH -> user needs to add security first, raise error
+        """
+        sec_id = holding.get_security().get_id()
+        has_security = self.contains_security(sec_id)
+        has_holding = self.contains_holding(sec_id)
+        if has_security and not has_holding:
+            self.__holdings[sec_id] = holding
+        elif not has_security:
+            m = "Must add {} to '{}' before adding it as a holding."
+            raise Exception(m.format(security_id, self.get_name()))
+        else:
+            m = "A holding for {} was already added to the '{}' asset class."
+            raise Exception(m.format(security_id, self.get_name()))  
 
     def get_security(self, security_id):
         """
@@ -80,12 +106,8 @@ class AssetClass:
         if self.contains_security(security_id):
             return self.__securities[security_id]
         else:
-            raise Exception(
-                "{} is not in the '{}' asset class's securities.".format(
-                    security_id,
-                    self.get_name()
-                )
-            )
+            m = "{} is not in the '{}' asset class's securities."
+            raise Exception(m.format(security_id, self.get_name()))
 
     def contains_holding(self, security_id):
         """
@@ -101,12 +123,8 @@ class AssetClass:
         if self.contains_holding(security_id):
             return self.__holdings[security_id]
         else:
-            raise Exception(
-                "{} is not in the '{}' asset class's holdings.".format(
-                    security_id,
-                    self.get_name()
-                )
-            )
+            m = "{} is not in the '{}' asset class's holdings."
+            raise Exception(m.format(security_id, self.get_name()))
 
     def update_security(self, security_id, security_info):
         """

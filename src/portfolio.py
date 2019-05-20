@@ -3,6 +3,7 @@
 # src/portfolio.py
 
 from src.deposit import Deposit
+from src.holding import Holding
 from src.security import Security
 
 from prettytable import PrettyTable
@@ -231,6 +232,8 @@ class Portfolio:
                     hol_info = holding_info[sec_id]
                     self.add_value(hol_info['equity'])
                     ac.update_holding(sec, hol_info)
+                else:
+                    ac.add_holding(Holding(sec, 0, 0.0))
 
     def plan_deposit(self, amount):
         """

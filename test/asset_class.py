@@ -33,17 +33,15 @@ class AssetClassTest(unittest.TestCase):
         ac.add_value(100.0)
         self.assertEqual(ac.get_value(), 100.0)
 
-    def test_add_security_new(self):
+    def test_add_security(self):
         ac = AssetClass('ac', target_percentage=1.0)
         ac.add_security(Security('sec', 'SEC'))
         self.assertEqual(ac.get_security('sec'), Security('sec', 'SEC'))
 
-    def test_add_security_update(self):
+    def test_add_holding(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.add_security(Security('sec', 'SEC', 'old_name', 25.0))
-        ac.add_security(Security('sec', 'SEC', 'sec_name', 15.0))
-        self.assertEqual(ac.get_security('sec').get_name(), 'sec_name')
-        self.assertEqual(ac.get_security('sec').get_price(), 15.0)
+        ac.add_security(Security('sec', 'SEC'))
+        self.assertEqual(ac.get_security('sec'), Security('sec', 'SEC'))
 
     def test_contains_security_false(self):
         ac = AssetClass('ac', target_percentage=1.0)

@@ -42,11 +42,12 @@ if __name__ == '__main__':
     user, password = load_credentials()
     # client = r.login(username, password)
     holding_info = load_holding_info()
+    log.info("Pulled holdings data from Robinhood...")
     security_info = load_security_info(portfolio.get_all_security_symbols())
-    log.info("Pulled Robinhood holdings data...")
+    log.info("Pulled security data from Robinhood...")
 
     portfolio.update(holding_info, security_info)
-    log.info("Updated portfolio with Robinhood holdings data...")
+    log.info("Updated portfolio with holdings and security data...")
 
     log.info("Portfolio before deposit:{}".format(portfolio.for_display()))
 
