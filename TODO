@@ -1,11 +1,8 @@
-1. Unit test everything
-2. Add securities that don't have any holdings yet as holdings in the asset class with 0 value, 0 shares
-3. Add tests for for_display() functions and finish other "TODO" tests
-4. Add total shares into display
-5. Add cash into display
-6. Get pre-push commit hook working
-7. Add validation function to check portfolio config
-8. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-9. Figure out how to use Robinhood API to determine how much cash is sitting in account
-10. Look into type support for python 3
-11. Add README documentation
+1. Add tests for for_display() functions and finish other "TODO" tests
+2. Add cash into display
+3. Add average buy-price, current price, and return into display
+4. Get pre-push commit hook working
+5. Add validation function to check portfolio config
+6. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+7. Look into type support for python 3
+8. Add README documentation

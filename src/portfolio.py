@@ -239,11 +239,12 @@ class Portfolio:
                 sec_id = sec.get_id()
                 sec_symbol = sec.get_symbol()
                 sec_info = security_info[sec_symbol]
-                ac.update_security(sec_id, sec_info)
+                ac.update_security(sec_id, sec_info['name'], sec_info['price'])
                 if sec_id in holding_info:
                     hol_info = holding_info[sec_id]
-                    self.add_value(hol_info['equity'])
-                    ac.update_holding(sec, hol_info)
+                    hol_value = hol_info['equity']
+                    self.add_value(hol_value)
+                    ac.update_holding(sec_id, hol_info['quantity'], hol_value)
                 else:
                     ac.add_holding(Holding(sec, 0, 0.0))
 

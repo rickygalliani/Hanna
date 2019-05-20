@@ -93,9 +93,10 @@ class AssetClassTest(unittest.TestCase):
         ac = AssetClass('ac', target_percentage=0.5)
         sec = Security('sec', 'SEC')
         ac.add_security(sec)
-        sec_info = {"name": "Security A", "price": 100.0}
-        ac.update_security('sec', sec_info)
-        self.assertEqual(ac.get_security('sec'), sec)
+        ac.update_security('sec', 'Security A', 100.0)
+        new_sec = ac.get_security('sec')
+        self.assertEqual(new_sec.get_name(), 'Security A')
+        self.assertEqual(new_sec.get_price(), 100.0)
 
     def test_update_holding(self):
         ac = AssetClass('ac', target_percentage=0.5)
@@ -114,8 +115,10 @@ class AssetClassTest(unittest.TestCase):
             'holding_type': 'etp'
         }
         ac.buy(sec, 1)
-        ac.update_holding(sec, holding_info)
-        self.assertEqual(ac.get_holding('sec'), Holding(sec, 5, 200))
+        ac.update_holding('sec', 5, 200.0)
+        new_hol = ac.get_holding('sec')
+        self.assertEqual(new_hol.get_num_shares(), 5)
+        self.assertEqual(new_hol.get_value(), 200.0)
 
     def test_plan_purchases_knapsack_test_1(self):
         ac = AssetClass('ac', target_percentage=1.0)

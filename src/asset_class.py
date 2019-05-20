@@ -71,17 +71,14 @@ class AssetClass:
         if not self.contains_security(sec_id):
             self.__securities[sec_id] = security
         else:
-            raise Exception(
-                "{} was already added to the '{}' asset class.".format(
-                    sec_id,
-                    self.get_name()
-                )
-            )  
+            raise Exception("add_security(): {} was already added to the '{}'"
+                "asset class.".format(sec_id, self.get_name()))  
 
     def add_holding(self, holding):
         """
         Adds the given holding to this asset class.
 
+        Possible cases (HS: has security, HH: has holding):
         1) HS / HH -> user already added holding and security, raise error
         2) !HS / HH -> impossible in theory, raise error
         3) HS / !HH -> good use case
@@ -93,11 +90,11 @@ class AssetClass:
         if has_security and not has_holding:
             self.__holdings[sec_id] = holding
         elif not has_security:
-            m = "Must add {} to '{}' before adding it as a holding."
-            raise Exception(m.format(security_id, self.get_name()))
+            raise Exception("add_holding(): Must add {} to '{}' before adding"
+                " it as a holding.".format(sec_id, self.get_name()))
         else:
-            m = "A holding for {} was already added to the '{}' asset class."
-            raise Exception(m.format(security_id, self.get_name()))  
+            raise Exception("add_holding(): A holding for {} was already added"
+                " to the '{}' asset class.".format(sec_id, self.get_name()))  
 
     def get_security(self, security_id):
         """
@@ -106,8 +103,8 @@ class AssetClass:
         if self.contains_security(security_id):
             return self.__securities[security_id]
         else:
-            m = "{} is not in the '{}' asset class's securities."
-            raise Exception(m.format(security_id, self.get_name()))
+            raise Exception("get_security(): {} is not in the '{}' asset "
+                "class's securities.".format(security_id, self.get_name()))
 
     def contains_holding(self, security_id):
         """
@@ -123,31 +120,32 @@ class AssetClass:
         if self.contains_holding(security_id):
             return self.__holdings[security_id]
         else:
-            m = "{} is not in the '{}' asset class's holdings."
+            m = "get_holding(): {} is not in the '{}' asset class's holdings."
             raise Exception(m.format(security_id, self.get_name()))
 
-    def update_security(self, security_id, security_info):
+    def update_security(self, security_id, name, price):
         """
         Updates the given security with name and latest price data.
         """
         sec = self.get_security(security_id)
-        sec.set_name(security_info['name'])
-        sec.set_price(security_info['price'])
+        sec.set_name(name)
+        sec.set_price(price)
 
-    def update_holding(self, security, holding_info):
+    def update_holding(self, security_id, num_shares, value):
         """
         Updates the given holding with new holding data.
         """
-        hol_shares = holding_info['quantity']
-        hol_value = holding_info['equity']
-        self.__value += hol_value
-        sec_id = holding_info['id']
-        if self.contains_holding(sec_id):
-            hol = self.get_holding(sec_id)
-            hol.set_num_shares(hol_shares)
-            hol.set_value(hol_value)
+        self.__value += value
+        if self.contains_holding(security_id):
+            hol = self.get_holding(security_id)
+            hol.set_num_shares(num_shares)
+            hol.set_value(value)
+        elif self.contains_security(security_id):
+            sec = self.get_security(security_id)
+            self.add_holding(Holding(sec, num_shares, value))
         else:
-            self.__holdings[sec_id] = Holding(security, hol_shares, hol_value)
+            raise Exception("update_holding(): {} is not in the '{}' asset "
+                "class's securities.".format(security_id, self.get_name()))
 
     def buy(self, security, num_shares):
         """
