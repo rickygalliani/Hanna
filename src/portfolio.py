@@ -5,6 +5,7 @@
 from src.deposit import Deposit
 from src.holding import Holding
 from src.security import Security
+from src.util import dollar_str, pct_str
 
 from prettytable import PrettyTable
 
@@ -42,8 +43,8 @@ class Portfolio:
             'Asset Class',
             'Security',
             'Symbol',
-            'Shares',
             'Restricted',
+            'Shares',
             'Percentage',
             'Value'
         ]
@@ -54,15 +55,18 @@ class Portfolio:
         ac_tot_pct = 0.0
         sec_tot_pct = 0.0
         sec_tot_value = 0.0
+        sec_tot_shares = 0
         acs = self.get_asset_classes()
         for ac in sorted(acs, key=lambda x: x.get_value(), reverse=True):
             ac_name = ac.get_name()
             ac_pct = self.get_asset_class_percentage(ac_name)
             ac_tot_pct += ac_pct
-            tgt_pct_str = '{:.1%}'.format(ac.get_target_percentage())
-            pct_str = '{:.1%}'.format(ac_pct)
-            val_str = "${:,.2f}".format(ac.get_value())
-            p_ac.add_row([ac_name, tgt_pct_str, pct_str, val_str])
+            p_ac.add_row([
+                ac_name,
+                pct_str(ac.get_target_percentage()),
+                pct_str(ac_pct),
+                dollar_str(ac.get_value())
+            ])
             hs = [
                 (h, self.get_security_value(h.get_security().get_id())) for h
                 in ac.get_holdings()
@@ -71,24 +75,32 @@ class Portfolio:
                 s = hol.get_security()
                 hol_id = s.get_id()
                 hol_pct = self.get_security_percentage(hol_id)
+                hol_num_shares = hol.get_num_shares()
                 sec_tot_pct += hol_pct
                 sec_tot_value += hol_val
+                sec_tot_shares += hol_num_shares
                 p_sec.add_row([
                     ac_name,
                     s.get_name(),
                     s.get_symbol(),
-                    hol.get_num_shares(),
                     s.get_buy_restricted(),
-                    "{:.1%}".format(hol_pct),
-                    "${:,.2f}".format(hol_val)
+                    hol_num_shares,
+                    pct_str(hol_pct),
+                    dollar_str(hol_val)
                 ])
-        ac_tot_pct_str = '{:.1%}'.format(ac_tot_pct)
-        ac_tot_val_str = "${:,.2f}".format(self.get_value())
         sec_tot_pct_str = '{:.1%}'.format(sec_tot_pct)
         sec_tot_val_str = "${:,.2f}".format(sec_tot_value)
-        p_ac.add_row(['Total', '100%', ac_tot_pct_str, ac_tot_val_str])
+        p_ac.add_row([
+            'Total', '100%', pct_str(ac_tot_pct), dollar_str(self.get_value())
+        ])
         p_sec.add_row([
-            'Total', '-', '-', '-', '-', sec_tot_pct_str, sec_tot_val_str
+            'Total',
+            '-',
+            '-',
+            '-',
+            sec_tot_shares,
+            pct_str(sec_tot_pct),
+            dollar_str(sec_tot_value)
         ])
         return "\n{}\n{}".format(p_ac, p_sec)
 

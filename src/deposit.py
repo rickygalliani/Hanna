@@ -2,6 +2,8 @@
 # Hanna
 # src/deposit.py
 
+from src.util import dollar_str, pct_str
+
 from prettytable import PrettyTable
 
 import json
@@ -43,30 +45,32 @@ class Deposit:
         ])
         p_ac.title = 'Expenditures per Asset Class'
         p_sec.title = 'Purchases'
-        sec_total = 0.0
+        sec_tot_value = 0.0
+        sec_tot_shares = 0
         acs = [
             (ac, self.get_asset_class_expenditures(ac))
             for ac in self.get_involved_asset_classes()
         ]
         sorted_acs = sorted(acs, key=lambda x: x[1], reverse=True)
         for ac_name, ac_exp in sorted_acs:
-            exp = "${:,.2f}".format(ac_exp)
-            p_ac.add_row([ac_name, exp])
+            p_ac.add_row([ac_name, dollar_str(ac_exp)])
             ps = self.get_purchases_for_asset_class(ac_name)
             sorted_ps = sorted(ps, key=lambda x: x.get_cost(), reverse=True)
             for purchase in sorted_ps:
                 p_cost = purchase.get_cost()
-                sec_total += p_cost
+                sec_num_shares = purchase.get_num_shares()
+                sec_tot_value += p_cost
+                sec_tot_shares += sec_num_shares
                 sec = purchase.get_security()
                 name = sec.get_name()
                 sym = sec.get_symbol()
-                shares = purchase.get_num_shares()
-                price = "${:,.2f}".format(sec.get_price())
-                cost = "${:,.2f}".format(p_cost)
+                shares = sec_num_shares
+                price = dollar_str(sec.get_price())
+                cost = dollar_str(p_cost)
                 p_sec.add_row([ac_name, name, sym, shares, price, cost])
-        p_ac.add_row(['Total', "${:,.2f}".format(self.get_total())])
+        p_ac.add_row(['Total', dollar_str(self.get_total())])
         p_sec.add_row(
-            ['Total', '-', '-', '-', '-', "${:,.2f}".format(sec_total)]
+            ['Total', '-', '-', sec_tot_shares, '-', dollar_str(sec_tot_value)]
         )
         return "\n{}\n{}".format(p_ac, p_sec)
 
