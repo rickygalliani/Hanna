@@ -119,8 +119,6 @@ class Portfolio:
 
     def add_asset_class(self, asset_class):
         self.__asset_classes[asset_class.get_name()] = asset_class
-        print("asset_class = {}".format(asset_class))
-        print("asset_class.get_value() = {}".format(asset_class.get_value()))
         self.__value += asset_class.get_value()
 
     def contains_asset_class(self, asset_class_name):
