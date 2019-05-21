@@ -79,16 +79,17 @@ class AssetClass:
         Adds the given holding to this asset class.
 
         Possible cases (HS: has security, HH: has holding):
-        1) HS / HH -> user already added holding and security, raise error
-        2) !HS / HH -> impossible in theory, raise error
-        3) HS / !HH -> good use case
-        4) !HS / !HH -> user needs to add security first, raise error
+        1) HS, HH: user already added holding and security, raise error
+        2) !HS, HH: impossible in theory, raise error
+        3) HS, !HH: good use case
+        4) !HS, !HH: user needs to add security first, raise error
         """
         sec_id = holding.get_security().get_id()
         has_security = self.contains_security(sec_id)
         has_holding = self.contains_holding(sec_id)
         if has_security and not has_holding:
             self.__holdings[sec_id] = holding
+            self.add_value(holding.get_value())
         elif not has_security:
             raise Exception("add_holding(): Must add {} to '{}' before adding"
                 " it as a holding.".format(sec_id, self.get_name()))
