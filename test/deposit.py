@@ -29,9 +29,12 @@ class DepositTest(unittest.TestCase):
         d2.add_purchase('ac', pur)
         self.assertEqual(d1, d2)
 
-    def test_get_purchase_for_asset_class(self):
-        # TODO
-        self.assertTrue(True)
+    def test_get_purchases_for_asset_class(self):
+        sec = Security('sec', 'SEC', 'sec_name', 10.0, False)
+        pur = Purchase(sec, 5)
+        d = Deposit()
+        d.add_purchase('ac', pur)
+        self.assertEqual(d.get_purchases_for_asset_class('ac'), [pur])
 
     def test_add_purchase(self):
         d = Deposit()

@@ -30,12 +30,24 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(p1, p2)
 
     def test_get_all_security_symbols(self):
-        # TODO
-        self.assertTrue(True)
+        p = Portfolio()
+        ac = AssetClass('ac', 1.0)
+        sec1 = Security('sec1', 'SEC1', 'sec1_name', 10.0)
+        sec2 = Security('sec2', 'SEC2', 'sec2_name', 15.0)
+        ac.add_security(sec1)
+        ac.add_security(sec2)
+        p.add_asset_class(ac)
+        true_symbols = sorted(p.get_all_security_symbols())
+        self.assertEqual(true_symbols, ['SEC1', 'SEC2'])
 
-    def test_contains_asset_class(self):
-        # TODO
-        self.assertTrue(True)
+    def test_contains_asset_class_false(self):
+        p = Portfolio()
+        self.assertFalse(p.contains_asset_class('ac'))
+
+    def test_contains_asset_class_true(self):
+        p = Portfolio()
+        p.add_asset_class(AssetClass('ac', 1.0))
+        self.assertTrue(p.contains_asset_class('ac'))
 
     def test_get_asset_class_names(self):
         p = Portfolio()
@@ -66,8 +78,14 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(p.get_asset_class_for_security('sec'), ac)
 
     def test_get_asset_class_value(self):
-        # TODO
-        self.assertTrue(True)
+        p = Portfolio()
+        ac = AssetClass('ac', 1.0)
+        p.add_asset_class(ac)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
+        ac.add_security(sec)
+        holding = Holding(sec, 3, 30.0)
+        ac.add_holding(holding)
+        self.assertEqual(p.get_asset_class_value('ac'), 30.0)
 
     def test_get_asset_class_percentage(self):
         p = Portfolio()
@@ -84,8 +102,14 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(p.get_asset_class_percentage('ac2'), 0.8)
 
     def test_get_security_value(self):
-        # TODO
-        self.assertTrue(True)
+        p = Portfolio()
+        ac = AssetClass('ac', 1.0)
+        p.add_asset_class(ac)
+        sec = Security('sec', 'SEC', 'sec_name', 10.0)
+        ac.add_security(sec)
+        holding = Holding(sec, 3, 30.0)
+        ac.add_holding(holding)
+        self.assertEqual(p.get_security_value('sec'), 30.0)
 
     def test_get_security_percentage(self):
         p = Portfolio()

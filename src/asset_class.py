@@ -48,14 +48,14 @@ class AssetClass:
         }
         return ac
 
-    def add_value(self, new_value):
+    def add_value(self, amount):
         """
         Adds the given value to this asset class.
         """
         if self.__value:
-            self.__value += new_value
+            self.__value += amount
         else:
-            self.__value = new_value
+            self.__value = amount
 
     def contains_security(self, security_id):
         """
@@ -136,12 +136,15 @@ class AssetClass:
         """
         Updates the given holding with new holding data.
         """
-        self.__value += value
         if self.contains_holding(security_id):
+            # Already have a holding for this security -> update state
             hol = self.get_holding(security_id)
+            old_hol_val = hol.get_value()
             hol.set_num_shares(num_shares)
             hol.set_value(value)
+            self.set_value(self.get_value() - old_hol_val + value)
         elif self.contains_security(security_id):
+            # Don't have holding for this security yet -> add as a new holding
             sec = self.get_security(security_id)
             self.add_holding(Holding(sec, num_shares, value))
         else:

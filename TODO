@@ -1,8 +1,9 @@
 1. Add tests for for_display() functions and finish other "TODO" tests
 2. Add cash into display
-3. Add average buy-price, current price, and return into display
-4. Get pre-push commit hook working
-5. Add validation function to check portfolio config
-6. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-7. Look into type support for python 3
-8. Add README documentation
+3. Look into test coverage library and implement on this project, need more testing
+4. Add average buy-price, current price, and return into display
+5. Get pre-push commit hook working
+6. Add validation function to check portfolio config
+7. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+8. Look into type support for python 3
+9. Add README documentation

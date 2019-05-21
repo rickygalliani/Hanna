@@ -119,7 +119,7 @@ class Portfolio:
 
     def add_asset_class(self, asset_class):
         self.__asset_classes[asset_class.get_name()] = asset_class
-        self.__value += asset_class.get_value()
+        self.add_value(asset_class.get_value())
 
     def contains_asset_class(self, asset_class_name):
         """
@@ -170,7 +170,11 @@ class Portfolio:
         Returns the percentage of the portfolio invested in the given asset
         class.
         """
-        return self.get_asset_class_value(asset_class_name) / self.get_value()
+        total_value = self.get_value()
+        if abs(total_value - 0 < 10e-10):
+            return 0.0
+        else:
+            return self.get_asset_class_value(asset_class_name) / total_value
 
     def get_security_value(self, security_id):
         """
@@ -202,14 +206,14 @@ class Portfolio:
         target = self.get_asset_class_target_value(asset_class_name)
         return ac.get_value() - target
 
-    def get_asset_class_budgets(self, deposit):
+    def get_asset_class_budgets(self, deposit_amount):
         """
         Returns the spending budgets for the asset classes in the portfolio
         for a given deposit.
         """
         # Temporarily pretend our portfolio has deposit's value added to it
-        self.add_value(deposit)
-        remaining_value = deposit
+        self.add_value(deposit_amount)
+        remaining_value = deposit_amount
         ac_budgets = dict([
             (ac.get_name(), 0.0) for ac in self.get_asset_classes()
         ])
@@ -226,7 +230,7 @@ class Portfolio:
             ac_budgets[n] = ac_budget
             remaining_value -= ac_budget
         # Remove deposit's value from portfolio
-        self.subtract_value(deposit)
+        self.subtract_value(deposit_amount)
         return ac_budgets
 
     def update(self, holding_info, security_info):
@@ -242,9 +246,10 @@ class Portfolio:
                 ac.update_security(sec_id, sec_info['name'], sec_info['price'])
                 if sec_id in holding_info:
                     hol_info = holding_info[sec_id]
+                    hol_shares = hol_info['quantity']
                     hol_value = hol_info['equity']
                     self.add_value(hol_value)
-                    ac.update_holding(sec_id, hol_info['quantity'], hol_value)
+                    ac.update_holding(sec_id, hol_shares, hol_value)
                 else:
                     ac.add_holding(Holding(sec, 0, 0.0))
 
