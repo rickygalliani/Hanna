@@ -42,6 +42,7 @@ class DepositTest(unittest.TestCase):
         pur = Purchase(sec, 5)
         d.add_purchase('ac', pur)
         self.assertEqual(d.get_total(), 50.0)
+        self.assertEqual(d.get_num_shares(), 5)
         self.assertTrue(pur in d.get_purchases_for_asset_class('ac'))
 
     def test_get_asset_class_expenditures(self):

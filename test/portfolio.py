@@ -205,6 +205,7 @@ class PortfolioTest(unittest.TestCase):
         }
         p.update(holding_info, security_info)
         self.assertEqual(p.get_value(), 30.0)
+        self.assertEqual(p.get_num_shares(), 2)
 
     def test_plan_deposit(self):
         p = Portfolio()
@@ -235,6 +236,7 @@ class PortfolioTest(unittest.TestCase):
         d.add_purchase('ac', Purchase(sec, 1))
         p.make_deposit(d)
         self.assertEqual(p.get_value(), 10.0)
+        self.assertEqual(p.get_num_shares(), 1)
 
 
 if __name__ == '__main__':

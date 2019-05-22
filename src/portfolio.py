@@ -17,6 +17,7 @@ class Portfolio:
     def __init__(self):
         self.__asset_classes = {}
         self.__value = 0.0
+        self.__num_shares = 0
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -33,9 +34,16 @@ class Portfolio:
     def get_value(self):
         return self.__value
 
+    def get_num_shares(self):
+        return self.__num_shares
+
     def to_dict(self):
         acs = [(ac.to_dict()) for ac in self.get_asset_classes()]
-        return {'asset_classes': acs, 'value': self.get_value()}
+        return {
+            'asset_classes': acs,
+            'value': self.get_value(),
+            'num_shares': self.get_num_shares()
+        }
 
     def for_display(self):
         ac_cols = ['Asset Class', 'Target Percentage', 'Percentage', 'Value']
@@ -52,20 +60,14 @@ class Portfolio:
         p_sec = PrettyTable(sec_cols)
         p_ac.title = 'Portfolio Asset Classes'
         p_sec.title = 'Portfolio Securities'
-        ac_tot_pct = 0.0
-        sec_tot_pct = 0.0
-        sec_tot_value = 0.0
-        sec_tot_shares = 0
-        acs = self.get_asset_classes()
-        for ac in sorted(acs, key=lambda x: x.get_value(), reverse=True):
+        acs = [(ac, ac.get_value()) for ac in self.get_asset_classes()]
+        for ac, ac_value in sorted(acs, key=lambda x: x[1], reverse=True):
             ac_name = ac.get_name()
-            ac_pct = self.get_asset_class_percentage(ac_name)
-            ac_tot_pct += ac_pct
             p_ac.add_row([
                 ac_name,
                 pct_str(ac.get_target_percentage()),
-                pct_str(ac_pct),
-                dollar_str(ac.get_value())
+                pct_str(self.get_asset_class_percentage(ac_name)),
+                dollar_str(ac_value)
             ])
             hs = [
                 (h, self.get_security_value(h.get_security().get_id())) for h
@@ -73,42 +75,40 @@ class Portfolio:
             ]
             for hol, hol_val in sorted(hs, key=lambda h: h[1], reverse=True):
                 s = hol.get_security()
-                hol_id = s.get_id()
-                hol_pct = self.get_security_percentage(hol_id)
-                hol_num_shares = hol.get_num_shares()
-                sec_tot_pct += hol_pct
-                sec_tot_value += hol_val
-                sec_tot_shares += hol_num_shares
                 p_sec.add_row([
                     ac_name,
                     s.get_name(),
                     s.get_symbol(),
                     s.get_buy_restricted(),
-                    hol_num_shares,
-                    pct_str(hol_pct),
+                    hol.get_num_shares(),
+                    pct_str(self.get_security_percentage(s.get_id())),
                     dollar_str(hol_val)
                 ])
-        sec_tot_pct_str = '{:.1%}'.format(sec_tot_pct)
-        sec_tot_val_str = "${:,.2f}".format(sec_tot_value)
         p_ac.add_row([
-            'Total', '100%', pct_str(ac_tot_pct), dollar_str(self.get_value())
+            'Total', '100%', pct_str(100), dollar_str(self.get_value())
         ])
         p_sec.add_row([
             'Total',
             '-',
             '-',
             '-',
-            sec_tot_shares,
-            pct_str(sec_tot_pct),
-            dollar_str(sec_tot_value)
+            self.get_num_shares(),
+            pct_str(100),
+            dollar_str(self.get_value())
         ])
         return "\n{}\n{}".format(p_ac, p_sec)
 
     def add_value(self, amount):
         self.__value += amount
 
+    def add_shares(self, num_shares):
+        self.__num_shares += num_shares
+
     def subtract_value(self, amount):
         self.__value -= amount
+
+    def subtract_shares(self, num_shares):
+        self.__num_shares -= num_shares
 
     def get_all_security_symbols(self):
         symbols = []
@@ -249,6 +249,7 @@ class Portfolio:
                     hol_shares = hol_info['quantity']
                     hol_value = hol_info['equity']
                     self.add_value(hol_value)
+                    self.add_shares(hol_shares)
                     ac.update_holding(sec_id, hol_shares, hol_value)
                 else:
                     ac.add_holding(Holding(sec, 0, 0.0))
@@ -287,4 +288,5 @@ class Portfolio:
             purchases = deposit.get_purchases_for_asset_class(ac_name)
             for p in purchases:
                 self.add_value(p.get_cost())
+                self.add_shares(p.get_num_shares())
                 ac.buy(p.get_security(), p.get_num_shares())

@@ -41,10 +41,10 @@ if __name__ == '__main__':
     # Populate asset classes and securities with holdings data
     user, password = load_credentials()
     # client = r.login(username, password)
-    holding_info = load_holding_info()
-    log.info("Pulled holdings data from Robinhood...")
     security_info = load_security_info(portfolio.get_all_security_symbols())
     log.info("Pulled security data from Robinhood...")
+    holding_info = load_holding_info()
+    log.info("Pulled holdings data from Robinhood...")
 
     portfolio.update(holding_info, security_info)
     log.info("Updated portfolio with holdings and security data...")
