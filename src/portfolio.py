@@ -85,7 +85,7 @@ class Portfolio:
                     dollar_str(hol_val)
                 ])
         p_ac.add_row([
-            'Total', '100%', pct_str(100), dollar_str(self.get_value())
+            'Total', '100%', pct_str(1), dollar_str(self.get_value())
         ])
         p_sec.add_row([
             'Total',
@@ -93,7 +93,7 @@ class Portfolio:
             '-',
             '-',
             self.get_num_shares(),
-            pct_str(100),
+            pct_str(1),
             dollar_str(self.get_value())
         ])
         return "\n{}\n{}".format(p_ac, p_sec)

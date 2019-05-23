@@ -127,10 +127,7 @@ class AssetClassTest(unittest.TestCase):
         ac.add_security(sec1)
         ac.add_security(sec2)
         purchases = ac.plan_purchases(100)
-        p1 = Purchase(sec1, 3)
-        p2 = Purchase(sec2, 0)
-        self.assertEqual(purchases['sec1'], p1)
-        self.assertEqual(purchases['sec2'], p2)
+        self.assertEqual(purchases, {'sec1': Purchase(sec1, 3)})
 
     def test_plan_purchases_knapsack_test_2(self):
         ac = AssetClass('ac', target_percentage=1.0)
@@ -139,10 +136,7 @@ class AssetClassTest(unittest.TestCase):
         ac.add_security(sec1)
         ac.add_security(sec2)
         purchases = ac.plan_purchases(98.5)
-        p1 = Purchase(sec1, 0)
-        p2 = Purchase(sec2, 2)
-        self.assertEqual(purchases['sec1'], p1)
-        self.assertEqual(purchases['sec2'], p2)
+        self.assertEqual(purchases, {'sec2': Purchase(sec2, 2)})
 
     def test_plan_purchases_buy_restricted_test_1(self):
         ac = AssetClass('ac', target_percentage=1.0)

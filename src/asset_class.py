@@ -142,7 +142,7 @@ class AssetClass:
             old_hol_val = hol.get_value()
             hol.set_num_shares(num_shares)
             hol.set_value(value)
-            self.set_value(self.get_value() - old_hol_val + value)
+            self.add_value(-old_hol_val + value)
         elif self.contains_security(security_id):
             # Don't have holding for this security yet -> add as a new holding
             sec = self.get_security(security_id)
@@ -178,7 +178,7 @@ class AssetClass:
 
         budget_cents = int(budget * 100)
         if budget_cents < 0:
-            return no_purchases()
+            return []
 
         securities_cents = dict([
             (s.get_id(), s.with_cents())
@@ -210,9 +210,12 @@ class AssetClass:
                 # If buying security j brought us to optimal expenditures at
                 # budget i
                 if T[exp_i - j_price] + j_price == exp_i:
-                    prev = purchases[j_id]
-                    purchases[j_id] = Purchase(prev.get_security(),
-                                               prev.get_num_shares() + 1)
+                    ol = purchases[j_id]
+                    nw = Purchase(ol.get_security(), ol.get_num_shares() + 1)
+                    purchases[j_id] = nw
                     break
             i = exp_i - securities_cents[j_id].get_price() + 1
-        return purchases
+        # Prune purchases of no shares from return value
+        return dict([
+            (s, p) for (s, p) in purchases.items() if p.get_num_shares() != 0
+        ])
