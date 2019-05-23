@@ -60,29 +60,33 @@ def load_portfolio_config():
     return portfolio
 
 
-def load_security_info(security_symbols):
+def load_security_info(security_symbols, use_mock_data):
     """
     Hits the Robinhood API to pull down security information like the latest
     price and the full security name.
     """
-    holding_info = json.load(open('test/data/security_info.json', 'r'))
-    for (security, info) in holding_info.items():
-        info['price'] = float(info['price'])
-    # holding_info = {}
-    # for sec_sym in security_symbols:
-    #     holding_info[sec_sym] = {
-    #         'name': r.get_name_by_symbol(sec_sym),
-    #         'price': r.get_latest_price(sec_sym)
-    #     }
+    if use_mock_data:
+        holding_info = json.load(open('test/data/security_info.json', 'r'))
+        for (security, info) in holding_info.items():
+            info['price'] = float(info['price'])
+    else:
+        holding_info = {}
+        for sec_sym in security_symbols:
+            holding_info[sec_sym] = {
+                'name': r.get_name_by_symbol(sec_sym),
+                'price': float(r.get_latest_price(sec_sym)[0])
+            }
     return holding_info
 
 
-def load_holding_info():
+def load_holding_info(use_mock_data):
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
-    # robinhood_resp = r.build_holdings().values()
-    robinhood_resp = json.load(open('test/data/holding_info.json', 'r'))
+    if use_mock_data:
+        robinhood_resp = json.load(open('test/data/holding_info.json', 'r'))
+    else:
+        robinhood_resp = r.build_holdings().values()
     holdings = {}
     for s in robinhood_resp:
         s_id = s['id']

@@ -233,7 +233,7 @@ class Portfolio:
         self.subtract_value(deposit_amount)
         return ac_budgets
 
-    def update(self, holding_info, security_info):
+    def update(self, securities, holdings):
         """
         Updates this portfolio (and its underlying asset classes and
         securities) with the given Robinhood holdings.
@@ -242,10 +242,10 @@ class Portfolio:
             for sec in ac.get_securities():
                 sec_id = sec.get_id()
                 sec_symbol = sec.get_symbol()
-                sec_info = security_info[sec_symbol]
+                sec_info = securities[sec_symbol]
                 ac.update_security(sec_id, sec_info['name'], sec_info['price'])
-                if sec_id in holding_info:
-                    hol_info = holding_info[sec_id]
+                if sec_id in holdings:
+                    hol_info = holdings[sec_id]
                     hol_shares = hol_info['quantity']
                     hol_value = hol_info['equity']
                     self.add_value(hol_value)

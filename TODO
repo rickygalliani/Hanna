@@ -1,8 +1,10 @@
-1. Add cash into display
-2. Look into test coverage library and implement on this project, need more testing
-3. Add average buy-price, current price, and return into display
-4. Get pre-push commit hook working
-5. Add validation function to check portfolio config
-6. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-7. Look into type support for python 3
-8. Add README documentation
+1. Add security price into display
+2. Add cash into display
+3. Improve command-line args
+4. Look into test coverage library and implement on this project, need more testing
+5. Add average buy-price, current price, and return into display
+6. Get pre-push commit hook working
+7. Add validation function to check portfolio config
+8. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+9. Look into type support for python 3
+10. Add README documentation

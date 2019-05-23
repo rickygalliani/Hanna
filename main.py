@@ -32,6 +32,8 @@ if __name__ == '__main__':
         log.error("[USAGE]: python3 rebalancer.py <amount>")
         sys.exit(1)
 
+    dev_mode = True
+
     amount = float(sys.argv[1])
     log.info("Deposit Amount: ${:,.2f}".format(amount))
 
@@ -39,14 +41,16 @@ if __name__ == '__main__':
     log.info("Loaded portfolio configuration...")
 
     # Populate asset classes and securities with holdings data
-    user, password = load_credentials()
-    # client = r.login(username, password)
-    security_info = load_security_info(portfolio.get_all_security_symbols())
+    if not dev_mode:
+        user, password = load_credentials()
+        client = r.login(user, password)
+    security_symbols = portfolio.get_all_security_symbols()
+    securities = load_security_info(security_symbols, dev_mode)
     log.info("Pulled security data from Robinhood...")
-    holding_info = load_holding_info()
+    holdings = load_holding_info(dev_mode)
     log.info("Pulled holdings data from Robinhood...")
 
-    portfolio.update(holding_info, security_info)
+    portfolio.update(securities, holdings)
     log.info("Updated portfolio with holdings and security data...")
 
     log.info("Portfolio before deposit:{}".format(portfolio.for_display()))
