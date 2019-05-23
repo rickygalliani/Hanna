@@ -53,8 +53,9 @@ class Portfolio:
             'Symbol',
             'Restricted',
             'Shares',
+            'Price',
+            'Value',
             'Percentage',
-            'Value'
         ]
         p_ac = PrettyTable(ac_cols)
         p_sec = PrettyTable(sec_cols)
@@ -81,8 +82,9 @@ class Portfolio:
                     s.get_symbol(),
                     s.get_buy_restricted(),
                     hol.get_num_shares(),
-                    pct_str(self.get_security_percentage(s.get_id())),
-                    dollar_str(hol_val)
+                    dollar_str(s.get_price()),
+                    dollar_str(hol_val),
+                    pct_str(self.get_security_percentage(s.get_id()))
                 ])
         p_ac.add_row([
             'Total', '100%', pct_str(1), dollar_str(self.get_value())
@@ -93,8 +95,9 @@ class Portfolio:
             '-',
             '-',
             self.get_num_shares(),
-            pct_str(1),
-            dollar_str(self.get_value())
+            '-',
+            dollar_str(self.get_value()),
+            pct_str(1)
         ])
         return "\n{}\n{}".format(p_ac, p_sec)
 

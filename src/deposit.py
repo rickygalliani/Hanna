@@ -51,7 +51,7 @@ class Deposit:
             'Price',
             'Cost'
         ])
-        p_ac.title = 'Expenditures per Asset Class'
+        p_ac.title = 'Expenditures For Each Asset Class'
         p_sec.title = 'Purchases'
         sec_tot_value = 0.0
         sec_tot_shares = 0
