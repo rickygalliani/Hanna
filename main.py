@@ -7,6 +7,7 @@ from src.security import Security
 from src.load import (
     load_credentials,
     load_portfolio_config,
+    load_account_profile,
     load_holding_info,
     load_security_info
 )
@@ -44,13 +45,15 @@ if __name__ == '__main__':
     if not dev_mode:
         user, password = load_credentials()
         client = r.login(user, password)
+    account_profile = load_account_profile(dev_mode)
+    log.info("Pulled account profile from Robinhood...")
     security_symbols = portfolio.get_all_security_symbols()
     securities = load_security_info(security_symbols, dev_mode)
     log.info("Pulled security data from Robinhood...")
     holdings = load_holding_info(dev_mode)
     log.info("Pulled holdings data from Robinhood...")
 
-    portfolio.update(securities, holdings)
+    portfolio.update(account_profile, securities, holdings)
     log.info("Updated portfolio with holdings and security data...")
 
     log.info("Portfolio before deposit:{}".format(portfolio.for_display()))

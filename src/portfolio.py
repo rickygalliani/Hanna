@@ -17,6 +17,7 @@ class Portfolio:
     def __init__(self):
         self.__asset_classes = {}
         self.__value = 0.0
+        self.__cash = 0.0
         self.__num_shares = 0
 
     def __eq__(self, other):
@@ -31,6 +32,9 @@ class Portfolio:
     def get_asset_classes(self):
         return self.__asset_classes.values()
 
+    def get_cash(self):
+        return self.__cash
+
     def get_value(self):
         return self.__value
 
@@ -42,6 +46,7 @@ class Portfolio:
         return {
             'asset_classes': acs,
             'value': self.get_value(),
+            'cash': self.get_cash(),
             'num_shares': self.get_num_shares()
         }
 
@@ -87,7 +92,23 @@ class Portfolio:
                     pct_str(self.get_security_percentage(s.get_id()))
                 ])
         p_ac.add_row([
+            'Cash',
+            '-',
+            pct_str(self.get_cash_percentage()),
+            dollar_str(self.get_cash())
+        ])
+        p_ac.add_row([
             'Total', '100%', pct_str(1), dollar_str(self.get_value())
+        ])
+        p_sec.add_row([
+            'Cash',
+            '-',
+            '-',
+            '-',
+            '-',
+            '-',
+            dollar_str(self.get_cash()),
+            pct_str(self.get_cash_percentage()),
         ])
         p_sec.add_row([
             'Total',
@@ -112,6 +133,9 @@ class Portfolio:
 
     def subtract_shares(self, num_shares):
         self.__num_shares -= num_shares
+
+    def set_cash(self, amount):
+        self.__cash = amount
 
     def get_all_security_symbols(self):
         symbols = []
@@ -168,6 +192,16 @@ class Portfolio:
         """
         return self.get_asset_class(asset_class_name).get_value()
 
+    def get_cash_percentage(self):
+        """
+        Returns the percentage of the portfolio value in cash.
+        """
+        total_value = self.get_value()
+        if abs(total_value - 0 < 10e-10):
+            return 0.0
+        else:
+            return 1.0 * self.get_cash() / total_value
+
     def get_asset_class_percentage(self, asset_class_name):
         """
         Returns the percentage of the portfolio invested in the given asset
@@ -177,7 +211,8 @@ class Portfolio:
         if abs(total_value - 0 < 10e-10):
             return 0.0
         else:
-            return self.get_asset_class_value(asset_class_name) / total_value
+            ac_value = self.get_asset_class_value(asset_class_name)
+            return 1.0 *  ac_value / total_value
 
     def get_security_value(self, security_id):
         """
@@ -236,11 +271,13 @@ class Portfolio:
         self.subtract_value(deposit_amount)
         return ac_budgets
 
-    def update(self, securities, holdings):
+    def update(self, account_profile, securities, holdings):
         """
         Updates this portfolio (and its underlying asset classes and
         securities) with the given Robinhood holdings.
         """
+        cash = account_profile['margin_balances']['unallocated_margin_cash']
+        self.set_cash(cash)
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():
                 sec_id = sec.get_id()

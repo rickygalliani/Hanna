@@ -14,8 +14,7 @@ import robin_stocks as r
 
 def load_credentials():
     """
-    Loads the target investment portfolio credentials from the credentials
-    config.
+    Loads the credentials for the Robinhood account.
     """
     config_file = os.path.join(os.getcwd(), 'config', 'credentials.json')
     cr = open(config_file, 'r')
@@ -60,6 +59,22 @@ def load_portfolio_config():
     return portfolio
 
 
+def load_account_profile(use_mock_data):
+    """
+    Loads user profile information from Robinhood including total equity,
+    cash, and dividend total.
+    """
+    if use_mock_data:
+        resp = json.load(open('test/data/account_profile.json', 'r'))
+    else:
+        resp = r.load_account_profile()
+    assert('margin_balances' in resp)
+    assert('unallocated_margin_cash' in resp['margin_balances'])
+    cash = resp['margin_balances']['unallocated_margin_cash']
+    resp['margin_balances']['unallocated_margin_cash'] = float(cash)
+    return resp
+
+
 def load_security_info(security_symbols, use_mock_data):
     """
     Hits the Robinhood API to pull down security information like the latest
@@ -84,11 +99,11 @@ def load_holding_info(use_mock_data):
     Hits the Robinhood API to pull down user's holdings data.
     """
     if use_mock_data:
-        robinhood_resp = json.load(open('test/data/holding_info.json', 'r'))
+        resp = json.load(open('test/data/holding_info.json', 'r'))
     else:
-        robinhood_resp = r.build_holdings().values()
+        resp = r.build_holdings().values()
     holdings = {}
-    for s in robinhood_resp:
+    for s in resp:
         s_id = s['id']
         holdings[s_id] = {
             'id': s_id,

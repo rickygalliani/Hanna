@@ -173,6 +173,15 @@ class PortfolioTest(unittest.TestCase):
         ac2.add_security(sec2)
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
+        account_profile = {
+            "margin_balances": {
+                "unallocated_margin_cash": 78.6800,
+            }
+        }
+        security_info = {
+            "SEC1": {"name": "sec1_name", "price": 10.0},
+            "SEC2": {"name": "sec2_name", "price": 20.0}
+        }
         holding_info = {
             'sec1': {
                 'id': 'sec1',
@@ -199,11 +208,8 @@ class PortfolioTest(unittest.TestCase):
                 'holding_type': 'etp'        
             }
         }
-        security_info = {
-            "SEC1": {"name": "sec1_name", "price": 10.0},
-            "SEC2": {"name": "sec2_name", "price": 20.0}
-        }
-        p.update(holding_info, security_info)
+        p.update(account_profile, security_info, holding_info)
+        self.assertEqual(p.get_cash(), 78.68)
         self.assertEqual(p.get_value(), 30.0)
         self.assertEqual(p.get_num_shares(), 2)
 
