@@ -25,23 +25,27 @@ if __name__ == '__main__':
         format='%(asctime)-15s %(levelname)s: %(message)s',
         level=logging.INFO
     )
-    log = logging.getLogger('rebalancer')
+    log = logging.getLogger('main')
 
-    dev_mode = True
+    dry_run = True
 
     portfolio = load_portfolio_config()
     log.info("Loaded portfolio configuration...")
 
     # Populate asset classes and securities with holdings data
-    if not dev_mode:
+    if not dry_run:
         user, password = load_credentials()
         client = r.login(user, password)
-    account_profile = load_account_profile(dev_mode)
+    
+    account_profile = load_account_profile(dry_run)
     log.info("Pulled account profile from Robinhood...")
+    
     security_symbols = portfolio.get_all_security_symbols()
-    securities = load_security_info(security_symbols, dev_mode)
+    securities = load_security_info(security_symbols, dry_run)
+    
     log.info("Pulled security data from Robinhood...")
-    holdings = load_holding_info(dev_mode)
+    holdings = load_holding_info(dry_run)
+    
     log.info("Pulled holdings data from Robinhood...")
 
     portfolio.update(account_profile, securities, holdings)
@@ -52,5 +56,5 @@ if __name__ == '__main__':
     deposit = portfolio.plan_deposit(portfolio.get_cash())
     log.info("Deposit:{}".format(deposit.for_display()))
 
-    portfolio.make_deposit(deposit)
+    portfolio.make_deposit(deposit, False)
     log.info("Portfolio after deposit:{}".format(portfolio.for_display()))

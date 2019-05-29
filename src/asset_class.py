@@ -4,6 +4,9 @@
 
 from src.holding import Holding
 from src.purchase import Purchase
+from src.util import dollar_str
+
+import robin_stocks as r
 
 import json
 
@@ -160,7 +163,7 @@ class AssetClass:
             raise Exception("update_holding(): {} is not in the '{}' asset "
                 "class's securities.".format(security_id, self.get_name()))
 
-    def buy(self, security, num_shares):
+    def buy(self, security, num_shares, dry_run):
         """
         Adds num_shares of the given security to the holdings of this asset
         class.
@@ -172,6 +175,25 @@ class AssetClass:
             self.__holdings[sec_id] = Holding(security, num_shares, value)
         else:
             self.__holdings[sec_id].buy(num_shares, security.get_price())
+        
+        if not dry_run:
+            # Actually buy the ETFs
+            confirmation = input(
+                "Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(
+                    n=num_shares,
+                    s="shares" if num_shares > 1 else "share",
+                    c=security.get_symbol(),
+                    p=dollar_str(security.get_price()),
+                    t=dollar_str(value)
+                )
+            ).lower()
+            if confirmation in ['', 'y']:
+                # TODO: Buy here!
+                # r.order_buy_market(s.get_symbol(), num_shares)
+                print("Buying...")
+            else:
+                print("Not buying...")
+
 
     def plan_purchases(self, budget):
         """

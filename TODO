@@ -1,4 +1,4 @@
-1. Improve command-line args
+1. Actually buy stock
 2. Look into test coverage library and implement on this project, need more testing
 3. Add average buy-price, current price, and return into display
 4. Get pre-push commit hook working

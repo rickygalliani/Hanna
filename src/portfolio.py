@@ -323,16 +323,20 @@ class Portfolio:
             rollover = final_budget - ac_total
         return deposit
 
-    def make_deposit(self, deposit):
+    def make_deposit(self, deposit, dry_run):
         """
         Makes all the purchases in the given deposit, updating the state of
         this portfolio.
         """
         for ac_name in deposit.get_involved_asset_classes():
             ac = self.get_asset_class(ac_name)
-            purchases = deposit.get_purchases_for_asset_class(ac_name)
+            purchases = sorted(
+                deposit.get_purchases_for_asset_class(ac_name),
+                key=lambda x: x.get_cost(),
+                reverse=True
+            )
             for p in purchases:
-                ac.buy(p.get_security(), p.get_num_shares())
+                ac.buy(p.get_security(), p.get_num_shares(), dry_run)
                 cost = p.get_cost()
                 self.add_value(cost)
                 self.add_shares(p.get_num_shares())
