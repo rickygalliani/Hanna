@@ -58,6 +58,19 @@ class AssetClassTest(unittest.TestCase):
         ac.add_security(sec)
         self.assertEqual(ac.get_security('sec'), sec)
 
+    def test_get_purchase_buffer_new(self):
+        ac = AssetClass('ac', target_percentage=1.0)
+        sec = Security('sec1', 'SEC1', 'sec1_name', 50.0, 0)
+        ac.add_security(sec)
+        self.assertTrue(abs(ac.get_purchase_buffer() - 7.5) < 10e-10)
+
+    def test_get_purchase_buffer_update(self):
+        ac = AssetClass('ac', target_percentage=1.0)
+        sec = Security('sec1', 'SEC1', 'sec1_name', 50.0, 0)
+        ac.add_security(sec)
+        sec.set_price(100.0)
+        self.assertTrue(abs(ac.get_purchase_buffer() - 15.0) < 10e-10)
+
     def test_buy_new(self):
         ac = AssetClass('ac', target_percentage=1.0)
         sec = Security('sec', 'SEC', price=5.0)

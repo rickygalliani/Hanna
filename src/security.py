@@ -18,6 +18,10 @@ class Security:
         self.__name = name
         self.__price = price
         self.__buy_restricted = buy_restricted
+        if price:
+            self.__purchase_buffer = 0.15 * price
+        else:
+            self.__purchase_buffer = 0.0
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -37,6 +41,9 @@ class Security:
     def get_price(self):
         return self.__price
 
+    def get_purchase_buffer(self):
+        return self.__purchase_buffer
+
     def get_buy_restricted(self):
         return self.__buy_restricted
 
@@ -45,6 +52,7 @@ class Security:
 
     def set_price(self, price):
         self.__price = price
+        self.__purchase_buffer = 0.15 * price
 
     def to_dict(self):
         return {
@@ -52,6 +60,7 @@ class Security:
             'symbol': self.get_symbol(),
             'name': self.get_name(),
             'price': self.get_price(),
+            'purchase_buffer': self.get_purchase_buffer(),
             'buy_restricted': self.get_buy_restricted()
         }
 

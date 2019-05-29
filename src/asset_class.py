@@ -15,6 +15,7 @@ class AssetClass:
         self.__target_percentage = target_percentage
         self.__securities = {}
         self.__holdings = {}
+        self.__purchase_buffer = 0.0
         self.__value = 0.0
 
     def __eq__(self, other):
@@ -35,6 +36,13 @@ class AssetClass:
     def get_holdings(self):
         return self.__holdings.values()
 
+    def get_purchase_buffer(self):
+        secs = self.get_securities()
+        if len(secs) == 0:
+            return 0.0
+        else:
+            return max([s.get_purchase_buffer() for s in secs])
+
     def get_value(self):
         return self.__value
 
@@ -44,6 +52,7 @@ class AssetClass:
             'target_percentage': self.get_target_percentage(),
             'securities': [s.to_dict() for s in self.get_securities()],
             'holdings': [h.to_dict() for h in self.get_holdings()],
+            'purchase_buffer': self.get_purchase_buffer(),
             'value': self.get_value()
         }
         return ac
@@ -178,7 +187,7 @@ class AssetClass:
 
         budget_cents = int(budget * 100)
         if budget_cents < 0:
-            return []
+            return {}
 
         securities_cents = dict([
             (s.get_id(), s.with_cents())

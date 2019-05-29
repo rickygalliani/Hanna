@@ -134,6 +134,9 @@ class Portfolio:
     def subtract_shares(self, num_shares):
         self.__num_shares -= num_shares
 
+    def subtract_cash(self, amount):
+        self.__cash -= amount
+
     def set_cash(self, amount):
         self.__cash = amount
 
@@ -310,6 +313,8 @@ class Portfolio:
         for (ac_name, budget) in budgets:
             ac = self.get_asset_class(ac_name)
             final_budget = budget + rollover
+            if (ac_name, budget) == budgets[-1]:
+                final_budget -= ac.get_purchase_buffer()
             ac_purchases = ac.plan_purchases(final_budget)
             ac_total = 0.0
             for purchase in ac_purchases.values():
@@ -327,6 +332,8 @@ class Portfolio:
             ac = self.get_asset_class(ac_name)
             purchases = deposit.get_purchases_for_asset_class(ac_name)
             for p in purchases:
-                self.add_value(p.get_cost())
-                self.add_shares(p.get_num_shares())
                 ac.buy(p.get_security(), p.get_num_shares())
+                cost = p.get_cost()
+                self.add_value(cost)
+                self.add_shares(p.get_num_shares())
+                self.subtract_cash(cost)

@@ -17,7 +17,6 @@ from random import shuffle
 import json
 import logging
 import robin_stocks as r
-import sys
 
 
 if __name__ == '__main__':
@@ -28,15 +27,7 @@ if __name__ == '__main__':
     )
     log = logging.getLogger('rebalancer')
 
-    # Load command line credentials
-    if len(sys.argv) != 2:
-        log.error("[USAGE]: python3 rebalancer.py <amount>")
-        sys.exit(1)
-
     dev_mode = True
-
-    amount = float(sys.argv[1])
-    log.info("Deposit Amount: ${:,.2f}".format(amount))
 
     portfolio = load_portfolio_config()
     log.info("Loaded portfolio configuration...")
@@ -58,7 +49,7 @@ if __name__ == '__main__':
 
     log.info("Portfolio before deposit:{}".format(portfolio.for_display()))
 
-    deposit = portfolio.plan_deposit(amount)
+    deposit = portfolio.plan_deposit(portfolio.get_cash())
     log.info("Deposit:{}".format(deposit.for_display()))
 
     portfolio.make_deposit(deposit)
