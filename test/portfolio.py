@@ -218,14 +218,14 @@ class PortfolioTest(unittest.TestCase):
         sec1 = Security('sec1', 'SEC1', 'sec1_name', 10.0, False)
         sec2 = Security('sec2', 'SEC2', 'sec2_name', 20.0, False)
         ac1 = AssetClass('ac1', 0.4)
-        ac1.add_security(sec1)
-        ac1.add_holding(Holding(sec1, 3, 30.0))
         ac2 = AssetClass('ac2', 0.6)
+        ac1.add_security(sec1)
         ac2.add_security(sec2)
+        ac1.add_holding(Holding(sec1, 3, 30.0))
         ac2.add_holding(Holding(sec2, 2, 40.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
-        deposit = p.plan_deposit(30.0)
+        deposit = p.plan_deposit(35.0)
         p1 = [Purchase(sec1, 1)]
         p2 = [Purchase(sec2, 1)]
         self.assertEqual(deposit.get_total(), 30.0)
@@ -240,7 +240,7 @@ class PortfolioTest(unittest.TestCase):
         p.add_asset_class(ac)
         d = Deposit()
         d.add_purchase('ac', Purchase(sec, 1))
-        p.make_deposit(d)
+        p.make_deposit(d, True)
         self.assertEqual(p.get_value(), 10.0)
         self.assertEqual(p.get_num_shares(), 1)
 

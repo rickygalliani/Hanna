@@ -42,10 +42,9 @@ if __name__ == '__main__':
     
     security_symbols = portfolio.get_all_security_symbols()
     securities = load_security_info(security_symbols, dry_run)
-    
     log.info("Pulled security data from Robinhood...")
+
     holdings = load_holding_info(dry_run)
-    
     log.info("Pulled holdings data from Robinhood...")
 
     portfolio.update(account_profile, securities, holdings)

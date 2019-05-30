@@ -74,16 +74,16 @@ class AssetClassTest(unittest.TestCase):
     def test_buy_new(self):
         ac = AssetClass('ac', target_percentage=1.0)
         sec = Security('sec', 'SEC', price=5.0)
-        ac.buy(sec, 3)
+        ac.buy(sec, 3, True)
         self.assertEqual(ac.get_holding('sec'), Holding(sec, 3, 15.0))
         self.assertEqual(ac.get_value(), 15.0)
 
     def test_buy_update(self):
         ac = AssetClass('ac', target_percentage=1.0)
         sec = Security('sec', 'SEC', price=5.0)
-        ac.buy(sec, 3)
+        ac.buy(sec, 3, True)
         sec.set_price(15.0)
-        ac.buy(sec, 3)
+        ac.buy(sec, 3, True)
         self.assertEqual(ac.get_holding('sec'), Holding(sec, 6, 60.0))
         self.assertEqual(ac.get_value(), 60.0)
 
@@ -93,13 +93,13 @@ class AssetClassTest(unittest.TestCase):
 
     def test_contains_holding_true(self):
         ac = AssetClass('ac', target_percentage=1.0)
-        ac.buy(Security('sec', 'SEC', 'sec_name', 15.0), 3)
+        ac.buy(Security('sec', 'SEC', 'sec_name', 15.0), 3, True)
         self.assertTrue(ac.contains_holding('sec'))
 
     def test_get_holding(self):
         ac = AssetClass('ac', target_percentage=1.0)
         sec = Security('sec', 'SEC', 'sec_name', 15.0)
-        ac.buy(sec, 3)
+        ac.buy(sec, 3, True)
         self.assertEqual(ac.get_holding('sec'), Holding(sec, 3, 45.0))
 
     def test_update_security(self):
@@ -127,7 +127,7 @@ class AssetClassTest(unittest.TestCase):
             'equity_change': 0.0,
             'holding_type': 'etp'
         }
-        ac.buy(sec, 1)
+        ac.buy(sec, 1, True)
         ac.update_holding('sec', 5, 200.0)
         new_hol = ac.get_holding('sec')
         self.assertEqual(new_hol.get_num_shares(), 5)

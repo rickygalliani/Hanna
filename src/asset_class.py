@@ -193,7 +193,6 @@ class AssetClass:
             else:
                 pass
 
-
     def plan_purchases(self, budget):
         """
         Uses a Dynamic Program to determine how to optimally spend the budget
