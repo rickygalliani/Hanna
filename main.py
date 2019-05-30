@@ -56,5 +56,5 @@ if __name__ == '__main__':
     deposit = portfolio.plan_deposit(portfolio.get_cash())
     log.info("Deposit:{}".format(deposit.for_display()))
 
-    portfolio.make_deposit(deposit, False)
+    portfolio.make_deposit(deposit, dry_run)
     log.info("Portfolio after deposit:{}".format(portfolio.for_display()))

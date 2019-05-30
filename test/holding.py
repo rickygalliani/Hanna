@@ -26,9 +26,10 @@ class HoldingTest(unittest.TestCase):
         h2 = Holding(sec2, 1, 10.0)
         self.assertNotEqual(h1, h2)
 
-    def test_buy(self):
+    def test_add(self):
         h = Holding('sec', 1, 100.0)
-        h.buy(2, 101)
+        other_holding = Holding('sec', 2, 202.0)
+        h.add(other_holding)
         self.assertEqual(h.get_num_shares(), 3)
         self.assertEqual(h.get_value(), 302.0)
 

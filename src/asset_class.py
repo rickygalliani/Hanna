@@ -171,10 +171,11 @@ class AssetClass:
         value = num_shares * security.get_price()
         self.add_value(value)
         sec_id = security.get_id()
+        buy_holding = Holding(security, num_shares, value)
         if not self.contains_holding(sec_id):
-            self.__holdings[sec_id] = Holding(security, num_shares, value)
+            self.__holdings[sec_id] = buy_holding
         else:
-            self.__holdings[sec_id].buy(num_shares, security.get_price())
+            self.__holdings[sec_id].add(buy_holding)
         
         if not dry_run:
             # Actually buy the ETFs
@@ -188,11 +189,9 @@ class AssetClass:
                 )
             ).lower()
             if confirmation in ['', 'y']:
-                # TODO: Buy here!
-                # r.order_buy_market(s.get_symbol(), num_shares)
-                print("Buying...")
+                r.order_buy_market(security.get_symbol(), num_shares)
             else:
-                print("Not buying...")
+                pass
 
 
     def plan_purchases(self, budget):

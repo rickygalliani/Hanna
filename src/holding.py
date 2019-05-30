@@ -40,10 +40,20 @@ class Holding:
             'value': self.get_value()
         }
 
-    def buy(self, num_shares, price):
+    def add(self, other_holding):
         """
         Buys the specified quantity of this holding at the specified price,
         updating the state of this security.
         """
-        self.set_num_shares(self.get_num_shares() + num_shares)
-        self.set_value(self.get_value() + price * num_shares)
+        if self.get_security() != other_holding.get_security():
+            raise Exception(
+                "Can only add holding of {} to this holding.".format(
+                    self.get_security().get_id()
+                )
+            )
+        cur_num_shares = self.get_num_shares()
+        other_num_shares = other_holding.get_num_shares()
+        cur_value = self.get_value()
+        other_value = other_holding.get_value()
+        self.set_num_shares(cur_num_shares + other_num_shares)
+        self.set_value(cur_value + other_value)
