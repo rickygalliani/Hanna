@@ -60,6 +60,39 @@ class AssetClass:
         }
         return ac
 
+    def get_security(self, security_id):
+        """
+        Returns the security for the given security id.
+        """
+        if self.contains_security(security_id):
+            return self.__securities[security_id]
+        else:
+            raise Exception("get_security(): {} is not in the '{}' asset "
+                "class's securities.".format(security_id, self.get_name()))
+
+    def get_holding(self, security_id):
+        """
+        Returns this asset class's holdings of the given security.
+        """
+        if self.contains_holding(security_id):
+            return self.__holdings[security_id]
+        else:
+            m = "get_holding(): {} is not in the '{}' asset class's holdings."
+            raise Exception(m.format(security_id, self.get_name()))
+
+    def contains_security(self, security_id):
+        """
+        Returns True if this asset class contains the given security.
+        """
+        return security_id in self.__securities
+
+    def contains_holding(self, security_id):
+        """
+        Returns True if this asset class contains a holding of the given
+        security.
+        """
+        return security_id in self.__holdings
+
     def add_value(self, amount):
         """
         Adds the given value to this asset class.
@@ -68,12 +101,6 @@ class AssetClass:
             self.__value += amount
         else:
             self.__value = amount
-
-    def contains_security(self, security_id):
-        """
-        Returns True if this asset class contains the given security.
-        """
-        return security_id in self.__securities
 
     def add_security(self, security):
         """
@@ -108,33 +135,6 @@ class AssetClass:
         else:
             raise Exception("add_holding(): A holding for {} was already added"
                 " to the '{}' asset class.".format(sec_id, self.get_name()))  
-
-    def get_security(self, security_id):
-        """
-        Returns the security for the given security id.
-        """
-        if self.contains_security(security_id):
-            return self.__securities[security_id]
-        else:
-            raise Exception("get_security(): {} is not in the '{}' asset "
-                "class's securities.".format(security_id, self.get_name()))
-
-    def contains_holding(self, security_id):
-        """
-        Returns True if this asset class contains a holding of the given
-        security.
-        """
-        return security_id in self.__holdings
-
-    def get_holding(self, security_id):
-        """
-        Returns this asset class's holdings of the given security.
-        """
-        if self.contains_holding(security_id):
-            return self.__holdings[security_id]
-        else:
-            m = "get_holding(): {} is not in the '{}' asset class's holdings."
-            raise Exception(m.format(security_id, self.get_name()))
 
     def update_security(self, security_id, name, price):
         """
