@@ -64,8 +64,9 @@ def load_account_profile(use_mock_data):
     Loads user profile information from Robinhood including total equity,
     cash, and dividend total.
     """
+    account_profile_mock_file = 'test/data/account_profile.json'
     if use_mock_data:
-        resp = json.load(open('test/data/account_profile.json', 'r'))
+        resp = json.load(open(account_profile_mock_file, 'r'))
     else:
         resp = r.load_account_profile()
     assert('margin_balances' in resp)
@@ -82,15 +83,15 @@ def load_security_info(security_symbols, use_mock_data):
     """
     if use_mock_data:
         holding_info = json.load(open('test/data/security_info.json', 'r'))
-        for (security, info) in holding_info.items():
-            info['price'] = float(info['price'])
     else:
         holding_info = {}
         for sec_sym in security_symbols:
             holding_info[sec_sym] = {
                 'name': r.get_name_by_symbol(sec_sym),
-                'price': float(r.get_latest_price(sec_sym)[0])
+                'price': r.get_latest_price(sec_sym)
             }
+    for (security, info) in holding_info.items():
+        info['price'] = float(info['price'][0])
     return holding_info
 
 

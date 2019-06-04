@@ -229,7 +229,7 @@ class AssetClass:
                         T[i] = new_exp
 
         # Backtrack thru T to construct set of optimal purchases
-        purchases = no_purchases()
+        purchases = {}
         i = len(T) - 1
         while T[i]:
             exp_i = T[i]  # Optimal amount spent at budget i
@@ -239,9 +239,13 @@ class AssetClass:
                 # If buying security j brought us to optimal expenditures at
                 # budget i
                 if T[exp_i - j_price] + j_price == exp_i:
-                    ol = purchases[j_id]
-                    nw = Purchase(ol.get_security(), ol.get_num_shares() + 1)
-                    purchases[j_id] = nw
+                    sec_j_dol = self.get_security(j_id)
+                    purchases[j_id] = (
+                        Purchase(sec_j_dol, 1) if j_id not in purchases else
+                        Purchase(
+                            sec_j_dol, purchases[j_id].get_num_shares() + 1
+                        )
+                    )
                     break
             i = exp_i - securities_cents[j_id].get_price() + 1
         # Prune purchases of no shares from return value

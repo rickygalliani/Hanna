@@ -54,6 +54,12 @@ class Security:
         self.__price = price
         self.__purchase_buffer = 0.15 * price
 
+    def restrict_buy(self):
+        self.__buy_restricted = 1
+
+    def enable_buy(self):
+        self.__buy_restricted = 0
+
     def to_dict(self):
         return {
             'id': self.get_id(),

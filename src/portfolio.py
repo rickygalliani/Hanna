@@ -138,7 +138,9 @@ class Portfolio:
         self.__cash -= amount
 
     def set_cash(self, amount):
+        self.__value -= self.__cash
         self.__cash = amount
+        self.__value += self.__cash
 
     def get_all_security_symbols(self):
         symbols = []
@@ -294,8 +296,6 @@ class Portfolio:
                     self.add_value(hol_value)
                     self.add_shares(hol_shares)
                     ac.update_holding(sec_id, hol_shares, hol_value)
-                else:
-                    ac.add_holding(Holding(sec, 0, 0.0))
 
     def plan_deposit(self, amount):
         """
@@ -328,13 +328,15 @@ class Portfolio:
         Makes all the purchases in the given deposit, updating the state of
         this portfolio.
         """
-        for ac_name in deposit.get_involved_asset_classes():
+        acs = [
+            (ac, deposit.get_asset_class_expenditures(ac))
+            for ac in deposit.get_involved_asset_classes()
+        ]
+        sorted_acs = sorted(acs, key=lambda x: x[1], reverse=True)
+        for ac_name, _ in sorted_acs:
             ac = self.get_asset_class(ac_name)
-            purchases = sorted(
-                deposit.get_purchases_for_asset_class(ac_name),
-                key=lambda x: x.get_cost(),
-                reverse=True
-            )
+            ps = deposit.get_purchases_for_asset_class(ac_name)
+            purchases = sorted(ps, key=lambda x: x.get_cost(), reverse=True)
             for p in purchases:
                 ac.buy(p.get_security(), p.get_num_shares(), dry_run)
                 cost = p.get_cost()

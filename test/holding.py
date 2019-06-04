@@ -26,7 +26,23 @@ class HoldingTest(unittest.TestCase):
         h2 = Holding(sec2, 1, 10.0)
         self.assertNotEqual(h1, h2)
 
-    def test_add(self):
+    def test_init_negative_num_shares(self):
+        # TODO
+        pass
+
+    def test_init_negative_value(self):
+        # TODO
+        pass
+
+    def test_add_zero(self):
+        # TODO
+        pass
+
+    def test_add_security_mismatch_holding(self):
+        # TODO
+        pass
+
+    def test_add_normal(self):
         h = Holding('sec', 1, 100.0)
         other_holding = Holding('sec', 2, 202.0)
         h.add(other_holding)
