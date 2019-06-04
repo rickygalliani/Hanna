@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+protected_branch='master'
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+if [ $protected_branch = $current_branch ]
+    then
+        echo "Running pre-push unit tests..."
+        ./scripts/unittest.sh
+
+        # $? stores exit value of the last command
+        if [ $? -ne 0 ]; then
+            echo "Unit tests must pass before pushing to master..."
+            exit 1
+        fi
+else
+    exit 0
+fi
