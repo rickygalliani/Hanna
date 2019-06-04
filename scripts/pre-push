@@ -9,16 +9,25 @@ if [ $protected_branch = $current_branch ]
 
         # $? stores exit value of the last command
         if [ $? -ne 0 ]; then
-            echo "Unit tests must pass before pushing to master..."
+            echo "Unit tests must pass..."
             exit 1
         fi
 
-        echo "Running pre-push style checks..."
+        echo "Running pre-push style checks on source code..."
         flake8 src/*.py
 
         # $? stores exit value of the last command
         if [ $? -ne 0 ]; then
-            echo "Style checks must pass before pushing to master..."
+            echo "Style checks must pass on source code..."
+            exit 1
+        fi
+
+        echo "Running pre-push style checks on unit tests..."
+        flake8 test/*.py
+
+        # $? stores exit value of the last command
+        if [ $? -ne 0 ]; then
+            echo "Style checks must pass on unit tests..."
             exit 1
         fi
 

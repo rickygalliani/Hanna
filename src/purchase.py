@@ -9,11 +9,14 @@ class Purchase:
 
     def __init__(self, security, num_shares):
         if not security.get_price():
-            raise Exception("Purchase must be instantiated with a security "
-                "that has a non-null price")
+            raise Exception(
+                "Purchase must be instantiated with a security "
+                "that has a non-null price"
+            )
         if num_shares <= 0:
-            raise Exception("Purchase must be instantiated with num_shares "
-                ">= 0")
+            raise Exception(
+                "Purchase must be instantiated with num_shares >= 0"
+            )
         self.__security = security
         self.__num_shares = num_shares
         self.__cost = self.__security.get_price() * self.__num_shares

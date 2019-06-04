@@ -9,11 +9,13 @@ class Holding:
 
     def __init__(self, security, num_shares, value):
         if num_shares <= 0:
-            raise Exception("Holding must be instantiated with a positive "
-                "number of shares")
+            raise Exception(
+                "Holding must be instantiated with a positive number of shares"
+            )
         if value <= 0:
-            raise Exception("Holding must be instantiated with a positive "
-                "value")
+            raise Exception(
+                "Holding must be instantiated with a positive value"
+            )
         self.__security = security
         self.__num_shares = num_shares
         self.__value = value

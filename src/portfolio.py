@@ -3,8 +3,6 @@
 # src/portfolio.py
 
 from src.deposit import Deposit
-from src.holding import Holding
-from src.security import Security
 from src.util import dollar_str, pct_str
 
 from prettytable import PrettyTable
@@ -217,7 +215,7 @@ class Portfolio:
             return 0.0
         else:
             ac_value = self.get_asset_class_value(asset_class_name)
-            return 1.0 *  ac_value / total_value
+            return 1.0 * ac_value / total_value
 
     def get_security_value(self, security_id):
         """

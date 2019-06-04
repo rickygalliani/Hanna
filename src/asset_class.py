@@ -67,8 +67,10 @@ class AssetClass:
         if self.contains_security(security_id):
             return self.__securities[security_id]
         else:
-            raise Exception("get_security(): {} is not in the '{}' asset "
-                "class's securities.".format(security_id, self.get_name()))
+            raise Exception(
+                "get_security(): {} is not in the '{}' asset "
+                "class's securities.".format(security_id, self.get_name())
+            )
 
     def get_holding(self, security_id):
         """
@@ -110,8 +112,10 @@ class AssetClass:
         if not self.contains_security(sec_id):
             self.__securities[sec_id] = security
         else:
-            raise Exception("add_security(): {} was already added to the '{}'"
-                "asset class.".format(sec_id, self.get_name()))  
+            raise Exception(
+                "add_security(): {} was already added to the '{}'"
+                "asset class.".format(sec_id, self.get_name())
+            )
 
     def add_holding(self, holding):
         """
@@ -130,11 +134,15 @@ class AssetClass:
             self.__holdings[sec_id] = holding
             self.add_value(holding.get_value())
         elif not has_security:
-            raise Exception("add_holding(): Must add {} to '{}' before adding"
-                " it as a holding.".format(sec_id, self.get_name()))
+            raise Exception(
+                "add_holding(): Must add {} to '{}' before adding"
+                " it as a holding.".format(sec_id, self.get_name())
+            )
         else:
-            raise Exception("add_holding(): A holding for {} was already added"
-                " to the '{}' asset class.".format(sec_id, self.get_name()))  
+            raise Exception(
+                "add_holding(): A holding for {} was already added"
+                " to the '{}' asset class.".format(sec_id, self.get_name())
+            )
 
     def update_security(self, security_id, name, price):
         """
@@ -160,8 +168,10 @@ class AssetClass:
             sec = self.get_security(security_id)
             self.add_holding(Holding(sec, num_shares, value))
         else:
-            raise Exception("update_holding(): {} is not in the '{}' asset "
-                "class's securities.".format(security_id, self.get_name()))
+            raise Exception(
+                "update_holding(): {} is not in the '{}' asset "
+                "class's securities.".format(security_id, self.get_name())
+            )
 
     def buy(self, security, num_shares, dry_run):
         """
@@ -176,7 +186,7 @@ class AssetClass:
             self.__holdings[sec_id] = buy_holding
         else:
             self.__holdings[sec_id].add(buy_holding)
-        
+
         if not dry_run:
             # Actually buy the ETFs
             confirmation = input(

@@ -21,7 +21,7 @@ class HoldingTest(unittest.TestCase):
 
     def test_equality(self):
         sec1 = Security('sec1', 'SEC1', price=10.0)
-        sec2 = Security('sec2', 'SEC2', price=10.0)    
+        sec2 = Security('sec2', 'SEC2', price=10.0)
         h1 = Holding(sec1, 1, 10.0)
         h2 = Holding(sec2, 1, 10.0)
         self.assertNotEqual(h1, h2)
@@ -48,6 +48,7 @@ class HoldingTest(unittest.TestCase):
         h.add(other_holding)
         self.assertEqual(h.get_num_shares(), 3)
         self.assertEqual(h.get_value(), 302.0)
+
 
 if __name__ == '__main__':
     unittest.main()

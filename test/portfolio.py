@@ -205,12 +205,12 @@ class PortfolioTest(unittest.TestCase):
                 'percentage': 0.66,
                 'percent_change': 0.0,
                 'equity_change': 0.0,
-                'holding_type': 'etp'        
+                'holding_type': 'etp'
             }
         }
         p.update(account_profile, security_info, holding_info)
         self.assertEqual(p.get_cash(), 78.68)
-        self.assertEqual(p.get_value(), 30.0)
+        self.assertEqual(p.get_value(), 108.68)
         self.assertEqual(p.get_num_shares(), 2)
 
     def test_plan_deposit(self):

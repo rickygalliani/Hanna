@@ -113,7 +113,7 @@ class AssetClassTest(unittest.TestCase):
     def test_add_holding_not_hs_not_hh(self):
         # TODO
         pass
-    
+
     def test_update_security(self):
         ac = AssetClass('ac', target_percentage=0.5)
         sec = Security('sec', 'SEC')
@@ -129,18 +129,6 @@ class AssetClassTest(unittest.TestCase):
             'sec', 'SEC', name='sec_name', price=40.0, buy_restricted=0
         )
         ac.add_security(sec)
-        holding_info = {
-            'id': 'sec',
-            'name': 'sec_name',
-            'price': 40.0,
-            'quantity': 5,
-            'average_buy_price': 40.0,
-            'equity': 200.0,
-            'percentage': 40.0,
-            'percent_change': 0.0,
-            'equity_change': 0.0,
-            'holding_type': 'etp'
-        }
         ac.buy(sec, 1, True)
         ac.update_holding('sec', 5, 200.0)
         new_hol = ac.get_holding('sec')
@@ -191,6 +179,7 @@ class AssetClassTest(unittest.TestCase):
         p1 = Purchase(sec1, 2)
         self.assertEqual(len(purchases), 1)
         self.assertEqual(purchases['sec1'], p1)
+
 
 if __name__ == '__main__':
     unittest.main()

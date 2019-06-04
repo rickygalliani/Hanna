@@ -2,7 +2,7 @@
 # Hanna
 # src/deposit.py
 
-from src.util import dollar_str, pct_str
+from src.util import dollar_str
 
 from prettytable import PrettyTable
 
@@ -53,8 +53,6 @@ class Deposit:
         ])
         p_ac.title = 'Expenditures For Each Asset Class'
         p_sec.title = 'Purchases'
-        sec_tot_value = 0.0
-        sec_tot_shares = 0
         acs = [
             (ac, self.get_asset_class_expenditures(ac))
             for ac in self.get_involved_asset_classes()

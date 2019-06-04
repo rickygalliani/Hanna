@@ -59,5 +59,6 @@ class SecurityTest(unittest.TestCase):
         sec = Security('sec', 'SEC', price=167).with_cents()
         self.assertEqual(sec.get_price(), 16700)
 
+
 if __name__ == '__main__':
     unittest.main()
