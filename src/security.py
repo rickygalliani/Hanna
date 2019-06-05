@@ -13,6 +13,10 @@ class Security:
                  name=None,
                  price=None,
                  buy_restricted=1):
+        if price and price <= 0:
+            raise Exception(
+                "Must pass a positive price (or None) to instantiate a Security"
+            )
         self.__id = security_id
         self.__symbol = symbol
         self.__name = name
@@ -51,6 +55,8 @@ class Security:
         self.__name = name
 
     def set_price(self, price):
+        if price <= 0:
+            raise Exception("Security price must be positive")
         self.__price = price
         self.__purchase_buffer = 0.15 * price
 

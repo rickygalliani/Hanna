@@ -11,6 +11,9 @@ import unittest
 
 class SecurityTest(unittest.TestCase):
 
+    def test_init_negative_price(self):
+        self.assertRaises(Exception, Security, 'sec', 'SEC', price=-10.0)
+
     def test_inequality(self):
         sec1 = Security('sec', 'SEC')
         sec2 = Security('sec', 'SEC', name='sec_name', price=100.0)

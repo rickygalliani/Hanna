@@ -10,8 +10,8 @@ class Purchase:
     def __init__(self, security, num_shares):
         if not security.get_price():
             raise Exception(
-                "Purchase must be instantiated with a security "
-                "that has a non-null price"
+                "Purchase must be instantiated with a Security "
+                "that has a non-None price"
             )
         if num_shares <= 0:
             raise Exception(

@@ -1,10 +1,9 @@
-1. Build more tests
-2. Be able to pass logger to source code modules
+1. Be able to pass logger to source code modules
+2. Make dry_run a command-line arg
 3. Check response from order_buy_market() and behave accordingly
 4. Look into test coverage library and implement on this project, need more testing
 5. Add average buy-price, current price, and return into display
-6. Get pre-push commit hook working
-7. Clean up code style in AssetClass.plan_purchases()
+6. Clean up code style in AssetClass.plan_purchases() (don't have to use cents)
 7. Add validation function to check portfolio config
 8. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
 9. Look into type support for python 3

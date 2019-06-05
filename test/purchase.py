@@ -13,22 +13,22 @@ import unittest
 class PurchaseTest(unittest.TestCase):
 
     def test_inequality(self):
-        p1 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 5)
-        p2 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 6)
+        p1 = Purchase(Security('sec', 'SEC', price=10.0), 5)
+        p2 = Purchase(Security('sec', 'SEC', price=10.0), 6)
         self.assertNotEqual(p1, p2)
 
     def test_equality(self):
-        p1 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 5)
-        p2 = Purchase(Security('sec', 'SEC', 'sec_name', 10.0), 5)
+        p1 = Purchase(Security('sec', 'SEC', price=10.0), 5)
+        p2 = Purchase(Security('sec', 'SEC', price=10.0), 5)
         self.assertEqual(p1, p2)
 
     def test_init_security_null_price(self):
-        # TODO
-        pass
+        sec_no_price = Security('sec', 'SEC')
+        self.assertRaises(Exception, Purchase, sec_no_price, 5)
 
     def test_init_zero_shares(self):
-        # TODO
-        pass
+        sec = Security('sec', 'SEC', price=10.0)
+        self.assertRaises(Exception, Purchase, sec, 0)
 
 
 if __name__ == '__main__':

@@ -39,6 +39,30 @@ class Portfolio:
     def get_num_shares(self):
         return self.__num_shares
 
+    def add_value(self, amount):
+        self.__value += amount
+
+    def add_shares(self, num_shares):
+        self.__num_shares += num_shares
+
+    def subtract_value(self, amount):
+        self.__value -= amount
+
+    def subtract_shares(self, num_shares):
+        self.__num_shares -= num_shares
+
+    def subtract_cash(self, amount):
+        self.__cash -= amount
+
+    def set_cash(self, amount):
+        self.__value -= self.__cash
+        self.__cash = amount
+        self.__value += self.__cash
+
+    def add_asset_class(self, asset_class):
+        self.__asset_classes[asset_class.get_name()] = asset_class
+        self.add_value(asset_class.get_value())
+
     def to_dict(self):
         acs = [(ac.to_dict()) for ac in self.get_asset_classes()]
         return {
@@ -120,36 +144,12 @@ class Portfolio:
         ])
         return "\n{}\n{}".format(p_ac, p_sec)
 
-    def add_value(self, amount):
-        self.__value += amount
-
-    def add_shares(self, num_shares):
-        self.__num_shares += num_shares
-
-    def subtract_value(self, amount):
-        self.__value -= amount
-
-    def subtract_shares(self, num_shares):
-        self.__num_shares -= num_shares
-
-    def subtract_cash(self, amount):
-        self.__cash -= amount
-
-    def set_cash(self, amount):
-        self.__value -= self.__cash
-        self.__cash = amount
-        self.__value += self.__cash
-
     def get_all_security_symbols(self):
         symbols = []
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():
                 symbols.append(sec.get_symbol())
         return symbols
-
-    def add_asset_class(self, asset_class):
-        self.__asset_classes[asset_class.get_name()] = asset_class
-        self.add_value(asset_class.get_value())
 
     def contains_asset_class(self, asset_class_name):
         """
