@@ -57,3 +57,6 @@ if __name__ == '__main__':
 
     portfolio.make_deposit(deposit, dry_run)
     log.info("Portfolio after deposit:{}".format(portfolio.for_display()))
+
+    if not dry_run:
+        r.logout()
