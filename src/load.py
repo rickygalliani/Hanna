@@ -82,17 +82,17 @@ def load_security_info(security_symbols, use_mock_data):
     price and the full security name.
     """
     if use_mock_data:
-        holding_info = json.load(open('test/data/security_info.json', 'r'))
+        security_info = json.load(open('test/data/security_info.json', 'r'))
     else:
-        holding_info = {}
+        security_info = {}
         for sec_sym in security_symbols:
-            holding_info[sec_sym] = {
+            security_info[sec_sym] = {
                 'name': r.get_name_by_symbol(sec_sym),
                 'price': r.get_latest_price(sec_sym)
             }
-    for (security, info) in holding_info.items():
+    for (security, info) in security_info.items():
         info['price'] = float(info['price'][0])
-    return holding_info
+    return security_info
 
 
 def load_holding_info(use_mock_data):

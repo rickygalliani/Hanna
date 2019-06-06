@@ -8,6 +8,10 @@ from src.util import dollar_str, pct_str
 from prettytable import PrettyTable
 
 import json
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 class Portfolio:
@@ -336,8 +340,12 @@ class Portfolio:
             ps = deposit.get_purchases_for_asset_class(ac_name)
             purchases = sorted(ps, key=lambda x: x.get_cost(), reverse=True)
             for p in purchases:
-                ac.buy(p.get_security(), p.get_num_shares(), dry_run)
-                cost = p.get_cost()
-                self.add_value(cost)
-                self.add_shares(p.get_num_shares())
-                self.subtract_cash(cost)
+                state = ac.buy(p.get_security(), p.get_num_shares(), dry_run)
+                if state != 'failed':
+                    log.info("\t- {}".format(state.capitalize()))
+                    cost = p.get_cost()
+                    self.add_value(cost)
+                    self.add_shares(p.get_num_shares())
+                    self.subtract_cash(cost)
+                else:
+                    log.error("\t- {}".format(state.capitalize()))

@@ -9,6 +9,9 @@ from src.util import dollar_str
 import robin_stocks as r
 
 import json
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class AssetClass:
@@ -176,7 +179,7 @@ class AssetClass:
     def buy(self, security, num_shares, dry_run):
         """
         Adds num_shares of the given security to the holdings of this asset
-        class.
+        class. Returns the state of the buy transaction.
         """
         value = num_shares * security.get_price()
         self.add_value(value)
@@ -187,21 +190,20 @@ class AssetClass:
         else:
             self.__holdings[sec_id].add(buy_holding)
 
+        log.info("Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(
+            n=num_shares,
+            s="shares" if num_shares > 1 else "share",
+            c=security.get_symbol(),
+            p=dollar_str(security.get_price()),
+            t=dollar_str(value)
+        ))
         if not dry_run:
             # Actually buy the ETFs
-            confirmation = input(
-                "Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(
-                    n=num_shares,
-                    s="shares" if num_shares > 1 else "share",
-                    c=security.get_symbol(),
-                    p=dollar_str(security.get_price()),
-                    t=dollar_str(value)
-                )
-            ).lower()
-            if confirmation in ['', 'y']:
-                r.order_buy_market(security.get_symbol(), num_shares)
-            else:
-                pass
+            if input('').lower() in ['', 'y']:
+                resp = r.order_buy_market(security.get_symbol(), num_shares)
+                return resp['state']
+        else:
+            return 'confirmed'
 
     def plan_purchases(self, budget):
         """

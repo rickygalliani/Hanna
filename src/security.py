@@ -15,7 +15,7 @@ class Security:
                  buy_restricted=1):
         if price and price <= 0:
             raise Exception(
-                "Must pass a positive price (or None) to instantiate a Security"
+                "Must pass positive price (or None) to instantiate a Security"
             )
         self.__id = security_id
         self.__symbol = symbol

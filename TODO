@@ -1,6 +1,6 @@
-1. Be able to pass logger to source code modules
-2. Make dry_run a command-line arg
-3. Check response from order_buy_market() and behave accordingly
+1. Make dry_run a command-line arg
+2. Tie data closer to API responses and less from simulated data
+3. Handle various responses from order_buy_market()
 4. Look into test coverage library and implement on this project, need more testing
 5. Add average buy-price, current price, and return into display
 6. Clean up code style in AssetClass.plan_purchases() (don't have to use cents)
