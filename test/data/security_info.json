@@ -1,82 +1,122 @@
 {
+    "SHM": {
+        "price": [
+            "48.810000"
+        ],
+        "name": "SPDR Nuveen Barclays Short Term Municipal Bond ETF"
+    },
     "SCHB": {
-        "name": "Schwab US Broad Market ETF",
-        "price": 69.240000
-    },
-    "IXUS": {
-        "name": "iShares Core MSCI Total International Stock ETF",
-        "price": 57.670000
-    },
-    "VEA": {
-        "name": "Vanguard FTSE Developed Markets ETF",
-        "price": 40.900000
-    },
-    "SCHD": {
-        "name": "Schwab US Dividend Equity ETF",
-        "price": 52.330000
-    },
-    "TFI": {
-        "name": "SPDR Nuveen Barclays Municipal Bond ETF",
-        "price": 49.860000
-    },
-    "SPEM": {
-        "name": "SPDR Portfolio Emerging Markets ETF",
-        "price": 34.420000
-    },
-    "ITOT": {
-        "name": "iShares Core S&P Total US Stock Market ETF",
-        "price": 65.550000
+        "price": [
+            "66.020000"
+        ],
+        "name": "Schwab US Broad Market ETF"
     },
     "VTI": {
-        "name": "Vanguard Total Stock Market ETF",
-        "price": 147.38000
-    },
-    "SCHF": {
-        "name": "Schwab International Equity ETF",
-        "price": 31.360000
-    },
-    "VTHR": {
-        "name": "Vanguard Russell 3000 ETF",
-        "price": 131.72000
-    },
-    "SHM": {
-        "name": "SPDR Nuveen Barclays Short Term Municipal Bond ETF",
-        "price": 48.585000
-    },
-    "MUB": {
-        "name": "iShares National Muni Bond ETF",
-        "price": 112.38000
-    },
-    "IEMG": {
-        "name": "iShares Core MSCI Emerging Markets ETF",
-        "price": 49.420000
+        "price": [
+            "140.510000"
+        ],
+        "name": "Vanguard Total Stock Market ETF"
     },
     "VWO": {
-        "name": "Vanguard FTSE Emerging Markets Fund",
-        "price": 40.850000
+        "price": [
+            "40.880000"
+        ],
+        "name": "Vanguard FTSE Emerging Markets Fund"
     },
-    "VTEB": {
-        "name": "Vanguard Tax-Exempt Bond ETF",
-        "price": 52.700000
-    },
-    "EFA": {
-        "name": "iShares MSCI EAFE ETF",
-        "price": 65.200000
-    },
-    "SCHE": {
-        "name": "Schwab Emerging Markets Equity fund",
-        "price": 25.170000
-    },
-    "VYM": {
-        "name": "Vanguard High Dividend Yield ETF",
-        "price": 86.270000
-    },
-    "DVY": {
-        "name": "iShares Dow Jones Select Dividend ETF",
-        "price": 98.620000
+    "VTHR": {
+        "price": [
+            "125.470000"
+        ],
+        "name": "Vanguard Russell 3000 ETF"
     },
     "VIG": {
-        "name": "Vanguard Dividend Appreciation ETF",
-        "price": 111.90000
+        "price": [
+            "108.710000"
+        ],
+        "name": "Vanguard Dividend Appreciation ETF"
+    },
+    "MUB": {
+        "price": [
+            "112.850000"
+        ],
+        "name": "iShares National Muni Bond ETF"
+    },
+    "IEMG": {
+        "price": [
+            "49.490000"
+        ],
+        "name": "iShares Core MSCI Emerging Markets ETF"
+    },
+    "SPEM": {
+        "price": [
+            "34.470000"
+        ],
+        "name": "SPDR Portfolio Emerging Markets ETF"
+    },
+    "SCHE": {
+        "price": [
+            "25.190000"
+        ],
+        "name": "Schwab Emerging Markets Equity fund"
+    },
+    "VEA": {
+        "price": [
+            "40.000000"
+        ],
+        "name": "Vanguard FTSE Developed Markets ETF"
+    },
+    "ITOT": {
+        "price": [
+            "62.470000"
+        ],
+        "name": "iShares Core S&P Total US Stock Market ETF"
+    },
+    "DVY": {
+        "price": [
+            "94.960000"
+        ],
+        "name": "iShares Dow Jones Select Dividend ETF"
+    },
+    "TFI": {
+        "price": [
+            "50.080000"
+        ],
+        "name": "SPDR Nuveen Barclays Municipal Bond ETF"
+    },
+    "SCHD": {
+        "price": [
+            "50.440000"
+        ],
+        "name": "Schwab US Dividend Equity ETF"
+    },
+    "IXUS": {
+        "price": [
+            "56.670000"
+        ],
+        "name": "iShares Core MSCI Total International Stock ETF"
+    },
+    "VYM": {
+        "price": [
+            "83.430000"
+        ],
+        "name": "Vanguard High Dividend Yield ETF"
+    },
+    "SCHF": {
+        "price": [
+            "30.690000"
+        ],
+        "name": "Schwab International Equity ETF"
+    },
+    "VTEB": {
+        "price": [
+            "52.940000"
+        ],
+        "name": "Vanguard Tax-Exempt Bond ETF"
+    },
+    "EFA": {
+        "price": [
+            "63.770000"
+        ],
+        "name": "iShares MSCI EAFE ETF"
     }
 }
