@@ -1,6 +1,6 @@
-1. update() in non dry run mode should make API calls to fetch actual data
-2. Handle 400 case where you have to use a limit order
-3. Make dry_run a command-line arg
+1. Write server-side code that can check when cash becomes available and sends an email alerting user to run program
+2. update() in non dry run mode should make API calls to fetch actual data
+3. Handle 400 case where you have to use a limit order
 4. Tie data closer to API responses and less from simulated data
 5. Handle various responses from order_buy_market(). Look into changing it to buy limit order
 6. Look into test coverage library and implement on this project, need more testing

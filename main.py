@@ -14,6 +14,7 @@ from src.load import (
 
 from random import shuffle
 
+import argparse
 import json
 import logging
 import robin_stocks as r
@@ -27,24 +28,26 @@ if __name__ == '__main__':
     )
     log = logging.getLogger('main')
 
-    dry_run = True
+    parser = argparse.ArgumentParser(description='Hanna main program.')
+    parser.add_argument('--dry_run', type=bool, required=False, default=True)
+    args = parser.parse_args()
 
     portfolio = load_portfolio_config()
     log.info("Loaded portfolio configuration...")
 
     # Populate asset classes and securities with holdings data
-    if not dry_run:
+    if not args.dry_run:
         user, password = load_credentials()
         client = r.login(user, password)
     
-    account_profile = load_account_profile(dry_run)
+    account_profile = load_account_profile(args.dry_run)
     log.info("Pulled account profile from Robinhood...")
     
     security_symbols = portfolio.get_all_security_symbols()
-    securities = load_security_info(security_symbols, dry_run)
+    securities = load_security_info(security_symbols, args.dry_run)
     log.info("Pulled security data from Robinhood...")
 
-    holdings = load_holding_info(dry_run)
+    holdings = load_holding_info(args.dry_run)
     log.info("Pulled holdings data from Robinhood...")
 
     portfolio.update(account_profile, securities, holdings)
@@ -55,8 +58,8 @@ if __name__ == '__main__':
     deposit = portfolio.plan_deposit(portfolio.get_cash())
     log.info("Deposit:{}".format(deposit.for_display()))
 
-    portfolio.make_deposit(deposit, dry_run)
+    portfolio.make_deposit(deposit, args.dry_run)
     log.info("Portfolio after deposit:{}".format(portfolio.for_display()))
 
-    if not dry_run:
+    if not args.dry_run:
         r.logout()
