@@ -199,9 +199,13 @@ class AssetClass:
         ))
         if not dry_run:
             # Actually buy the ETFs
-            if input('').lower() in ['', 'y']:
+            user_choice = input('').lower()
+            if user_choice in ['', 'y']:
                 resp = r.order_buy_market(security.get_symbol(), num_shares)
-                return resp['state']
+                if resp is None:
+                    return 'failed'
+                else:
+                    return resp['state']
         else:
             return 'confirmed'
 
@@ -211,12 +215,6 @@ class AssetClass:
         on the asset class's securities. This is the well known Unbounded
         Knapsack problem.
         """
-        def no_purchases():
-            return dict([
-                (s.get_id(), Purchase(s, 0))
-                for s in self.get_securities() if not s.get_buy_restricted()
-            ])
-
         budget_cents = int(budget * 100)
         if budget_cents < 0:
             return {}
@@ -251,13 +249,10 @@ class AssetClass:
                 # If buying security j brought us to optimal expenditures at
                 # budget i
                 if T[exp_i - j_price] + j_price == exp_i:
-                    sec_j_dol = self.get_security(j_id)
-                    purchases[j_id] = (
-                        Purchase(sec_j_dol, 1) if j_id not in purchases else
-                        Purchase(
-                            sec_j_dol, purchases[j_id].get_num_shares() + 1
-                        )
-                    )
+                    if j_id in purchases:
+                        purchases[j_id].add_shares(1)
+                    else:
+                        purchases[j_id] = Purchase(self.get_security(j_id), 1)
                     break
             i = exp_i - securities_cents[j_id].get_price() + 1
         # Prune purchases of no shares from return value

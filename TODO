@@ -1,10 +1,12 @@
-1. Make dry_run a command-line arg
-2. Tie data closer to API responses and less from simulated data
-3. Handle various responses from order_buy_market()
-4. Look into test coverage library and implement on this project, need more testing
-5. Add average buy-price, current price, and return into display
-6. Clean up code style in AssetClass.plan_purchases() (don't have to use cents)
-7. Add validation function to check portfolio config
-8. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-9. Look into type support for python 3
-10. Add README documentation
+1. update() in non dry run mode should make API calls to fetch actual data
+2. Handle 400 case where you have to use a limit order
+3. Make dry_run a command-line arg
+4. Tie data closer to API responses and less from simulated data
+5. Handle various responses from order_buy_market(). Look into changing it to buy limit order
+6. Look into test coverage library and implement on this project, need more testing
+7. Add average buy-price, current price, and return into display
+8. Clean up code style in AssetClass.plan_purchases() (don't have to use cents)
+9. Add validation function to check portfolio config
+10. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+11. Look into type support for python 3
+12. Add README documentation

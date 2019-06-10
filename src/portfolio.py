@@ -342,10 +342,12 @@ class Portfolio:
             for p in purchases:
                 state = ac.buy(p.get_security(), p.get_num_shares(), dry_run)
                 if state != 'failed':
-                    log.info("\t- {}".format(state.capitalize()))
+                    m = "\t- Trade Status: {}\n".format(state.capitalize())
+                    log.info(m)
                     cost = p.get_cost()
                     self.add_value(cost)
                     self.add_shares(p.get_num_shares())
                     self.subtract_cash(cost)
                 else:
-                    log.error("\t- {}".format(state.capitalize()))
+                    m = "\t- Trade Status: {}\n".format(state.capitalize())
+                    log.error(m)

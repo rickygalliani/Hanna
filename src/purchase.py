@@ -36,6 +36,10 @@ class Purchase:
     def get_cost(self):
         return self.__cost
 
+    def add_shares(self, num_shares):
+        self.__num_shares += num_shares
+        self.__cost += (num_shares * self.get_security().get_price())
+
     def to_dict(self):
         return {
             'security': self.get_security().to_dict(),
