@@ -3,14 +3,9 @@
 # main.py
 
 from src.asset_class import AssetClass
+from src.portfolio import Portfolio
 from src.security import Security
-from src.load import (
-    load_credentials,
-    load_portfolio_config,
-    load_account_profile,
-    load_holding_info,
-    load_security_info
-)
+from src.load import load_credentials
 
 from random import shuffle
 
@@ -29,28 +24,23 @@ if __name__ == '__main__':
     log = logging.getLogger('main')
 
     parser = argparse.ArgumentParser(description='Hanna main program.')
-    parser.add_argument('--dry_run', type=bool, required=False, default=True)
+    parser.add_argument(
+        '--real',
+        required=False,
+        default=False,
+        action='store_true'
+    )
     args = parser.parse_args()
+    print("args = {}".format(args))
 
-    portfolio = load_portfolio_config()
-    log.info("Loaded portfolio configuration...")
+    portfolio = Portfolio()
 
     # Populate asset classes and securities with holdings data
-    if not args.dry_run:
+    if args.real:
         user, password = load_credentials()
         client = r.login(user, password)
-    
-    account_profile = load_account_profile(args.dry_run)
-    log.info("Pulled account profile from Robinhood...")
-    
-    security_symbols = portfolio.get_all_security_symbols()
-    securities = load_security_info(security_symbols, args.dry_run)
-    log.info("Pulled security data from Robinhood...")
 
-    holdings = load_holding_info(args.dry_run)
-    log.info("Pulled holdings data from Robinhood...")
-
-    portfolio.update(account_profile, securities, holdings)
+    portfolio.update(not args.real)
     log.info("Updated portfolio with holdings and security data...")
 
     log.info("Portfolio before deposit:{}".format(portfolio.for_display()))
@@ -58,8 +48,8 @@ if __name__ == '__main__':
     deposit = portfolio.plan_deposit(portfolio.get_cash())
     log.info("Deposit:{}".format(deposit.for_display()))
 
-    portfolio.make_deposit(deposit, args.dry_run)
+    portfolio.make_deposit(deposit, not args.real)
     log.info("Portfolio after deposit:{}".format(portfolio.for_display()))
 
-    if not args.dry_run:
+    if args.real:
         r.logout()

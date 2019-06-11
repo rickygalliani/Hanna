@@ -2,13 +2,21 @@
 # Hanna
 # src/portfolio.py
 
+from src.asset_class import AssetClass
 from src.deposit import Deposit
+from src.load import (
+    load_account_profile,
+    load_holding_info,
+    load_security_info
+)
+from src.security import Security
 from src.util import dollar_str, pct_str
 
 from prettytable import PrettyTable
 
 import json
 import logging
+import os
 
 
 log = logging.getLogger(__name__)
@@ -17,10 +25,48 @@ log = logging.getLogger(__name__)
 class Portfolio:
 
     def __init__(self):
+        """
+        Initializes a portfolio using a user-specified configuration.
+        """
         self.__asset_classes = {}
         self.__value = 0.0
         self.__cash = 0.0
         self.__num_shares = 0
+
+        # Read portfolio configuration
+        config = os.path.join(os.getcwd(), 'config', 'portfolio.json')
+        self.load_from_config(config)
+        log.info("Loaded portfolio configuration...")
+
+    def load_from_config(self, config_file):
+        """
+        Loads the target investment portfolio (weights for asset classes and
+        the securities underlying those asset classes) from the portfolio
+        config.
+        """
+        co = open(config_file, 'r')
+        portfolio_config = json.load(co)
+        co.close()
+
+        total_target_pct = 0.0
+        for a in portfolio_config:
+            # Sanity check for config format
+            assert('name' in a)
+            assert('target_percentage' in a)
+            assert('securities' in a)
+            assert('buy_restrictions' in a)
+
+            ac_target_pct = float(a['target_percentage'])
+            ac = AssetClass(a['name'], ac_target_pct)
+            total_target_pct += ac_target_pct
+            for s_symbol, s_id in a['securities'].items():
+                s = Security(s_id,
+                             s_symbol,
+                             buy_restricted=s_symbol in a['buy_restrictions'])
+                ac.add_security(s)
+            self.add_asset_class(ac)
+
+        assert(abs(total_target_pct) - 1.0 < 1e-10)
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -278,11 +324,21 @@ class Portfolio:
         self.subtract_value(deposit_amount)
         return ac_budgets
 
-    def update(self, account_profile, securities, holdings):
+    def update(self, dry_run):
         """
         Updates this portfolio (and its underlying asset classes and
         securities) with the given Robinhood holdings.
         """
+        account_profile = load_account_profile(dry_run)
+        log.info("Pulled account profile from Robinhood...")
+
+        security_symbols = self.get_all_security_symbols()
+        securities = load_security_info(security_symbols, dry_run)
+        log.info("Pulled security data from Robinhood...")
+
+        holdings = load_holding_info(dry_run)
+        log.info("Pulled holdings data from Robinhood...")
+
         cash = account_profile['margin_balances']['unallocated_margin_cash']
         self.set_cash(cash)
         for ac in self.get_asset_classes():

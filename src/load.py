@@ -2,10 +2,6 @@
 # Hanna
 # src/load.py
 
-from src.asset_class import AssetClass
-from src.portfolio import Portfolio
-from src.security import Security
-
 import os
 import json
 
@@ -23,40 +19,6 @@ def load_credentials():
     assert('username' in credentials)
     assert('password' in credentials)
     return (credentials['username'], credentials['password'])
-
-
-def load_portfolio_config():
-    """
-    Loads the target investment portfolio (weights for asset classes and the
-    securities underlying those asset classes) from the portfolio config.
-    """
-    # Read portfolio configuration
-    config_file = os.path.join(os.getcwd(), 'config', 'portfolio.json')
-    co = open(config_file, 'r')
-    portfolio_config = json.load(co)
-    co.close()
-
-    portfolio = Portfolio()
-    total_target_pct = 0.0
-    for a in portfolio_config:
-        # Sanity check for config format
-        assert('name' in a)
-        assert('target_percentage' in a)
-        assert('securities' in a)
-        assert('buy_restrictions' in a)
-
-        ac_target_pct = float(a['target_percentage'])
-        ac = AssetClass(a['name'], ac_target_pct)
-        total_target_pct += ac_target_pct
-        for s_symbol, s_id in a['securities'].items():
-            s = Security(s_id,
-                         s_symbol,
-                         buy_restricted=s_symbol in a['buy_restrictions'])
-            ac.add_security(s)
-        portfolio.add_asset_class(ac)
-
-    assert(abs(total_target_pct) - 1.0 < 1e-10)
-    return portfolio
 
 
 def load_account_profile(use_mock_data):
