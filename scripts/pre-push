@@ -13,6 +13,9 @@ if [ $protected_branch = $current_branch ]
             exit 1
         fi
 
+        echo "Running pre-push style checks on the main program..."
+        flake8 main.py
+
         echo "Running pre-push style checks on source code..."
         flake8 src/*.py
 

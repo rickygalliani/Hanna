@@ -173,7 +173,7 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(budgets['ac1'], 10.0)
         self.assertEqual(budgets['ac2'], 90.0)
 
-    def test_update(self):
+    def test_update_basic(self):
         p = Portfolio()
         sec1 = Security('sec1', 'SEC1', name='sec_name', price=10.0)
         sec2 = Security('sec2', 'SEC2', name='sec_name', price=20.0)
@@ -222,6 +222,43 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(p.get_cash(), 78.68)
         self.assertEqual(p.get_value(), 108.68)
         self.assertEqual(p.get_num_shares(), 2)
+
+    def test_update_idempotent(self):
+        p = Portfolio()
+        sec1 = Security('sec1', 'SEC1', name='sec_name', price=10.0)
+        ac1 = AssetClass('ac1', 0.4)
+        ac1.add_security(sec1)
+        p.add_asset_class(ac1)
+        account_profile = {
+            "margin_balances": {
+                "unallocated_margin_cash": 78.6800,
+            }
+        }
+        security_info = {
+            "SEC1": {"name": "sec1_name", "price": 10.0}
+        }
+        holding_info = {
+            'sec1': {
+                'id': 'sec1',
+                'name': 'sec1_name',
+                'price': 10.0,
+                'quantity': 3,
+                'average_buy_price': 10.0,
+                'equity': 30.0,
+                'percentage': 0.33,
+                'percent_change': 0.0,
+                'equity_change': 0.0,
+                'holding_type': 'etp'
+            }
+        }
+        p.update(account_profile, security_info, holding_info)
+        self.assertEqual(p.get_cash(), 78.68)
+        self.assertEqual(p.get_value(), 108.68)
+        self.assertEqual(p.get_num_shares(), 3)
+        p.update(account_profile, security_info, holding_info)
+        self.assertEqual(p.get_cash(), 78.68)
+        self.assertEqual(p.get_value(), 108.68)
+        self.assertEqual(p.get_num_shares(), 3)
 
     def test_plan_deposit(self):
         p = Portfolio()

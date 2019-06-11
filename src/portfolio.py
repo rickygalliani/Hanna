@@ -10,13 +10,17 @@ from src.load import (
     load_security_info
 )
 from src.security import Security
-from src.util import dollar_str, pct_str
+from src.util import (
+    latency_str,
+    dollar_str,
+    pct_str
+)
 
+from datetime import datetime
 from prettytable import PrettyTable
 
 import json
 import logging
-import os
 
 
 log = logging.getLogger(__name__)
@@ -32,11 +36,6 @@ class Portfolio:
         self.__value = 0.0
         self.__cash = 0.0
         self.__num_shares = 0
-
-        # Read portfolio configuration
-        config = os.path.join(os.getcwd(), 'config', 'portfolio.json')
-        self.load_from_config(config)
-        log.info("Loaded portfolio configuration...")
 
     def load_from_config(self, config_file):
         """
@@ -324,21 +323,26 @@ class Portfolio:
         self.subtract_value(deposit_amount)
         return ac_budgets
 
-    def update(self, dry_run):
+    def refresh(self, dry_run):
         """
-        Updates this portfolio (and its underlying asset classes and
-        securities) with the given Robinhood holdings.
+        Hits the Robinhood API to pull fresh holding data for this portfolio.
+        The internal state is changed by the in __update() function.
         """
+        s = datetime.now()
         account_profile = load_account_profile(dry_run)
-        log.info("Pulled account profile from Robinhood...")
-
         security_symbols = self.get_all_security_symbols()
         securities = load_security_info(security_symbols, dry_run)
-        log.info("Pulled security data from Robinhood...")
-
         holdings = load_holding_info(dry_run)
-        log.info("Pulled holdings data from Robinhood...")
+        e = datetime.now()
+        self.update(account_profile, securities, holdings)
+        log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))
+        log.info("Portfolio:{}".format(self.for_display()))
 
+    def update(self, account_profile, securities, holdings):
+        """
+        Private function that updates this portfolio (and its underlying asset
+        classes and securities).
+        """
         cash = account_profile['margin_balances']['unallocated_margin_cash']
         self.set_cash(cash)
         for ac in self.get_asset_classes():
@@ -349,17 +353,27 @@ class Portfolio:
                 ac.update_security(sec_id, sec_info['name'], sec_info['price'])
                 if sec_id in holdings:
                     hol_info = holdings[sec_id]
-                    hol_shares = hol_info['quantity']
-                    hol_value = hol_info['equity']
-                    self.add_value(hol_value)
-                    self.add_shares(hol_shares)
-                    ac.update_holding(sec_id, hol_shares, hol_value)
+                    updated_shares = hol_info['quantity']
+                    updated_value = hol_info['equity']
+                    contains_hol = ac.contains_holding(sec_id)
+                    out_of_date_shares = (
+                        0 if not contains_hol
+                        else ac.get_holding(sec_id).get_num_shares()
+                    )
+                    out_of_date_value = (
+                        0.0 if not contains_hol
+                        else ac.get_holding(sec_id).get_value()
+                    )
+                    ac.update_holding(sec_id, updated_shares, updated_value)
+                    self.add_shares(updated_shares - out_of_date_shares)
+                    self.add_value(updated_value - out_of_date_value)
 
     def plan_deposit(self, amount):
         """
         Returns the optimal purchases to make with deposit added to this
         portfolio.
         """
+        s = datetime.now()
         # Compute purchases necessary to rebalance portfolio
         deposit = Deposit()
         budgets = sorted(
@@ -379,6 +393,8 @@ class Portfolio:
                 deposit.add_purchase(ac_name, purchase)
                 ac_total += purchase.get_cost()
             rollover = final_budget - ac_total
+        e = datetime.now()
+        log.info("Planned deposit. ({})".format(latency_str(s, e)))
         return deposit
 
     def make_deposit(self, deposit, dry_run):
@@ -386,6 +402,7 @@ class Portfolio:
         Makes all the purchases in the given deposit, updating the state of
         this portfolio.
         """
+        log.info("Deposit:{}".format(deposit.for_display()))
         acs = [
             (ac, deposit.get_asset_class_expenditures(ac))
             for ac in deposit.get_involved_asset_classes()

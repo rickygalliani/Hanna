@@ -1,12 +1,13 @@
-1. Write server-side code that can check when cash becomes available and sends an email alerting user to run program
-2. update() in non dry run mode should make API calls to fetch actual data
-3. Handle 400 case where you have to use a limit order
-4. Tie data closer to API responses and less from simulated data
-5. Handle various responses from order_buy_market(). Look into changing it to buy limit order
-6. Look into test coverage library and implement on this project, need more testing
-7. Add average buy-price, current price, and return into display
-8. Clean up code style in AssetClass.plan_purchases() (don't have to use cents)
-9. Add validation function to check portfolio config
-10. Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
-11. Look into type support for python 3
-12. Add README documentation
+- Respond to portfolio config changes in portfolio.update()
+- Write server-side code that can check when cash becomes available and sends an email alerting user to run program
+- update() in non dry run mode should make API calls to fetch actual data
+- Handle 400 case where you have to use a limit order
+- Tie data closer to API responses and less from simulated data
+- Handle various responses from order_buy_market(). Look into changing it to buy limit order
+- Look into test coverage library and implement on this project, need more testing
+- Add average buy-price, current price, and return into display
+- Clean up code style in AssetClass.plan_purchases() (don't have to use cents)
+- Add validation function to check portfolio config
+- Allow user to enter in holdings, would allow them to not enter their Robinhood credentials
+- Look into type support for python 3
+- Add README documentation

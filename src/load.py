@@ -4,8 +4,11 @@
 
 import os
 import json
-
+import logging
 import robin_stocks as r
+
+
+log = logging.getLogger(__name__)
 
 
 def load_credentials():
