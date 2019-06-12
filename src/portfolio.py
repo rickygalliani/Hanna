@@ -214,6 +214,10 @@ class Portfolio:
         return "\n{}\n{}".format(p_ac, p_sec)
 
     def get_all_security_symbols(self):
+        """
+        Returns the symbols of all securities in the portfolio as a list of
+        strings.
+        """
         symbols = []
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():
