@@ -1,5 +1,5 @@
+- Add return data to console output on a per-security and per-asset class basis
 - Support all types of portfolio configuration updates (i.e., security and asset class removals in addition to additions)
-- Write server-side code that can check when cash becomes available and sends an email alerting user to run program
 - Handle 400 case where you have to use a limit order
 - Tie data closer to API responses and less from simulated data
 - Handle various responses from order_buy_market(). Look into changing it to buy limit order
