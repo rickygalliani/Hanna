@@ -45,7 +45,7 @@ class Portfolio:
         """
         total_target_pct = 0.0
         for a in portfolio_config:
-            # Sanity check for config format
+            # Sanity check for portfolio config format
             assert('name' in a)
             assert('target_percentage' in a)
             assert('securities' in a)
