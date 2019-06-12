@@ -1,39 +1,49 @@
-#!/usr/bin/env bash
-protected_branch='master'
-current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+# Original implementation by: nivbend (GitHub)
 
-if [ $protected_branch = $current_branch ]
-    then
-        echo "Running pre-push unit tests..."
-        ./scripts/unittest.sh
+from __future__ import print_function
+from subprocess import check_output, CalledProcessError
+from os.path import isfile
 
-        # $? stores exit value of the last command
-        if [ $? -ne 0 ]; then
-            echo "Unit tests must pass..."
-            exit 1
-        fi
+import logging
 
-        echo "Running pre-push style checks on the main program..."
-        flake8 main.py
+logging.basicConfig(
+    format='%(asctime)-15s %(levelname)s: %(message)s',
+    level=logging.INFO
+)
+log = logging.getLogger('pre-push')
 
-        echo "Running pre-push style checks on source code..."
-        flake8 src/*.py
+(SUCCESS, UNIT_TEST_ERROR) = range(2)
 
-        # $? stores exit value of the last command
-        if [ $? -ne 0 ]; then
-            echo "Style checks must pass on source code..."
-            exit 1
-        fi
 
-        echo "Running pre-push style checks on unit tests..."
-        flake8 test/*.py
+def run():
+    """
+    Run the unit tests for all source code modules.
+    """
+    test_modules = [
+        'security',
+        'holding',
+        'asset_class',
+        'portfolio',
+        'purchase',
+        'deposit',
+        'util'
+    ]
+    for mod in test_modules:
+        log.info("Running {} unit tests".format(mod))
+        try: 
+            test_status = check_output([
+                'python3',
+                '-m',
+                'unittest',
+                '--verbose', 
+                "test.{}".format(mod)
+            ]) 
+        except CalledProcessError:
+            log.error("{} unit tests failed".format(mod))
+            return UNIT_TEST_ERROR
 
-        # $? stores exit value of the last command
-        if [ $? -ne 0 ]; then
-            echo "Style checks must pass on unit tests..."
-            exit 1
-        fi
+    return SUCCESS
 
-else
-    exit 0
-fi
+
+if __name__ == "__main__":
+    exit(run())

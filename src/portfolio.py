@@ -35,7 +35,7 @@ class Portfolio:
         self.__asset_classes = {}
         self.__value = 0.0
         self.__cash = 0.0
-        self.__num_shares = 0    
+        self.__num_shares = 0
 
     def load_configuration(self, portfolio_config):
         """

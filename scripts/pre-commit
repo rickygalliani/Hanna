@@ -1,0 +1,49 @@
+# Original implementation by: nivbend (GitHub)
+
+from __future__ import print_function
+from subprocess import check_output, CalledProcessError
+
+import logging
+
+logging.basicConfig(
+    format='%(asctime)-15s %(levelname)s: %(message)s',
+    level=logging.INFO
+)
+log = logging.getLogger('pre-commit')
+
+(SUCCESS, GIT_DIFF_ERROR, FLAKE8_ERROR) = range(3)
+
+
+def run():
+    """
+    Verify the code style for all the changed Python files using flake8.
+    """
+    # Get all changed file paths.
+    try:
+        changed_files = check_output(
+            ['git', 'diff', '--staged', '--name-only', 'HEAD']
+        )
+    except CalledProcessError:
+        log.error("Couldn't get list of changed files")
+        return GIT_DIFF_ERROR
+
+    # Limit checks to python scripts only
+    changed_python_files = []
+    for f in changed_files.splitlines():
+        f_str = f.decode()
+        if f_str.endswith('.py'):
+            changed_python_files.append(f_str)
+
+    for f in changed_python_files:
+        try:
+            log.info("Running flake8 style checks on {}".format(f))
+            check_output(['flake8', f])
+        except CalledProcessError as error:
+            log.error(error.output)
+            return FLAKE8_ERROR
+
+    return SUCCESS
+
+
+if __name__ == "__main__":
+    exit(run())
