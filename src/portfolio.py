@@ -130,7 +130,10 @@ class Portfolio:
         self.add_value(asset_class.get_value())
 
     def to_dict(self):
-        acs = [(ac.to_dict()) for ac in self.get_asset_classes()]
+        acs = sorted(
+            [(ac.to_dict()) for ac in self.get_asset_classes()],
+            key=lambda ac_dict: ac_dict['name']
+        )
         return {
             'asset_classes': acs,
             'value': self.get_value(),

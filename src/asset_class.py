@@ -56,11 +56,19 @@ class AssetClass:
         self.__target_percentage = target_percentage
 
     def to_dict(self):
+        secs = sorted(
+            [s.to_dict() for s in self.get_securities()],
+            key=lambda sec: sec['id']
+        )
+        hols = sorted(
+            [h.to_dict() for h in self.get_holdings()],
+            key=lambda hol: hol['security']['id']
+        )
         ac = {
             'name': self.get_name(),
             'target_percentage': self.get_target_percentage(),
-            'securities': [s.to_dict() for s in self.get_securities()],
-            'holdings': [h.to_dict() for h in self.get_holdings()],
+            'securities': secs,
+            'holdings': hols,
             'purchase_buffer': self.get_purchase_buffer(),
             'value': self.get_value()
         }
