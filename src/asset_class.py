@@ -52,6 +52,9 @@ class AssetClass:
     def get_value(self):
         return self.__value
 
+    def set_target_percentage(self, target_percentage):
+        self.__target_percentage = target_percentage
+
     def to_dict(self):
         ac = {
             'name': self.get_name(),

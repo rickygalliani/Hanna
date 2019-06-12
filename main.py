@@ -6,6 +6,7 @@ from src.portfolio import Portfolio
 from src.load import load_credentials
 
 import argparse
+import json
 import logging
 import os
 import robin_stocks as r
@@ -30,7 +31,7 @@ if __name__ == '__main__':
 
     portfolio = Portfolio()
     config = os.path.join(os.getcwd(), 'config', 'portfolio.json')
-    portfolio.load_from_config(config)
+    portfolio.load_configuration(json.load(open(config, 'r')))
 
     if args.real:
         user, password = load_credentials()

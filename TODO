@@ -1,6 +1,5 @@
-- Respond to portfolio config changes in portfolio.update()
+- Support all types of portfolio configuration updates (i.e., security and asset class removals in addition to additions)
 - Write server-side code that can check when cash becomes available and sends an email alerting user to run program
-- update() in non dry run mode should make API calls to fetch actual data
 - Handle 400 case where you have to use a limit order
 - Tie data closer to API responses and less from simulated data
 - Handle various responses from order_buy_market(). Look into changing it to buy limit order

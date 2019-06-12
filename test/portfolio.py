@@ -39,6 +39,133 @@ class PortfolioTest(unittest.TestCase):
         p2.add_asset_class(AssetClass('ac', 1.0))
         self.assertEqual(p1, p2)
 
+    def test_load_configuration_basic(self):
+        portfolio_config = [
+            {
+                "name": "Asset Class 1",
+                "target_percentage": 0.5,
+                "securities": {
+                    "SEC1": "sec1id"
+                },
+                "buy_restrictions": []
+            },
+            {
+                "name": "Asset Class 2",
+                "target_percentage": 0.5,
+                "securities": {
+                    "SEC2": "sec2id",
+                    "SEC3": "sec3id"
+                },
+                "buy_restrictions": ["SEC3"]
+            }
+        ]
+        p_load = Portfolio()
+        p_load.load_configuration(portfolio_config)
+        p_test = Portfolio()
+        sec1 = Security("sec1id", "SEC1", buy_restricted=0)
+        sec2 = Security("sec2id", "SEC2", buy_restricted=0)
+        sec3 = Security("sec3id", "SEC3")
+        ac1 = AssetClass("Asset Class 1", 0.5)
+        ac2 = AssetClass("Asset Class 2", 0.5)
+        ac1.add_security(sec1)
+        ac2.add_security(sec2)
+        ac2.add_security(sec3)
+        p_test.add_asset_class(ac1)
+        p_test.add_asset_class(ac2)
+        self.assertEqual(p_load, p_test)
+
+    def test_load_configuration_idempotent(self):
+        portfolio_config = [
+            {
+                "name": "Asset Class 1",
+                "target_percentage": 0.5,
+                "securities": {
+                    "SEC1": "sec1id"
+                },
+                "buy_restrictions": []
+            },
+            {
+                "name": "Asset Class 2",
+                "target_percentage": 0.5,
+                "securities": {
+                    "SEC2": "sec2id",
+                    "SEC3": "sec3id"
+                },
+                "buy_restrictions": ["SEC3"]
+            }
+        ]
+        p_load = Portfolio()
+        p_load.load_configuration(portfolio_config)
+        p_load.load_configuration(portfolio_config)
+        p_test = Portfolio()
+        sec1 = Security("sec1id", "SEC1", buy_restricted=0)
+        sec2 = Security("sec2id", "SEC2", buy_restricted=0)
+        sec3 = Security("sec3id", "SEC3")
+        ac1 = AssetClass("Asset Class 1", 0.5)
+        ac2 = AssetClass("Asset Class 2", 0.5)
+        ac1.add_security(sec1)
+        ac2.add_security(sec2)
+        ac2.add_security(sec3)
+        p_test.add_asset_class(ac1)
+        p_test.add_asset_class(ac2)
+        self.assertEqual(p_load, p_test)
+
+    def test_load_configuration_add(self):
+        old_portfolio_config = [
+            {
+                "name": "Asset Class 1",
+                "target_percentage": 0.5,
+                "securities": {
+                    "SEC1": "sec1id"
+                },
+                "buy_restrictions": []
+            },
+            {
+                "name": "Asset Class 2",
+                "target_percentage": 0.5,
+                "securities": {
+                    "SEC2": "sec2id",
+                    "SEC3": "sec3id"
+                },
+                "buy_restrictions": ["SEC3"]
+            }
+        ]
+        new_portfolio_config = [
+            {
+                "name": "Asset Class 1",
+                "target_percentage": 0.33,
+                "securities": {
+                    "SEC1": "sec1id",
+                    "SEC4": "sec4id"
+                },
+                "buy_restrictions": ["SEC1"]
+            },
+            {
+                "name": "Asset Class 2",
+                "target_percentage": 0.33,
+                "securities": {
+                    "SEC2": "sec2id",
+                    "SEC3": "sec3id"
+                },
+                "buy_restrictions": ["SEC3"]
+            },
+            {
+                "name": "Asset Class 2",
+                "target_percentage": 0.34,
+                "securities": {
+                    "SEC5": "sec5id",
+                    "SEC6": "sec6id"
+                },
+                "buy_restrictions": []
+            }
+        ]
+        p_load = Portfolio()
+        p_load.load_configuration(old_portfolio_config)
+        p_load.load_configuration(new_portfolio_config)
+        p_test = Portfolio()
+        p_test.load_configuration(new_portfolio_config)
+        self.assertEqual(p_load, p_test)
+
     def test_get_all_security_symbols(self):
         p = Portfolio()
         ac = AssetClass('ac', 1.0)

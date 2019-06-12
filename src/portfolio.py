@@ -37,16 +37,12 @@ class Portfolio:
         self.__cash = 0.0
         self.__num_shares = 0
 
-    def load_from_config(self, config_file):
+    def load_configuration(self, portfolio_config):
         """
         Loads the target investment portfolio (weights for asset classes and
-        the securities underlying those asset classes) from the portfolio
-        config.
+        the securities underlying those asset classes) from the given config
+        file.
         """
-        co = open(config_file, 'r')
-        portfolio_config = json.load(co)
-        co.close()
-
         total_target_pct = 0.0
         for a in portfolio_config:
             # Sanity check for config format
@@ -55,17 +51,38 @@ class Portfolio:
             assert('securities' in a)
             assert('buy_restrictions' in a)
 
+            ac_name = a['name']
             ac_target_pct = float(a['target_percentage'])
-            ac = AssetClass(a['name'], ac_target_pct)
-            total_target_pct += ac_target_pct
-            for s_symbol, s_id in a['securities'].items():
-                s = Security(s_id,
-                             s_symbol,
-                             buy_restricted=s_symbol in a['buy_restrictions'])
-                ac.add_security(s)
-            self.add_asset_class(ac)
+            ac_securities = a['securities']
+            ac_buy_restrictions = a['buy_restrictions']
 
-        assert(abs(total_target_pct) - 1.0 < 1e-10)
+            ac = None
+            if self.contains_asset_class(ac_name):
+                ac = self.get_asset_class(ac_name)
+                ac.set_target_percentage(ac_target_pct)
+            else:
+                ac = AssetClass(ac_name, ac_target_pct)
+
+            total_target_pct += ac_target_pct
+            for s_symbol, s_id in ac_securities.items():
+                buy_restricted = int(s_symbol in ac_buy_restrictions)
+                s = Security(s_id, s_symbol, buy_restricted=buy_restricted)
+                if not ac.contains_security(s_id):
+                    ac.add_security(s)
+                else:
+                    sec = ac.get_security(s_id)
+                    if buy_restricted:
+                        sec.restrict_buy()
+                    else:
+                        sec.enable_buy()
+            if not self.contains_asset_class(ac_name):
+                self.add_asset_class(ac)
+
+        if abs(total_target_pct - 1.0) >= 1e-10:
+            raise Exception(
+                'load_configuration(): asset class target percentages do not '
+                'add up to 1.'
+            )
 
     def __eq__(self, other):
         return self.to_dict() == other.to_dict()
@@ -326,7 +343,7 @@ class Portfolio:
     def refresh(self, dry_run):
         """
         Hits the Robinhood API to pull fresh holding data for this portfolio.
-        The internal state is changed by the in __update() function.
+        The internal state is changed by the in update() function.
         """
         s = datetime.now()
         account_profile = load_account_profile(dry_run)
