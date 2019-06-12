@@ -1,4 +1,6 @@
+- Fix pre-push script (which currently doesn't fail if unit tests fail). Migrate it to Python
 - Add return data to console output on a per-security and per-asset class basis
+- Look into the black code formatter
 - Support all types of portfolio configuration updates (i.e., security and asset class removals in addition to additions)
 - Handle 400 case where you have to use a limit order
 - Tie data closer to API responses and less from simulated data
