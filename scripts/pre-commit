@@ -5,6 +5,7 @@ from __future__ import print_function
 from subprocess import check_output, CalledProcessError
 
 import logging
+import os
 
 logging.basicConfig(
     format="%(asctime)-15s %(levelname)s: %(message)s", level=logging.INFO
@@ -37,9 +38,11 @@ def run():
 
     for f in changed_python_files:
         try:
-            log.info("\t- Formatting {}".format(f))
-            check_output(["black", f, "-l", "79"])
-            log.info("\t- Checking {}".format(f))
+            log.info("\t{}".format(f))
+            log.info("\t\t- Formatting with black")
+            devnull = open(os.devnull, 'w')
+            check_output(["black", f, "-l", "79"], stderr=devnull)
+            log.info("\t\t- Verifying style with flake8")
             check_output(["flake8", f])
         except CalledProcessError as error:
             log.error(error.output)

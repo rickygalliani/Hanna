@@ -15,9 +15,9 @@ class Purchase:
         if num_shares <= 0:
             raise Exception(
                 "Purchase must be instantiated with num_shares >= 0"
-            )    
+            )
         self.__security = security
-        self.__num_shares = num_shares     
+        self.__num_shares = num_shares
         self.__cost = self.__security.get_price() * self.__num_shares
 
     def __eq__(self, other):
