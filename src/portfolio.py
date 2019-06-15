@@ -78,7 +78,7 @@ class Portfolio:
             if not self.contains_asset_class(ac_name):
                 self.add_asset_class(ac)
 
-        if abs(total_target_pct - 1.0) >= 1e-10:
+        if abs(total_target_pct - 1.0) >= 1e-9:
             raise Exception(
                 'load_configuration(): asset class target percentages do not '
                 'add up to 1.'
@@ -273,7 +273,7 @@ class Portfolio:
         Returns the percentage of the portfolio value in cash.
         """
         total_value = self.get_value()
-        if abs(total_value - 0 < 10e-10):
+        if abs(total_value - 0 < 10e-9):
             return 0.0
         else:
             return 1.0 * self.get_cash() / total_value
@@ -284,7 +284,7 @@ class Portfolio:
         class.
         """
         total_value = self.get_value()
-        if abs(total_value - 0 < 10e-10):
+        if abs(total_value - 0 < 10e-9):
             return 0.0
         else:
             ac_value = self.get_asset_class_value(asset_class_name)

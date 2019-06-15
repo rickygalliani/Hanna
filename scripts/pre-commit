@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # Original implementation by: nivbend (GitHub)
 
 from __future__ import print_function
@@ -18,6 +19,7 @@ def run():
     """
     Verify the code style for all the changed Python files using flake8.
     """
+    log.info("Running pre-commit flake8 style checks")
     # Get all changed file paths.
     try:
         changed_files = check_output(
@@ -36,7 +38,7 @@ def run():
 
     for f in changed_python_files:
         try:
-            log.info("Running flake8 style checks on {}".format(f))
+            log.info("\t- Checking {}".format(f))
             check_output(['flake8', f])
         except CalledProcessError as error:
             log.error(error.output)
