@@ -6,13 +6,9 @@ import json
 
 
 class Security:
-
-    def __init__(self,
-                 security_id,
-                 symbol,
-                 name=None,
-                 price=None,
-                 buy_restricted=1):
+    def __init__(
+        self, security_id, symbol, name=None, price=None, buy_restricted=1
+    ):
         if price and price <= 0:
             raise Exception(
                 "Must pass positive price (or None) to instantiate a Security"
@@ -68,12 +64,12 @@ class Security:
 
     def to_dict(self):
         return {
-            'id': self.get_id(),
-            'symbol': self.get_symbol(),
-            'name': self.get_name(),
-            'price': self.get_price(),
-            'purchase_buffer': self.get_purchase_buffer(),
-            'buy_restricted': self.get_buy_restricted()
+            "id": self.get_id(),
+            "symbol": self.get_symbol(),
+            "name": self.get_name(),
+            "price": self.get_price(),
+            "purchase_buffer": self.get_purchase_buffer(),
+            "buy_restricted": self.get_buy_restricted(),
         }
 
     def with_cents(self):
@@ -86,5 +82,5 @@ class Security:
             self.get_symbol(),
             self.get_name(),
             int(self.get_price() * 100),
-            self.get_buy_restricted()
+            self.get_buy_restricted(),
         )

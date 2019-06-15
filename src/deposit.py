@@ -10,7 +10,6 @@ import json
 
 
 class Deposit:
-
     def __init__(self):
         self.__total = 0.0  # Total spent on all purchases
         self.__num_shares = 0  # Total shares bought on all purchases
@@ -36,23 +35,18 @@ class Deposit:
 
     def to_dict(self):
         return {
-            'total': self.get_total(),
-            'num_shares': self.get_num_shares(),
-            'purchases': self.get_purchases()
+            "total": self.get_total(),
+            "num_shares": self.get_num_shares(),
+            "purchases": self.get_purchases(),
         }
 
     def for_display(self):
-        p_ac = PrettyTable(['Asset Class', 'Expenditures'])
-        p_sec = PrettyTable([
-            'Asset Class',
-            'Security',
-            'Symbol',
-            'Shares',
-            'Price',
-            'Cost'
-        ])
-        p_ac.title = 'Expenditures For Each Asset Class'
-        p_sec.title = 'Purchases'
+        p_ac = PrettyTable(["Asset Class", "Expenditures"])
+        p_sec = PrettyTable(
+            ["Asset Class", "Security", "Symbol", "Shares", "Price", "Cost"]
+        )
+        p_ac.title = "Expenditures For Each Asset Class"
+        p_sec.title = "Purchases"
         acs = [
             (ac, self.get_asset_class_expenditures(ac))
             for ac in self.get_involved_asset_classes()
@@ -73,11 +67,11 @@ class Deposit:
                 price = dollar_str(sec.get_price())
                 cost = dollar_str(p_cost)
                 p_sec.add_row([ac_name, name, sym, shares, price, cost])
-        p_ac.add_row(['Total', dollar_str(self.get_total())])
+        p_ac.add_row(["Total", dollar_str(self.get_total())])
         tot_shares = self.get_num_shares()
         tot_cost = self.get_total()
         p_sec.add_row(
-            ['Total', '-', '-', tot_shares, '-', dollar_str(tot_cost)]
+            ["Total", "-", "-", tot_shares, "-", dollar_str(tot_cost)]
         )
         return "\n{}\n{}".format(p_ac, p_sec)
 

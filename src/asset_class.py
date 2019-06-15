@@ -15,7 +15,6 @@ log = logging.getLogger(__name__)
 
 
 class AssetClass:
-
     def __init__(self, name, target_percentage):
         self.__name = name
         self.__target_percentage = target_percentage
@@ -58,19 +57,19 @@ class AssetClass:
     def to_dict(self):
         secs = sorted(
             [s.to_dict() for s in self.get_securities()],
-            key=lambda sec: sec['id']
+            key=lambda sec: sec["id"],
         )
         hols = sorted(
             [h.to_dict() for h in self.get_holdings()],
-            key=lambda hol: hol['security']['id']
+            key=lambda hol: hol["security"]["id"],
         )
         ac = {
-            'name': self.get_name(),
-            'target_percentage': self.get_target_percentage(),
-            'securities': secs,
-            'holdings': hols,
-            'purchase_buffer': self.get_purchase_buffer(),
-            'value': self.get_value()
+            "name": self.get_name(),
+            "target_percentage": self.get_target_percentage(),
+            "securities": secs,
+            "holdings": hols,
+            "purchase_buffer": self.get_purchase_buffer(),
+            "value": self.get_value(),
         }
         return ac
 
@@ -201,24 +200,26 @@ class AssetClass:
         else:
             self.__holdings[sec_id].add(buy_holding)
 
-        log.info("Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(
-            n=num_shares,
-            s="shares" if num_shares > 1 else "share",
-            c=security.get_symbol(),
-            p=dollar_str(security.get_price()),
-            t=dollar_str(value)
-        ))
+        log.info(
+            "Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(
+                n=num_shares,
+                s="shares" if num_shares > 1 else "share",
+                c=security.get_symbol(),
+                p=dollar_str(security.get_price()),
+                t=dollar_str(value),
+            )
+        )
         if not dry_run:
             # Actually buy the ETFs
-            user_choice = input('').lower()
-            if user_choice in ['', 'y']:
+            user_choice = input("").lower()
+            if user_choice in ["", "y"]:
                 resp = r.order_buy_market(security.get_symbol(), num_shares)
                 if resp is None:
-                    return 'failed'
+                    return "failed"
                 else:
-                    return resp['state']
+                    return resp["state"]
         else:
-            return 'confirmed'
+            return "confirmed"
 
     def plan_purchases(self, budget):
         """
@@ -230,10 +231,13 @@ class AssetClass:
         if budget_cents < 0:
             return {}
 
-        securities_cents = dict([
-            (s.get_id(), s.with_cents())
-            for s in self.get_securities() if not s.get_buy_restricted()
-        ])
+        securities_cents = dict(
+            [
+                (s.get_id(), s.with_cents())
+                for s in self.get_securities()
+                if not s.get_buy_restricted()
+            ]
+        )
 
         # Purchase at T[i] maximizes expenditure with budget i
         T = [0 for x in range(budget_cents + 1)]
@@ -267,6 +271,6 @@ class AssetClass:
                     break
             i = exp_i - securities_cents[j_id].get_price() + 1
         # Prune purchases of no shares from return value
-        return dict([
-            (s, p) for (s, p) in purchases.items() if p.get_num_shares() != 0
-        ])
+        return dict(
+            [(s, p) for (s, p) in purchases.items() if p.get_num_shares() != 0]
+        )

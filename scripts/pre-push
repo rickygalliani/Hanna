@@ -8,10 +8,9 @@ from os.path import isfile
 import logging
 
 logging.basicConfig(
-    format='%(asctime)-15s %(levelname)s: %(message)s',
-    level=logging.INFO
+    format="%(asctime)-15s %(levelname)s: %(message)s", level=logging.INFO
 )
-log = logging.getLogger('pre-push')
+log = logging.getLogger("pre-push")
 
 (SUCCESS, UNIT_TEST_ERROR) = range(2)
 
@@ -21,24 +20,26 @@ def run():
     Run the unit tests for all source code modules.
     """
     test_modules = [
-        'security',
-        'holding',
-        'asset_class',
-        'portfolio',
-        'purchase',
-        'deposit',
-        'util'
+        "security",
+        "holding",
+        "asset_class",
+        "portfolio",
+        "purchase",
+        "deposit",
+        "util",
     ]
     for mod in test_modules:
         log.info("Running {} unit tests".format(mod))
-        try: 
-            test_status = check_output([
-                'python3',
-                '-m',
-                'unittest',
-                '--verbose', 
-                "test.{}".format(mod)
-            ]) 
+        try:
+            test_status = check_output(
+                [
+                    "python3",
+                    "-m",
+                    "unittest",
+                    "--verbose",
+                    "test.{}".format(mod),
+                ]
+            )
         except CalledProcessError:
             log.error("{} unit tests failed".format(mod))
             return UNIT_TEST_ERROR

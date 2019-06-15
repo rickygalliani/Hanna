@@ -22,7 +22,7 @@ def latency_str(start, end):
     Returns the given latency in milliseconds
     """
     latency = difference_in_millis(start, end)
-    return "{:g} ms".format(float('{:.3g}'.format(latency)))
+    return "{:g} ms".format(float("{:.3g}".format(latency)))
 
 
 def difference_in_millis(start, end):

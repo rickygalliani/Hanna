@@ -6,7 +6,6 @@ import json
 
 
 class Purchase:
-
     def __init__(self, security, num_shares):
         if not security.get_price():
             raise Exception(
@@ -38,11 +37,11 @@ class Purchase:
 
     def add_shares(self, num_shares):
         self.__num_shares += num_shares
-        self.__cost += (num_shares * self.get_security().get_price())
+        self.__cost += num_shares * self.get_security().get_price()
 
     def to_dict(self):
         return {
-            'security': self.get_security().to_dict(),
-            'num_shares': self.get_num_shares(),
-            'cost': self.get_cost()
+            "security": self.get_security().to_dict(),
+            "num_shares": self.get_num_shares(),
+            "cost": self.get_cost(),
         }

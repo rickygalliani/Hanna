@@ -6,7 +6,6 @@ import json
 
 
 class Holding:
-
     def __init__(self, security, num_shares, value):
         if num_shares <= 0:
             raise Exception(
@@ -43,9 +42,9 @@ class Holding:
 
     def to_dict(self):
         return {
-            'security': self.get_security().to_dict(),
-            'num_shares': self.get_num_shares(),
-            'value': self.get_value()
+            "security": self.get_security().to_dict(),
+            "num_shares": self.get_num_shares(),
+            "value": self.get_value(),
         }
 
     def add(self, other_holding):

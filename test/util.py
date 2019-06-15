@@ -10,9 +10,8 @@ import unittest
 
 
 class UtilTest(unittest.TestCase):
-
     def test_dollar_str(self):
-        self.assertEqual(dollar_str(100.892342), '$100.89')
+        self.assertEqual(dollar_str(100.892342), "$100.89")
 
     def test_pct_str(self):
-        self.assertEqual(pct_str(0.351783423234), '35.2%')
+        self.assertEqual(pct_str(0.351783423234), "35.2%")

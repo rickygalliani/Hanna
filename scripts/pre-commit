@@ -7,10 +7,9 @@ from subprocess import check_output, CalledProcessError
 import logging
 
 logging.basicConfig(
-    format='%(asctime)-15s %(levelname)s: %(message)s',
-    level=logging.INFO
+    format="%(asctime)-15s %(levelname)s: %(message)s", level=logging.INFO
 )
-log = logging.getLogger('pre-commit')
+log = logging.getLogger("pre-commit")
 
 (SUCCESS, GIT_DIFF_ERROR, FLAKE8_ERROR) = range(3)
 
@@ -19,11 +18,11 @@ def run():
     """
     Verify the code style for all the changed Python files using flake8.
     """
-    log.info("Running pre-commit flake8 style checks")
+    log.info("Running pre-commit formatter and flake8 style checks")
     # Get all changed file paths.
     try:
         changed_files = check_output(
-            ['git', 'diff', '--staged', '--name-only', 'HEAD']
+            ["git", "diff", "--staged", "--name-only", "HEAD"]
         )
     except CalledProcessError:
         log.error("Couldn't get list of changed files")
@@ -33,13 +32,15 @@ def run():
     changed_python_files = []
     for f in changed_files.splitlines():
         f_str = f.decode()
-        if f_str.endswith('.py'):
+        if f_str.endswith(".py"):
             changed_python_files.append(f_str)
 
     for f in changed_python_files:
         try:
+            log.info("\t- Formatting {}".format(f))
+            check_output(["black", f, "-l", "79"])
             log.info("\t- Checking {}".format(f))
-            check_output(['flake8', f])
+            check_output(["flake8", f])
         except CalledProcessError as error:
             log.error(error.output)
             return FLAKE8_ERROR
