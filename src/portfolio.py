@@ -4,16 +4,19 @@
 
 from src.asset_class import AssetClass
 from src.deposit import Deposit
+from src.holding import Holding
 from src.load import (
     load_account_profile,
     load_holding_info,
     load_security_info,
 )
+from src.purchase import Purchase
 from src.security import Security
 from src.util import latency_str, dollar_str, pct_str
 
 from datetime import datetime
 from prettytable import PrettyTable
+from typing import Any, Dict, KeysView, List, Tuple, ValuesView
 
 import json
 import logging
@@ -23,22 +26,24 @@ log = logging.getLogger(__name__)
 
 
 class Portfolio:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes a portfolio using a user-specified configuration.
         """
-        self.__asset_classes = {}
-        self.__value = 0.0
-        self.__cash = 0.0
-        self.__num_shares = 0
+        self.__asset_classes: Dict[str, AssetClass] = {}
+        self.__value: float = 0.0
+        self.__cash: float = 0.0
+        self.__num_shares: int = 0
 
-    def load_configuration(self, portfolio_config):
+    def load_configuration(
+        self, portfolio_config: List[Dict[str, Any]]
+    ) -> None:
         """
         Loads the target investment portfolio (weights for asset classes and
         the securities underlying those asset classes) from the given config
         file.
         """
-        total_target_pct = 0.0
+        total_target_pct: float = 0.0
         for a in portfolio_config:
             # Sanity check for portfolio config format
             assert "name" in a
@@ -46,26 +51,28 @@ class Portfolio:
             assert "securities" in a
             assert "buy_restrictions" in a
 
-            ac_name = a["name"]
-            ac_target_pct = float(a["target_percentage"])
-            ac_securities = a["securities"]
-            ac_buy_restrictions = a["buy_restrictions"]
+            ac_name: str = a["name"]
+            ac_target_pct: float = float(a["target_percentage"])
+            ac_securities: Dict[str, str] = a["securities"]
+            ac_buy_restrictions: List[str] = a["buy_restrictions"]
 
-            ac = None
-            if self.contains_asset_class(ac_name):
-                ac = self.get_asset_class(ac_name)
-                ac.set_target_percentage(ac_target_pct)
-            else:
-                ac = AssetClass(ac_name, ac_target_pct)
+            ac: AssetClass = (
+                self.get_asset_class(ac_name)
+                if self.contains_asset_class(ac_name)
+                else AssetClass(ac_name, ac_target_pct)
+            )
+            ac.set_target_percentage(ac_target_pct)
 
             total_target_pct += ac_target_pct
             for s_symbol, s_id in ac_securities.items():
-                buy_restricted = int(s_symbol in ac_buy_restrictions)
-                s = Security(s_id, s_symbol, buy_restricted=buy_restricted)
+                buy_restricted: int = int(s_symbol in ac_buy_restrictions)
+                s: Security = Security(
+                    s_id, s_symbol, buy_restricted=buy_restricted
+                )
                 if not ac.contains_security(s_id):
                     ac.add_security(s)
                 else:
-                    sec = ac.get_security(s_id)
+                    sec: Security = ac.get_security(s_id)
                     if buy_restricted:
                         sec.restrict_buy()
                     else:
@@ -79,53 +86,55 @@ class Portfolio:
                 "add up to 1."
             )
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Portfolio):
+            return NotImplemented
         return self.to_dict() == other.to_dict()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return json.dumps(self.to_dict())
 
-    def get_asset_class_names(self):
+    def get_asset_class_names(self) -> KeysView[str]:
         return self.__asset_classes.keys()
 
-    def get_asset_classes(self):
+    def get_asset_classes(self) -> ValuesView[AssetClass]:
         return self.__asset_classes.values()
 
-    def get_cash(self):
+    def get_cash(self) -> float:
         return self.__cash
 
-    def get_value(self):
+    def get_value(self) -> float:
         return self.__value
 
-    def get_num_shares(self):
+    def get_num_shares(self) -> int:
         return self.__num_shares
 
-    def add_value(self, amount):
+    def add_value(self, amount: float) -> None:
         self.__value += amount
 
-    def add_shares(self, num_shares):
+    def add_shares(self, num_shares: int) -> None:
         self.__num_shares += num_shares
 
-    def subtract_value(self, amount):
+    def subtract_value(self, amount: float) -> None:
         self.__value -= amount
 
-    def subtract_shares(self, num_shares):
+    def subtract_shares(self, num_shares: int) -> None:
         self.__num_shares -= num_shares
 
-    def subtract_cash(self, amount):
+    def subtract_cash(self, amount: float) -> None:
         self.__cash -= amount
 
-    def set_cash(self, amount):
+    def set_cash(self, amount: float) -> None:
         self.__value -= self.__cash
         self.__cash = amount
         self.__value += self.__cash
 
-    def add_asset_class(self, asset_class):
+    def add_asset_class(self, asset_class) -> None:
         self.__asset_classes[asset_class.get_name()] = asset_class
         self.add_value(asset_class.get_value())
 
-    def to_dict(self):
-        acs = sorted(
+    def to_dict(self) -> Dict[str, Any]:
+        acs: List[Dict[str, Any]] = sorted(
             [(ac.to_dict()) for ac in self.get_asset_classes()],
             key=lambda ac_dict: ac_dict["name"],
         )
@@ -136,9 +145,14 @@ class Portfolio:
             "num_shares": self.get_num_shares(),
         }
 
-    def for_display(self):
-        ac_cols = ["Asset Class", "Target Percentage", "Percentage", "Value"]
-        sec_cols = [
+    def for_display(self) -> str:
+        ac_cols: List[str] = [
+            "Asset Class",
+            "Target Percentage",
+            "Percentage",
+            "Value",
+        ]
+        sec_cols: List[str] = [
             "Asset Class",
             "Security",
             "Symbol",
@@ -148,13 +162,15 @@ class Portfolio:
             "Value",
             "Percentage",
         ]
-        p_ac = PrettyTable(ac_cols)
-        p_sec = PrettyTable(sec_cols)
+        p_ac: PrettyTable = PrettyTable(ac_cols)
+        p_sec: PrettyTable = PrettyTable(sec_cols)
         p_ac.title = "Portfolio Asset Classes"
         p_sec.title = "Portfolio Securities"
-        acs = [(ac, ac.get_value()) for ac in self.get_asset_classes()]
+        acs: List[Tuple[AssetClass, float]] = [
+            (ac, ac.get_value()) for ac in self.get_asset_classes()
+        ]
         for ac, ac_value in sorted(acs, key=lambda x: x[1], reverse=True):
-            ac_name = ac.get_name()
+            ac_name: str = ac.get_name()
             p_ac.add_row(
                 [
                     ac_name,
@@ -163,12 +179,12 @@ class Portfolio:
                     dollar_str(ac_value),
                 ]
             )
-            hs = [
+            hs: List[Tuple[Holding, float]] = [
                 (h, self.get_security_value(h.get_security().get_id()))
                 for h in ac.get_holdings()
             ]
             for hol, hol_val in sorted(hs, key=lambda h: h[1], reverse=True):
-                s = hol.get_security()
+                s: Security = hol.get_security()
                 p_sec.add_row(
                     [
                         ac_name,
@@ -218,25 +234,25 @@ class Portfolio:
         )
         return "\n{}\n{}".format(p_ac, p_sec)
 
-    def get_all_security_symbols(self):
+    def get_all_security_symbols(self) -> List[str]:
         """
         Returns the symbols of all securities in the portfolio as a list of
         strings.
         """
-        symbols = []
+        symbols: List[str] = []
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():
                 symbols.append(sec.get_symbol())
         return symbols
 
-    def contains_asset_class(self, asset_class_name):
+    def contains_asset_class(self, asset_class_name: str) -> bool:
         """
         Returns True if this portfolio contains an asset class with the given
         name.
         """
         return asset_class_name in self.get_asset_class_names()
 
-    def contains_security(self, security_id):
+    def contains_security(self, security_id: str) -> bool:
         """
         Returns whether the portfolio contains the given security.
         """
@@ -247,7 +263,7 @@ class Portfolio:
             ]
         )
 
-    def get_asset_class(self, asset_class_name):
+    def get_asset_class(self, asset_class_name: str) -> AssetClass:
         """
         Retrieves the asset class instance with the given name.
         """
@@ -259,7 +275,7 @@ class Portfolio:
             )
         )
 
-    def get_asset_class_for_security(self, security_id):
+    def get_asset_class_for_security(self, security_id: str) -> AssetClass:
         """
         Returns the asset class object containing the given security.
         """
@@ -270,130 +286,141 @@ class Portfolio:
             "Portfolio does not contain security {}.".format(security_id)
         )
 
-    def get_asset_class_value(self, asset_class_name):
+    def get_asset_class_value(self, asset_class_name: str) -> float:
         """
         Returns the value invested in the given asset class.
         """
         return self.get_asset_class(asset_class_name).get_value()
 
-    def get_cash_percentage(self):
+    def get_cash_percentage(self) -> float:
         """
         Returns the percentage of the portfolio value in cash.
         """
-        total_value = self.get_value()
+        total_value: float = self.get_value()
         if abs(total_value - 0 < 10e-9):
             return 0.0
         else:
             return 1.0 * self.get_cash() / total_value
 
-    def get_asset_class_percentage(self, asset_class_name):
+    def get_asset_class_percentage(self, asset_class_name: str) -> float:
         """
         Returns the percentage of the portfolio invested in the given asset
         class.
         """
-        total_value = self.get_value()
+        total_value: float = self.get_value()
         if abs(total_value - 0 < 10e-9):
             return 0.0
         else:
-            ac_value = self.get_asset_class_value(asset_class_name)
+            ac_value: float = self.get_asset_class_value(asset_class_name)
             return 1.0 * ac_value / total_value
 
-    def get_security_value(self, security_id):
+    def get_security_value(self, security_id: str) -> float:
         """
         Returns the value invested in the given security.
         """
-        ac = self.get_asset_class_for_security(security_id)
+        ac: AssetClass = self.get_asset_class_for_security(security_id)
         return ac.get_holding(security_id).get_value()
 
-    def get_security_percentage(self, security_id):
+    def get_security_percentage(self, security_id: str) -> float:
         """
         Returns the percentage of this portfolio invested in the given
         security.
         """
         return self.get_security_value(security_id) / self.get_value()
 
-    def get_asset_class_target_value(self, asset_class_name):
+    def get_asset_class_target_value(self, asset_class_name: str) -> float:
         """
         Returns the amount that should be invested in the given asset class.
         """
-        ac = self.get_asset_class(asset_class_name)
+        ac: AssetClass = self.get_asset_class(asset_class_name)
         return self.get_value() * ac.get_target_percentage()
 
-    def get_asset_class_target_deviation(self, asset_class_name):
+    def get_asset_class_target_deviation(self, asset_class_name: str) -> float:
         """
         Returns the deviation between the target and the achieved amount
         invested in the given asset class.
         """
-        ac = self.get_asset_class(asset_class_name)
-        target = self.get_asset_class_target_value(asset_class_name)
+        ac: AssetClass = self.get_asset_class(asset_class_name)
+        target: float = self.get_asset_class_target_value(asset_class_name)
         return ac.get_value() - target
 
-    def get_asset_class_budgets(self, deposit_amount):
+    def get_asset_class_budgets(
+        self, deposit_amount: float
+    ) -> Dict[str, float]:
         """
         Returns the spending budgets for the asset classes in the portfolio
         for a given deposit.
         """
         # Temporarily pretend our portfolio has deposit's value added to it
         self.add_value(deposit_amount)
-        remaining_value = deposit_amount
-        ac_budgets = dict(
+        remaining_value: float = deposit_amount
+        ac_budgets: Dict[str, float] = dict(
             [(ac.get_name(), 0.0) for ac in self.get_asset_classes()]
         )
-        ac_devs = []
+        ac_devs: List[Tuple[str, float]] = []
         for ac in self.get_asset_classes():
             ac_name = ac.get_name()
             ac_dev = self.get_asset_class_target_deviation(ac.get_name())
             ac_devs.append((ac_name, ac_dev))
         ac_devs.sort(key=lambda x: x[1])
-        for (n, ac_dev) in ac_devs:
-            ac_budget = max(0, -1.0 * ac_dev)
+        for (nm, ac_dev) in ac_devs:
+            ac_budget: float = max(0, -1.0 * ac_dev)
             if ac_budget > remaining_value:
                 ac_budget = remaining_value
-            ac_budgets[n] = ac_budget
+            ac_budgets[nm] = ac_budget
             remaining_value -= ac_budget
         # Remove deposit's value from portfolio
         self.subtract_value(deposit_amount)
         return ac_budgets
 
-    def refresh(self, dry_run):
+    def refresh(self, dry_run: bool) -> None:
         """
         Hits the Robinhood API to pull fresh holding data for this portfolio.
         The internal state is changed by the in update() function.
         """
         s = datetime.now()
-        account_profile = load_account_profile(dry_run)
-        security_symbols = self.get_all_security_symbols()
-        securities = load_security_info(security_symbols, dry_run)
-        holdings = load_holding_info(dry_run)
-        e = datetime.now()
+        account_profile: Dict[str, Any] = load_account_profile(dry_run)
+        security_symbols: List[str] = self.get_all_security_symbols()
+        securities: Dict[str, Any] = load_security_info(
+            security_symbols, dry_run
+        )
+        holdings: Dict[str, Dict[str, Any]] = load_holding_info(dry_run)
+        e: datetime = datetime.now()
         self.update(account_profile, securities, holdings)
         log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))
         log.info("Portfolio:{}".format(self.for_display()))
 
-    def update(self, account_profile, securities, holdings):
+    def update(
+        self,
+        account_profile: Dict[str, Any],
+        securities: Dict[str, Any],
+        holdings: Dict[str, Dict[str, Any]],
+    ) -> None:
         """
         Private function that updates this portfolio (and its underlying asset
         classes and securities).
         """
-        cash = account_profile["margin_balances"]["unallocated_margin_cash"]
+        cash: float = account_profile["margin_balances"][
+            "unallocated_margin_cash"
+        ]
         self.set_cash(cash)
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():
-                sec_id = sec.get_id()
-                sec_symbol = sec.get_symbol()
-                sec_info = securities[sec_symbol]
+                sec_id: str = sec.get_id()
+                sec_symbol: str = sec.get_symbol()
+                sec_info: Dict[str, Any] = securities[sec_symbol]
                 ac.update_security(sec_id, sec_info["name"], sec_info["price"])
                 if sec_id in holdings:
-                    hol_info = holdings[sec_id]
-                    updated_shares = hol_info["quantity"]
-                    updated_value = hol_info["equity"]
-                    contains_hol = ac.contains_holding(sec_id)
-                    out_of_date_shares = (
+                    hol_info: Dict[str, Any] = holdings[sec_id]
+                    updated_shares: int = hol_info["quantity"]
+                    updated_value: float = hol_info["equity"]
+                    contains_hol: bool = ac.contains_holding(sec_id)
+                    out_of_date_shares: int = (
                         0
                         if not contains_hol
                         else ac.get_holding(sec_id).get_num_shares()
                     )
-                    out_of_date_value = (
+                    out_of_date_value: float = (
                         0.0
                         if not contains_hol
                         else ac.get_holding(sec_id).get_value()
@@ -402,59 +429,69 @@ class Portfolio:
                     self.add_shares(updated_shares - out_of_date_shares)
                     self.add_value(updated_value - out_of_date_value)
 
-    def plan_deposit(self, amount):
+    def plan_deposit(self, amount: float) -> Deposit:
         """
         Returns the optimal purchases to make with deposit added to this
         portfolio.
         """
-        s = datetime.now()
+        s: datetime = datetime.now()
         # Compute purchases necessary to rebalance portfolio
-        deposit = Deposit()
-        budgets = sorted(
+        deposit: Deposit = Deposit()
+        budgets: List[Tuple[str, float]] = sorted(
             self.get_asset_class_budgets(amount).items(),
             key=lambda x: x[1],
             reverse=True,
         )
-        rollover = 0.0  # Rollover allocations not spent in previous classes
+        rollover: float = 0.0  # Rollover allocations not spent in previous classes
         for (ac_name, budget) in budgets:
-            ac = self.get_asset_class(ac_name)
-            final_budget = budget + rollover
+            ac: AssetClass = self.get_asset_class(ac_name)
+            final_budget: float = budget + rollover
             if (ac_name, budget) == budgets[-1]:
                 final_budget -= ac.get_purchase_buffer()
-            ac_purchases = ac.plan_purchases(final_budget)
-            ac_total = 0.0
+            ac_purchases: Dict[str, Purchase] = ac.plan_purchases(final_budget)
+            ac_total: float = 0.0
             for purchase in ac_purchases.values():
                 deposit.add_purchase(ac_name, purchase)
                 ac_total += purchase.get_cost()
             rollover = final_budget - ac_total
-        e = datetime.now()
+        e: datetime = datetime.now()
         log.info("Planned deposit. ({})".format(latency_str(s, e)))
         return deposit
 
-    def make_deposit(self, deposit, dry_run):
+    def make_deposit(self, deposit: Deposit, dry_run: bool) -> None:
         """
         Makes all the purchases in the given deposit, updating the state of
         this portfolio.
         """
         log.info("Deposit:{}".format(deposit.for_display()))
-        acs = [
+        acs: List[Tuple[str, float]] = [
             (ac, deposit.get_asset_class_expenditures(ac))
             for ac in deposit.get_involved_asset_classes()
         ]
-        sorted_acs = sorted(acs, key=lambda x: x[1], reverse=True)
+        sorted_acs: List[Tuple[str, float]] = sorted(
+            acs, key=lambda x: x[1], reverse=True
+        )
         for ac_name, _ in sorted_acs:
-            ac = self.get_asset_class(ac_name)
-            ps = deposit.get_purchases_for_asset_class(ac_name)
-            purchases = sorted(ps, key=lambda x: x.get_cost(), reverse=True)
+            ac: AssetClass = self.get_asset_class(ac_name)
+            ps: List[Purchase] = deposit.get_purchases_for_asset_class(ac_name)
+            purchases: List[Purchase] = sorted(
+                ps, key=lambda x: x.get_cost(), reverse=True
+            )
             for p in purchases:
-                state = ac.buy(p.get_security(), p.get_num_shares(), dry_run)
+                state: str = ac.buy(
+                    p.get_security(), p.get_num_shares(), dry_run
+                )
                 if state != "failed":
-                    m = "\t- Trade Status: {}\n".format(state.capitalize())
+                    m: str = "\t- Trade Status: {}\n".format(
+                        state.capitalize()
+                    )
                     log.info(m)
-                    cost = p.get_cost()
+                    cost: float = p.get_cost()
                     self.add_value(cost)
                     self.add_shares(p.get_num_shares())
                     self.subtract_cash(cost)
                 else:
-                    m = "\t- Trade Status: {}\n".format(state.capitalize())
-                    log.error(m)
+                    em: str = "\t- Trade Status: {}\n".format(
+                        state.capitalize()
+                    )
+                    log.error(em)
