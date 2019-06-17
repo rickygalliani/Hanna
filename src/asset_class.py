@@ -56,8 +56,7 @@ class AssetClass:
 
     def to_dict(self):
         secs = sorted(
-            [s.to_dict() for s in self.get_securities()],
-            key=lambda sec: sec["id"],
+            [s.to_dict() for s in self.get_securities()], key=lambda sec: sec["id"]
         )
         hols = sorted(
             [h.to_dict() for h in self.get_holdings()],
@@ -213,8 +212,9 @@ class AssetClass:
             # Actually buy the ETFs
             user_choice = input("").lower()
             if user_choice in ["", "y"]:
-                resp = r.order_buy_limit(security.get_symbol(), num_shares,
-                        security.get_price())
+                resp = r.order_buy_limit(
+                    security.get_symbol(), num_shares, security.get_price()
+                )
                 if resp is None:
                     return "failed"
                 else:
@@ -272,6 +272,4 @@ class AssetClass:
                     break
             i = exp_i - securities_cents[j_id].get_price() + 1
         # Prune purchases of no shares from return value
-        return dict(
-            [(s, p) for (s, p) in purchases.items() if p.get_num_shares() != 0]
-        )
+        return dict([(s, p) for (s, p) in purchases.items() if p.get_num_shares() != 0])
