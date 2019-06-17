@@ -442,7 +442,8 @@ class Portfolio:
             key=lambda x: x[1],
             reverse=True,
         )
-        rollover: float = 0.0  # Rollover allocations not spent in previous classes
+        # Rollover allocations not spent in previous classes
+        rollover: float = 0.0
         for (ac_name, budget) in budgets:
             ac: AssetClass = self.get_asset_class(ac_name)
             final_budget: float = budget + rollover
