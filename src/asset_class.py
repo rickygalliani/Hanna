@@ -213,7 +213,8 @@ class AssetClass:
             # Actually buy the ETFs
             user_choice = input("").lower()
             if user_choice in ["", "y"]:
-                resp = r.order_buy_market(security.get_symbol(), num_shares)
+                resp = r.order_buy_limit(security.get_symbol(), num_shares,
+                        security.get_price())
                 if resp is None:
                     return "failed"
                 else:
