@@ -12,13 +12,23 @@ logging.basicConfig(
 )
 log = logging.getLogger("pre-push")
 
-(SUCCESS, UNIT_TEST_ERROR) = range(2)
+(SUCCESS, TYPE_CHECK_ERROR, UNIT_TEST_ERROR) = range(3)
 
 
 def run():
     """
     Run the unit tests for all source code modules.
     """
+    src_modules = [
+        "security",
+        "holding",
+        "asset_class",
+        "portfolio",
+        "purchase",
+        "deposit",
+        "util",
+        "load"
+    ]
     test_modules = [
         "security",
         "holding",
@@ -28,10 +38,25 @@ def run():
         "deposit",
         "util",
     ]
+    for mod in src_modules:
+        log.info("Running {} type checks".format(mod))
+        try:
+            type_check = check_output(
+                [
+                    "mypy",
+                    "--ignore-missing-imports",
+                    "src/{}.py".format(mod)
+                ]
+            )
+        except CalledProcessError:
+            log.error("{} type checks failed".format(mod))
+            log.error("mypy --ignore-missing-imports src/{}.py".format(mod))
+            return TYPE_CHECK_ERROR
+
     for mod in test_modules:
         log.info("Running {} unit tests".format(mod))
         try:
-            test_status = check_output(
+           test_status = check_output(
                 [
                     "python3",
                     "-m",
