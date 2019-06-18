@@ -5,6 +5,7 @@
 
 from datetime import datetime, timedelta
 
+
 def dollar_str(amt: float) -> str:
     """
     Returns the given amount formatted as a string dollar amount.
