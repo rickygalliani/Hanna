@@ -9,8 +9,12 @@ import json
 
 class Security:
     def __init__(
-            self, security_id: str, symbol: str, name: Optional[str]=None, price:
-            Optional[float]=None, buy_restricted: int=1
+        self,
+        security_id: str,
+        symbol: str,
+        name: Optional[str] = None,
+        price: Optional[float] = None,
+        buy_restricted: int = 1,
     ):
         if price and price <= 0:
             raise Exception(
