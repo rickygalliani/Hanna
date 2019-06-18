@@ -16,7 +16,7 @@ from src.util import latency_str, dollar_str, pct_str
 
 from datetime import datetime
 from prettytable import PrettyTable
-from typing import Any, Dict, KeysView, List, Tuple, ValuesView
+from typing import Any, Dict, KeysView, List, Optional, Tuple, ValuesView
 
 import json
 import logging
@@ -26,6 +26,7 @@ log = logging.getLogger(__name__)
 
 
 class Portfolio:
+
     def __init__(self) -> None:
         """
         Initializes a portfolio using a user-specified configuration.
@@ -185,6 +186,8 @@ class Portfolio:
             ]
             for hol, hol_val in sorted(hs, key=lambda h: h[1], reverse=True):
                 s: Security = hol.get_security()
+                price: Optional[float] = s.get_price()
+                price_str: str = dollar_str(price) if price is not None else ""
                 p_sec.add_row(
                     [
                         ac_name,
@@ -192,7 +195,7 @@ class Portfolio:
                         s.get_symbol(),
                         s.get_buy_restricted(),
                         hol.get_num_shares(),
-                        dollar_str(s.get_price()),
+                        price_str,
                         dollar_str(hol_val),
                         pct_str(self.get_security_percentage(s.get_id())),
                     ]

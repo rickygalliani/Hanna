@@ -2,13 +2,12 @@
 # Hanna
 # src/deposit.py
 
-from src.asset_class import AssetClass
 from src.purchase import Purchase
 from src.security import Security
 from src.util import dollar_str
 
 from prettytable import PrettyTable
-from typing import Any, Dict, List, KeysView, Tuple
+from typing import Any, Dict, List, KeysView, Optional, Tuple
 
 import json
 
@@ -17,7 +16,7 @@ class Deposit:
     def __init__(self):
         self.__total: float = 0.0  # Total spent on all purchases
         self.__num_shares: int = 0  # Total shares bought on all purchases
-        self.__purchases: Dict[str, Purchase] = {}
+        self.__purchases: Dict[str, List[Purchase]] = {}
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Deposit):
@@ -33,7 +32,7 @@ class Deposit:
     def get_num_shares(self) -> int:
         return self.__num_shares
 
-    def get_purchases(self) -> Dict[str, Purchase]:
+    def get_purchases(self) -> Dict[str, List[Purchase]]:
         return self.__purchases
 
     def get_involved_asset_classes(self) -> KeysView:
@@ -53,11 +52,11 @@ class Deposit:
         )
         p_ac.title = "Expenditures For Each Asset Class"
         p_sec.title = "Purchases"
-        acs: List[Tuple[AssetClass, float]] = [
+        acs: List[Tuple[str, float]] = [
             (ac, self.get_asset_class_expenditures(ac))
             for ac in self.get_involved_asset_classes()
         ]
-        sorted_acs: List[Tuple[AssetClass, float]] = sorted(
+        sorted_acs: List[Tuple[str, float]] = sorted(
             acs, key=lambda x: x[1], reverse=True
         )
         for ac_name, ac_exp in sorted_acs:
@@ -71,12 +70,13 @@ class Deposit:
             )
             for p, p_cost in sorted_ps:
                 sec: Security = p.get_security()
-                name: str = sec.get_name()
+                name: Optional[str] = sec.get_name()
                 sym: str = sec.get_symbol()
                 shares: int = p.get_num_shares()
-                price: float = dollar_str(sec.get_price())
-                cost: float = dollar_str(p_cost)
-                p_sec.add_row([ac_name, name, sym, shares, price, cost])
+                price: Optional[float] = sec.get_price()
+                price_str: str = dollar_str(price) if price is not None else ""
+                cost: str = dollar_str(p_cost)
+                p_sec.add_row([ac_name, name, sym, shares, price_str, cost])
         p_ac.add_row(["Total", dollar_str(self.get_total())])
         tot_shares: int = self.get_num_shares()
         tot_cost: float = self.get_total()

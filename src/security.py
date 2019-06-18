@@ -96,6 +96,6 @@ class Security:
             self.get_id(),
             self.get_symbol(),
             self.get_name(),
-            int(price * 100),
+            price * 100,
             self.get_buy_restricted(),
         )

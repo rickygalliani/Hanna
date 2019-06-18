@@ -7,7 +7,7 @@ from src.purchase import Purchase
 from src.security import Security
 from src.util import dollar_str
 
-from typing import Any, Dict, List, ValuesView
+from typing import Any, Dict, List, Optional
 
 import robin_stocks as r
 
@@ -40,11 +40,17 @@ class AssetClass:
     def get_target_percentage(self) -> float:
         return self.__target_percentage
 
-    def get_securities(self) -> ValuesView:
-        return self.__securities.values()
+    def get_securities(self) -> List:
+        return sorted(
+            [sec for sec in self.__securities.values()],
+            key=lambda sec: sec.get_id(),
+        )
 
-    def get_holdings(self) -> ValuesView:
-        return self.__holdings.values()
+    def get_holdings(self) -> List:
+        return sorted(
+            [hol for hol in self.__holdings.values()],
+            key=lambda hol: hol.get_security().get_id(),
+        )
 
     def get_purchase_buffer(self) -> float:
         secs = self.get_securities()
@@ -60,14 +66,10 @@ class AssetClass:
         self.__target_percentage = target_percentage
 
     def to_dict(self) -> Dict[str, Any]:
-        secs: List[Dict[str, Any]] = sorted(
-            [s.to_dict() for s in self.get_securities()],
-            key=lambda sec: sec["id"],
-        )
-        hols: List[Dict[str, Any]] = sorted(
-            [h.to_dict() for h in self.get_holdings()],
-            key=lambda hol: hol["security"]["id"],
-        )
+        secs: List[Dict[str, Any]] = [
+            s.to_dict() for s in self.get_securities()
+        ]
+        hols: List[Dict[str, Any]] = [h.to_dict() for h in self.get_holdings()]
         ac = {
             "name": self.get_name(),
             "target_percentage": self.get_target_percentage(),
@@ -200,7 +202,10 @@ class AssetClass:
         Adds num_shares of the given security to the holdings of this asset
         class. Returns the state of the buy transaction.
         """
-        value: float = num_shares * security.get_price()
+        price: Optional[float] = security.get_price()
+        if price is None:
+            raise Exception("Can't buy security with undefined price")
+        value: float = num_shares * price
         self.add_value(value)
         sec_id: str = security.get_id()
         buy_holding: Holding = Holding(security, num_shares, value)
@@ -214,7 +219,7 @@ class AssetClass:
                 n=num_shares,
                 s="shares" if num_shares > 1 else "share",
                 c=security.get_symbol(),
-                p=dollar_str(security.get_price()),
+                p=dollar_str(price),
                 t=dollar_str(value),
             )
         )
@@ -242,19 +247,25 @@ class AssetClass:
         if budget_cents < 0:
             return {}
 
-        securities_cents: Dict[str, Security] = dict(
-            [
-                (s.get_id(), s.with_cents())
-                for s in self.get_securities()
-                if not s.get_buy_restricted()
-            ]
-        )
+        sec_ids: List[str] = []
+        prices_in_cents: List[int] = []
+        for s in self.get_securities():
+            if not s.get_buy_restricted():
+                s_id = s.get_id()
+                price = s.with_cents().get_price()
+                if price is not None:
+                    sec_ids.append(s_id)
+                    prices_in_cents.append(int(price))
+                else:
+                    log.warn(
+                        "Omitting {} from purchases because it has an "
+                        "undefined price".format(s_id)
+                    )
 
         # Purchase at T[i] maximizes expenditure with budget i
         T: List[int] = [0 for x in range(budget_cents + 1)]
         for b_cents in range(budget_cents + 1):
-            for j, (j_id, s_cents) in enumerate(securities_cents.items()):
-                j_price_cents: int = s_cents.get_price()
+            for (j_id, j_price_cents) in zip(sec_ids, prices_in_cents):
                 # Check if budget of b allows for a purchase of j
                 if j_price_cents <= b_cents:
                     # Check if buying it increases expenditures
@@ -270,17 +281,16 @@ class AssetClass:
         while T[i]:
             exp_i: int = T[i]  # Optimal amount spent at budget i
             # Find last security purchased
-            for j, (j_id, sec_cents) in enumerate(securities_cents.items()):
-                price_cents: int = sec_cents.get_price()
+            for (j_id, j_price_cents) in zip(sec_ids, prices_in_cents):
                 # If buying security j brought us to optimal expenditures at
                 # budget i
-                if T[exp_i - price_cents] + price_cents == exp_i:
+                if T[exp_i - j_price_cents] + j_price_cents == exp_i:
                     if j_id in purchases:
                         purchases[j_id].add_shares(1)
                     else:
                         purchases[j_id] = Purchase(self.get_security(j_id), 1)
                     break
-            i = exp_i - securities_cents[j_id].get_price() + 1
+            i = exp_i - j_price_cents + 1
         # Prune purchases of no shares from return value
         return dict(
             [(s, p) for (s, p) in purchases.items() if p.get_num_shares() != 0]
