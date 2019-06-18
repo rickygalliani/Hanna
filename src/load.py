@@ -2,6 +2,8 @@
 # Hanna
 # src/load.py
 
+from typing import Any, Dict, List, Tuple
+
 import os
 import json
 import logging
@@ -11,41 +13,45 @@ import robin_stocks as r
 log = logging.getLogger(__name__)
 
 
-def load_credentials():
+def load_credentials() -> Tuple[str, str]:
     """
     Loads the credentials for the Robinhood account.
     """
-    config_file = os.path.join(os.getcwd(), "config", "credentials.json")
+    config_file: str = os.path.join(os.getcwd(), "config", "credentials.json")
     cr = open(config_file, "r")
-    credentials = json.load(cr)
+    credentials: Dict[str, str] = json.load(cr)
     cr.close()
     assert "username" in credentials
     assert "password" in credentials
     return (credentials["username"], credentials["password"])
 
 
-def load_account_profile(use_mock_data):
+def load_account_profile(use_mock_data: bool) -> Dict[str, Any]:
     """
     Loads user profile information from Robinhood including total equity,
     cash, and dividend total.
     """
-    account_profile_mock_file = "test/data/account_profile.json"
-    if use_mock_data:
-        resp = json.load(open(account_profile_mock_file, "r"))
-    else:
-        resp = r.load_account_profile()
+    account_profile_mock_file: str = "test/data/account_profile.json"
+    resp: Dict[str, Any] = (
+        json.load(open(account_profile_mock_file, "r"))
+        if use_mock_data
+        else r.load_account_profile()
+    )
     assert "margin_balances" in resp
     assert "unallocated_margin_cash" in resp["margin_balances"]
-    cash = resp["margin_balances"]["unallocated_margin_cash"]
+    cash: float = resp["margin_balances"]["unallocated_margin_cash"]
     resp["margin_balances"]["unallocated_margin_cash"] = float(cash)
     return resp
 
 
-def load_security_info(security_symbols, use_mock_data):
+def load_security_info(
+    security_symbols: List[str], use_mock_data: bool
+) -> Dict[str, Any]:
     """
     Hits the Robinhood API to pull down security information like the latest
     price and the full security name.
     """
+    security_info: Dict[str, Any] = {}
     if use_mock_data:
         security_info = json.load(open("test/data/security_info.json", "r"))
     else:
@@ -60,17 +66,18 @@ def load_security_info(security_symbols, use_mock_data):
     return security_info
 
 
-def load_holding_info(use_mock_data):
+def load_holding_info(use_mock_data: bool) -> Dict[str, Any]:
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
-    if use_mock_data:
-        resp = json.load(open("test/data/holding_info.json", "r"))
-    else:
-        resp = r.build_holdings().values()
-    holdings = {}
+    resp: List[Dict[str, Any]] = (
+        json.load(open("test/data/holding_info.json", "r"))
+        if use_mock_data
+        else r.build_holdings().values()
+    )
+    holdings: Dict[str, Any] = {}
     for s in resp:
-        s_id = s["id"]
+        s_id: str = s["id"]
         holdings[s_id] = {
             "id": s_id,
             "name": s["name"],
