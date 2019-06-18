@@ -4,6 +4,7 @@
 
 from src.asset_class import AssetClass
 from src.purchase import Purchase
+from src.security import Security
 from src.util import dollar_str
 
 from prettytable import PrettyTable
