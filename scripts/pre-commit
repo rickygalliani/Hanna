@@ -40,7 +40,7 @@ def run():
         try:
             log.info("\t{}".format(f))
             log.info("\t\t- Checking types with mypy")
-            check_output(["mypy" "--ignore-missing-imports", f])
+            check_output(["mypy", "--ignore-missing-imports", f])
             log.info("\t\t- Formatting with black")
             devnull = open(os.devnull, 'w')
             check_output(["black", f, "-l", "79"], stderr=devnull)
