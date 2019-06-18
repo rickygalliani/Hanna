@@ -1,4 +1,5 @@
 - Add types everywhere
+- If black style changes are made, they're made after the commit
 - 400 Client Error: Bad Request for url: https://api.robinhood.com/orders/
 - black formatter doesn't seem to be running in pre-commit
 - Figure out why table titles aren't showing up

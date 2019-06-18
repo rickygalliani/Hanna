@@ -10,7 +10,9 @@ import json
 
 
 class Holding:
-    def __init__(self, security: Security, num_shares: int, value: float) -> None:
+    def __init__(
+        self, security: Security, num_shares: int, value: float
+    ) -> None:
         if num_shares <= 0:
             raise Exception(
                 "Holding must be instantiated with a positive number of shares"
