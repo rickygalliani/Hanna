@@ -20,7 +20,9 @@ class DepositTest(unittest.TestCase):
         self.assertNotEqual(d1, d2)
 
     def test_equality(self):
-        sec: Security = Security("sec", "SEC", price=10.0, buy_restricted=False)
+        sec: Security = Security(
+            "sec", "SEC", price=10.0, buy_restricted=False
+        )
         pur: Purchase = Purchase(sec, 5)
         d1: Deposit = Deposit()
         d1.add_purchase("ac", pur)
@@ -57,8 +59,12 @@ class DepositTest(unittest.TestCase):
 
     def test_get_asset_class_expenditures(self):
         d: Deposit = Deposit()
-        sec1: Security = Security("sec1", "SEC1", price=10.0, buy_restricted=False)
-        sec2: Security = Security("sec2", "SEC2", price=5.0, buy_restricted=False)
+        sec1: Security = Security(
+            "sec1", "SEC1", price=10.0, buy_restricted=False
+        )
+        sec2: Security = Security(
+            "sec2", "SEC2", price=5.0, buy_restricted=False
+        )
         d.add_purchase("ac", Purchase(sec1, 5))
         d.add_purchase("ac", Purchase(sec2, 10))
         self.assertEqual(d.get_asset_class_expenditures("ac"), 100.0)
