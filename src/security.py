@@ -15,7 +15,7 @@ class Security:
         name: Optional[str] = None,
         price: Optional[float] = None,
         buy_restricted: int = 1,
-    ):
+    ) -> None:
         if price and price <= 0:
             raise Exception(
                 "Must pass positive price (or None) to instantiate a Security"

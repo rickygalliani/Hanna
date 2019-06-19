@@ -13,7 +13,7 @@ import json
 
 
 class Deposit:
-    def __init__(self):
+    def __init__(self) -> None:
         self.__total: float = 0.0  # Total spent on all purchases
         self.__num_shares: int = 0  # Total shares bought on all purchases
         self.__purchases: Dict[str, List[Purchase]] = {}

@@ -26,7 +26,6 @@ log = logging.getLogger(__name__)
 
 
 class Portfolio:
-
     def __init__(self) -> None:
         """
         Initializes a portfolio using a user-specified configuration.
