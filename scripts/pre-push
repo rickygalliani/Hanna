@@ -54,6 +54,21 @@ def run():
             return TYPE_CHECK_ERROR
 
     for mod in test_modules:
+        log.info("Running {} unit test type checks".format(mod))
+        try:
+            type_check = check_output(
+                [
+                    "mypy",
+                    "--ignore-missing-imports",
+                    "test/{}.py".format(mod)
+                ]
+            )
+        except CalledProcessError:
+            log.error("{} unit test type checks failed".format(mod))
+            log.error("mypy --ignore-missing-imports test/{}.py".format(mod))
+            return TYPE_CHECK_ERROR
+
+    for mod in test_modules:
         log.info("Running {} unit tests".format(mod))
         try:
            test_status = check_output(
