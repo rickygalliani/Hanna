@@ -5,11 +5,7 @@
 from src.asset_class import AssetClass
 from src.deposit import Deposit
 from src.holding import Holding
-from src.api import (
-    load_account_profile,
-    load_holding_info,
-    load_security_info,
-)
+from src.api import AccountProfile, load_account_profile, load_holding_info, load_security_info
 from src.purchase import Purchase
 from src.security import Security
 from src.util import latency_str, dollar_str, pct_str
@@ -381,7 +377,7 @@ class Portfolio:
         The internal state is changed by the in update() function.
         """
         s = datetime.now()
-        account_profile: Dict[str, Any] = load_account_profile(dry_run)
+        account_profile: AccountProfile = load_account_profile(dry_run)
         security_symbols: List[str] = self.get_all_security_symbols()
         securities: Dict[str, Any] = load_security_info(
             security_symbols, dry_run
@@ -394,7 +390,7 @@ class Portfolio:
 
     def update(
         self,
-        account_profile: Dict[str, Any],
+        account_profile: AccountProfile,
         securities: Dict[str, Any],
         holdings: Dict[str, Dict[str, Any]],
     ) -> None:
@@ -402,9 +398,7 @@ class Portfolio:
         Private function that updates this portfolio (and its underlying asset
         classes and securities).
         """
-        cash: float = account_profile["margin_balances"][
-            "unallocated_margin_cash"
-        ]
+        cash: float = account_profile.get_buying_power()
         self.set_cash(cash)
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():

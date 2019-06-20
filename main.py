@@ -3,7 +3,7 @@
 # main.py
 
 from src.portfolio import Portfolio
-from src.api import load_credentials
+from src.api import Credentials, load_credentials
 
 import argparse
 import json
@@ -30,8 +30,8 @@ if __name__ == "__main__":
     portfolio.load_configuration(json.load(open(config, "r")))
 
     if args.real:
-        user, password = load_credentials()
-        client = r.login(user, password)
+        credentials: Credentials = load_credentials()
+        client = r.login(c.get_username(), c.get_password())
 
     portfolio.refresh(not args.real)
     deposit = portfolio.plan_deposit(portfolio.get_cash())

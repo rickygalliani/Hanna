@@ -15,8 +15,21 @@ log = logging.getLogger(__name__)
 
 class Credentials:
     def __init__(self, username: str, password: str) -> None:
-        self.username: str = username
-        self.password: str = password
+        self.__username: str = username
+        self.__password: str = password
+
+    def get_username(self) -> str:
+        return self.__username
+
+    def get_password(self) -> str:
+        return self.__password
+
+class AccountProfile:
+    def __init__(self, buying_power: float) -> None:
+        self.__buying_power: float = buying_power
+        
+    def get_buying_power(self) -> float:
+        return self.__buying_power
 
 
 def load_credentials() -> Credentials:
@@ -29,7 +42,7 @@ def load_credentials() -> Credentials:
     cr.close()
 
 
-def load_account_profile(use_mock_data: bool) -> Dict[str, Any]:
+def load_account_profile(use_mock_data: bool) -> AccountProfile:
     """
     Loads user profile information from Robinhood including total equity,
     cash, and dividend total.
@@ -42,9 +55,8 @@ def load_account_profile(use_mock_data: bool) -> Dict[str, Any]:
     )
     assert "margin_balances" in resp
     assert "unallocated_margin_cash" in resp["margin_balances"]
-    cash: float = resp["margin_balances"]["unallocated_margin_cash"]
-    resp["margin_balances"]["unallocated_margin_cash"] = float(cash)
-    return resp
+    buying_power: float = float(resp["margin_balances"]["unallocated_margin_cash"])
+    return AccountProfile(buying_power)
 
 
 def load_security_info(
@@ -94,5 +106,6 @@ def load_holding_info(use_mock_data: bool) -> Dict[str, Any]:
             "type": s["type"],
         }
     return holdings
+
 
 load_credentials()
