@@ -27,7 +27,7 @@ def run():
         "purchase",
         "deposit",
         "util",
-        "load"
+        "api"
     ]
     test_modules = [
         "security",

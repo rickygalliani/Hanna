@@ -1,6 +1,6 @@
 # Ricky Galliani
 # Hanna
-# src/load.py
+# src/api.py
 
 from typing import Any, Dict, List, Tuple
 
@@ -13,17 +13,20 @@ import robin_stocks as r
 log = logging.getLogger(__name__)
 
 
-def load_credentials() -> Tuple[str, str]:
+class Credentials:
+    def __init__(self, username: str, password: str) -> None:
+        self.username: str = username
+        self.password: str = password
+
+
+def load_credentials() -> Credentials:
     """
     Loads the credentials for the Robinhood account.
     """
     config_file: str = os.path.join(os.getcwd(), "config", "credentials.json")
     cr = open(config_file, "r")
-    credentials: Dict[str, str] = json.load(cr)
+    credentials: Credentials = Credentials(**json.load(cr))
     cr.close()
-    assert "username" in credentials
-    assert "password" in credentials
-    return (credentials["username"], credentials["password"])
 
 
 def load_account_profile(use_mock_data: bool) -> Dict[str, Any]:
@@ -91,3 +94,5 @@ def load_holding_info(use_mock_data: bool) -> Dict[str, Any]:
             "type": s["type"],
         }
     return holdings
+
+load_credentials()

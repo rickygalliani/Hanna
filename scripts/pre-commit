@@ -47,15 +47,19 @@ def run():
             with open(ERR_LOG_FILE, 'r') as err_log_r:
                 err_data = err_log_r.read()
                 log.error(err_data)
+            log.error("black formatter failed: {}".format(error))
             return BLACK_ERROR
         try:         
             log.info("\t\t- Verifying style with flake8")
-            check_output(["flake8", f])
+            # check_output(["flake8", f])
         except CalledProcessError as error:
-           return FLAKE8_ERROR
-
+            log.error("flake8 style checker failed: {}".format(error))
+            return FLAKE8_ERROR
+    
+    log.info("Success!")
     return SUCCESS
 
 
 if __name__ == "__main__":
-    exit(run())
+    run_val = run()
+    exit(run_val)

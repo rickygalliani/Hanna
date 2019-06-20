@@ -1,3 +1,6 @@
+- Fix flake8 support, breaking with new type-hinted code
+- Run type and unit tests for all modules under src and test, not hard coded
+  list
 - 400 Client Error: Bad Request for url: https://api.robinhood.com/orders/
 - Figure out why table titles aren't showing up
 - Define schemas for all the API response types
