@@ -12,14 +12,15 @@ logging.basicConfig(
 )
 log = logging.getLogger("pre-commit")
 
-(SUCCESS, GIT_DIFF_ERROR, FLAKE8_ERROR) = range(3)
+ERR_LOG_FILE = 'pre-commit-err.log'
+(SUCCESS, GIT_DIFF_ERROR, BLACK_ERROR, FLAKE8_ERROR) = range(4)
 
 
 def run():
     """
     Verify the code style for all the changed Python files using flake8.
     """
-    log.info("Running pre-commit formatter and flake8 style checks")
+    log.info("Running pre-commit formatter (black) and style checks (flake8)")
     # Get all changed file paths.
     try:
         changed_files = check_output(
@@ -40,14 +41,18 @@ def run():
         try:
             log.info("\t{}".format(f))
             log.info("\t\t- Formatting with black")
-            devnull = open(os.devnull, 'w')
-            out = check_output(["black", f, "-l", "79"], stderr=devnull)
-            print(out)
+            with open(ERR_LOG_FILE, 'w') as err_log_w:
+                check_output(["black", f, "-l", "79"], stderr=err_log_w)
+        except CalledProcessError as error:
+            with open(ERR_LOG_FILE, 'r') as err_log_r:
+                err_data = err_log_r.read()
+                log.error(err_data)
+            return BLACK_ERROR
+        try:         
             log.info("\t\t- Verifying style with flake8")
             check_output(["flake8", f])
         except CalledProcessError as error:
-            log.error(error.output)
-            return FLAKE8_ERROR
+           return FLAKE8_ERROR
 
     return SUCCESS
 
