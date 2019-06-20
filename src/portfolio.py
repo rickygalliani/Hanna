@@ -424,7 +424,7 @@ class Portfolio:
                     sec_id, sec_info.get_name(), sec_info.get_price()
                 )
                 if sec_id in holdings:
-                    hol_info: Holding_info = holdings[sec_id]
+                    hol_info: HoldingInfo = holdings[sec_id]
                     updated_shares: int = hol_info.get_quantity()
                     updated_value: float = hol_info.get_equity()
                     updated_average_buy_price: float = hol_info.get_average_buy_price()

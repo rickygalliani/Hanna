@@ -164,7 +164,7 @@ def load_holding_info(use_mock_data: bool) -> Dict[str, HoldingInfo]:
     holdings: Dict[str, HoldingInfo] = {}
     for s in resp:
         s_id: str = s["id"]
-        holdings[s_id]: HoldingInfo = HoldingInfo(
+        holdings[s_id] = HoldingInfo(
             s_id,
             s["name"],
             float(s["price"]),
