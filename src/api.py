@@ -45,6 +45,57 @@ class SecurityInfo:
         return self.__price
 
 
+class HoldingInfo:
+    def __init__(
+        self,
+        security_id: str,
+        name: str,
+        price: float,
+        quantity: int,
+        average_buy_price: float,
+        equity: float,
+        percentage: float,
+        percent_change: float,
+        equity_change: float,
+    ) -> None:
+        self.__security_id: str = security_id
+        self.__name: str = name
+        self.__price: float = price
+        self.__quantity: int = quantity
+        self.__average_buy_price: float = average_buy_price
+        self.__equity: float = equity
+        self.__percentage: float = percentage
+        self.__percent_change: float = percent_change
+        self.__equity_change: float = equity_change
+
+    def get_security_id(self) -> str:
+        return self.__security_id
+
+    def get_name(self) -> str:
+        return self.__name
+
+    def get_price(self) -> float:
+        return self.__price
+
+    def get_quantity(self) -> int:
+        return self.__quantity
+
+    def get_average_buy_price(self) -> float:
+        return self.__average_buy_price
+
+    def get_equity(self) -> float:
+        return self.__equity
+
+    def get_percentage(self) -> float:
+        return self.__percentage
+
+    def get_percent_change(self) -> float:
+        return self.__percent_change
+
+    def get_equity_change(self) -> float:
+        return self.__equity_change
+
+
 def load_credentials() -> Credentials:
     """
     Loads the credentials for the Robinhood account.
@@ -100,7 +151,7 @@ def load_security_info(
     return security_info
 
 
-def load_holding_info(use_mock_data: bool) -> Dict[str, Any]:
+def load_holding_info(use_mock_data: bool) -> Dict[str, HoldingInfo]:
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
@@ -109,22 +160,18 @@ def load_holding_info(use_mock_data: bool) -> Dict[str, Any]:
         if use_mock_data
         else r.build_holdings().values()
     )
-    holdings: Dict[str, Any] = {}
+    holdings: Dict[str, HoldingInfo] = {}
     for s in resp:
         s_id: str = s["id"]
-        holdings[s_id] = {
-            "id": s_id,
-            "name": s["name"],
-            "price": float(s["price"]),
-            "quantity": int(float(s["quantity"])),
-            "average_buy_price": float(s["average_buy_price"]),
-            "equity": float(s["equity"]),
-            "percentage": float(s["percentage"]),
-            "percent_change": float(s["percent_change"]),
-            "equity_change": float(s["equity_change"]),
-            "type": s["type"],
-        }
+        holdings[s_id]: HoldingInfo = HoldingInfo(
+            s_id,
+            s["name"],
+            float(s["price"]),
+            int(float(s["quantity"])),
+            float(s["average_buy_price"]),
+            float(s["equity"]),
+            float(s["percentage"]),
+            float(s["percent_change"]),
+            float(s["equity_change"]),
+        )
     return holdings
-
-
-load_credentials()

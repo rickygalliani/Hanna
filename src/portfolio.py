@@ -7,6 +7,7 @@ from src.deposit import Deposit
 from src.holding import Holding
 from src.api import (
     AccountProfile,
+    HoldingInfo,
     SecurityInfo,
     load_account_profile,
     load_holding_info,
@@ -388,7 +389,7 @@ class Portfolio:
         securities: Dict[str, SecurityInfo] = load_security_info(
             security_symbols, dry_run
         )
-        holdings: Dict[str, Dict[str, Any]] = load_holding_info(dry_run)
+        holdings: Dict[str, HoldingInfo] = load_holding_info(dry_run)
         e: datetime = datetime.now()
         self.update(account_profile, securities, holdings)
         log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))
@@ -398,7 +399,7 @@ class Portfolio:
         self,
         account_profile: AccountProfile,
         securities: Dict[str, SecurityInfo],
-        holdings: Dict[str, Dict[str, Any]],
+        holdings: Dict[str, HoldingInfo],
     ) -> None:
         """
         Private function that updates this portfolio (and its underlying asset
@@ -415,9 +416,9 @@ class Portfolio:
                     sec_id, sec_info.get_name(), sec_info.get_price()
                 )
                 if sec_id in holdings:
-                    hol_info: Dict[str, Any] = holdings[sec_id]
-                    updated_shares: int = hol_info["quantity"]
-                    updated_value: float = hol_info["equity"]
+                    hol_info: Holding_info = holdings[sec_id]
+                    updated_shares: int = hol_info.get_quantity()
+                    updated_value: float = hol_info.get_equity()
                     contains_hol: bool = ac.contains_holding(sec_id)
                     out_of_date_shares: int = (
                         0
