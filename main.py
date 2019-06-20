@@ -30,7 +30,7 @@ if __name__ == "__main__":
     portfolio.load_configuration(json.load(open(config, "r")))
 
     if args.real:
-        credentials: Credentials = load_credentials()
+        c: Credentials = load_credentials()
         client = r.login(c.get_username(), c.get_password())
 
     portfolio.refresh(not args.real)

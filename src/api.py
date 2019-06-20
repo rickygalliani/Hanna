@@ -104,6 +104,7 @@ def load_credentials() -> Credentials:
     cr = open(config_file, "r")
     credentials: Credentials = Credentials(**json.load(cr))
     cr.close()
+    return credentials
 
 
 def load_account_profile(use_mock_data: bool) -> AccountProfile:
