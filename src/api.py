@@ -33,6 +33,18 @@ class AccountProfile:
         return self.__buying_power
 
 
+class SecurityInfo:
+    def __init__(self, name: str, price: float) -> None:
+        self.__name: str = name
+        self.__price: float = price
+
+    def get_name(self) -> str:
+        return self.__name
+
+    def get_price(self) -> float:
+        return self.__price
+
+
 def load_credentials() -> Credentials:
     """
     Loads the credentials for the Robinhood account.
@@ -64,23 +76,27 @@ def load_account_profile(use_mock_data: bool) -> AccountProfile:
 
 def load_security_info(
     security_symbols: List[str], use_mock_data: bool
-) -> Dict[str, Any]:
+) -> Dict[str, SecurityInfo]:
     """
     Hits the Robinhood API to pull down security information like the latest
     price and the full security name.
     """
-    security_info: Dict[str, Any] = {}
+    security_info_resp: Dict[str, Any] = {}
     if use_mock_data:
-        security_info = json.load(open("test/data/security_info.json", "r"))
+        security_info_resp = json.load(
+            open("test/data/security_info.json", "r")
+        )
     else:
-        security_info = {}
         for sec_sym in security_symbols:
-            security_info[sec_sym] = {
+            security_info_resp[sec_sym] = {
                 "name": r.get_name_by_symbol(sec_sym),
                 "price": r.get_latest_price(sec_sym),
             }
-    for (security, info) in security_info.items():
-        info["price"] = float(info["price"][0])
+    security_info: Dict[str, SecurityInfo] = {}
+    for (security, info) in security_info_resp.items():
+        security_info[security] = SecurityInfo(
+            info["name"], float(info["price"][0])
+        )
     return security_info
 
 

@@ -51,8 +51,8 @@ def run():
             return BLACK_ERROR
         with open(ERR_LOG_FILE, 'r') as err_log_r:
             err_data = err_log_r.read()
-            print("err_data = {}".format(err_data))
             if 'reformatted' in err_data:
+                print("err_data = {}".format(err_data))
                 return BLACK_ERROR
 
         try:         

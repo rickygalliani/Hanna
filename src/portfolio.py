@@ -7,6 +7,7 @@ from src.deposit import Deposit
 from src.holding import Holding
 from src.api import (
     AccountProfile,
+    SecurityInfo,
     load_account_profile,
     load_holding_info,
     load_security_info,
@@ -384,7 +385,7 @@ class Portfolio:
         s = datetime.now()
         account_profile: AccountProfile = load_account_profile(dry_run)
         security_symbols: List[str] = self.get_all_security_symbols()
-        securities: Dict[str, Any] = load_security_info(
+        securities: Dict[str, SecurityInfo] = load_security_info(
             security_symbols, dry_run
         )
         holdings: Dict[str, Dict[str, Any]] = load_holding_info(dry_run)
@@ -396,7 +397,7 @@ class Portfolio:
     def update(
         self,
         account_profile: AccountProfile,
-        securities: Dict[str, Any],
+        securities: Dict[str, SecurityInfo],
         holdings: Dict[str, Dict[str, Any]],
     ) -> None:
         """
@@ -409,8 +410,10 @@ class Portfolio:
             for sec in ac.get_securities():
                 sec_id: str = sec.get_id()
                 sec_symbol: str = sec.get_symbol()
-                sec_info: Dict[str, Any] = securities[sec_symbol]
-                ac.update_security(sec_id, sec_info["name"], sec_info["price"])
+                sec_info: SecurityInfo = securities[sec_symbol]
+                ac.update_security(
+                    sec_id, sec_info.get_name(), sec_info.get_price()
+                )
                 if sec_id in holdings:
                     hol_info: Dict[str, Any] = holdings[sec_id]
                     updated_shares: int = hol_info["quantity"]
