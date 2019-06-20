@@ -24,10 +24,11 @@ class Credentials:
     def get_password(self) -> str:
         return self.__password
 
+
 class AccountProfile:
     def __init__(self, buying_power: float) -> None:
         self.__buying_power: float = buying_power
-        
+
     def get_buying_power(self) -> float:
         return self.__buying_power
 
@@ -55,7 +56,9 @@ def load_account_profile(use_mock_data: bool) -> AccountProfile:
     )
     assert "margin_balances" in resp
     assert "unallocated_margin_cash" in resp["margin_balances"]
-    buying_power: float = float(resp["margin_balances"]["unallocated_margin_cash"])
+    buying_power: float = float(
+        resp["margin_balances"]["unallocated_margin_cash"]
+    )
     return AccountProfile(buying_power)
 
 

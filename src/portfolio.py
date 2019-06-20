@@ -5,7 +5,12 @@
 from src.asset_class import AssetClass
 from src.deposit import Deposit
 from src.holding import Holding
-from src.api import AccountProfile, load_account_profile, load_holding_info, load_security_info
+from src.api import (
+    AccountProfile,
+    load_account_profile,
+    load_holding_info,
+    load_security_info,
+)
 from src.purchase import Purchase
 from src.security import Security
 from src.util import latency_str, dollar_str, pct_str

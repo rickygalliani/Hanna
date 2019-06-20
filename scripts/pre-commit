@@ -49,6 +49,12 @@ def run():
                 log.error(err_data)
             log.error("black formatter failed: {}".format(error))
             return BLACK_ERROR
+        with open(ERR_LOG_FILE, 'r') as err_log_r:
+            err_data = err_log_r.read()
+            print("err_data = {}".format(err_data))
+            if 'reformatted' in err_data:
+                return BLACK_ERROR
+
         try:         
             log.info("\t\t- Verifying style with flake8")
             # check_output(["flake8", f])
