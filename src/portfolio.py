@@ -161,9 +161,11 @@ class Portfolio:
             "Symbol",
             "Restricted",
             "Shares",
+            "Average Price",
             "Price",
             "Value",
             "Percentage",
+            "Return",
         ]
         p_ac: PrettyTable = PrettyTable(ac_cols)
         p_sec: PrettyTable = PrettyTable(sec_cols)
@@ -195,11 +197,13 @@ class Portfolio:
                         ac_name,
                         s.get_name(),
                         s.get_symbol(),
-                        s.get_buy_restricted(),
+                        "Yes" if s.get_buy_restricted() else "No",
                         hol.get_num_shares(),
+                        dollar_str(hol.get_average_buy_price()),
                         price_str,
                         dollar_str(hol_val),
                         pct_str(self.get_security_percentage(s.get_id())),
+                        pct_str(hol.get_percent_change()),
                     ]
                 )
         p_ac.add_row(
@@ -221,8 +225,10 @@ class Portfolio:
                 "-",
                 "-",
                 "-",
+                "-",
                 dollar_str(self.get_cash()),
                 pct_str(self.get_cash_percentage()),
+                pct_str(0.0),
             ]
         )
         p_sec.add_row(
@@ -233,8 +239,10 @@ class Portfolio:
                 "-",
                 self.get_num_shares(),
                 "-",
+                "-",
                 dollar_str(self.get_value()),
                 pct_str(1),
+                "TODO",
             ]
         )
         return "\n{}\n{}".format(p_ac, p_sec)
@@ -419,20 +427,26 @@ class Portfolio:
                     hol_info: Holding_info = holdings[sec_id]
                     updated_shares: int = hol_info.get_quantity()
                     updated_value: float = hol_info.get_equity()
+                    updated_average_buy_price: float = hol_info.get_average_buy_price()
                     contains_hol: bool = ac.contains_holding(sec_id)
-                    out_of_date_shares: int = (
+                    old_shares: int = (
                         0
                         if not contains_hol
                         else ac.get_holding(sec_id).get_num_shares()
                     )
-                    out_of_date_value: float = (
+                    old_value: float = (
                         0.0
                         if not contains_hol
                         else ac.get_holding(sec_id).get_value()
                     )
-                    ac.update_holding(sec_id, updated_shares, updated_value)
-                    self.add_shares(updated_shares - out_of_date_shares)
-                    self.add_value(updated_value - out_of_date_value)
+                    ac.update_holding(
+                        sec_id,
+                        updated_shares,
+                        updated_value,
+                        updated_average_buy_price,
+                    )
+                    self.add_shares(updated_shares - old_shares)
+                    self.add_value(updated_value - old_value)
 
     def plan_deposit(self, amount: float) -> Deposit:
         """

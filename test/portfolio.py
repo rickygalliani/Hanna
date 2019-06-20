@@ -3,6 +3,7 @@
 # test/portfolio.py
 
 from src.asset_class import AssetClass
+from src.api import AccountProfile, HoldingInfo, SecurityInfo
 from src.deposit import Deposit
 from src.holding import Holding
 from src.portfolio import Portfolio
@@ -195,7 +196,7 @@ class PortfolioTest(unittest.TestCase):
         p.add_asset_class(ac)
         sec: Security = Security("sec", "SEC", price=10.0)
         ac.add_security(sec)
-        holding: Holding = Holding(sec, 3, 30.0)
+        holding: Holding = Holding(sec, 3, 30.0, 10.0)
         ac.add_holding(holding)
         self.assertEqual(p.get_asset_class_value("ac"), 30.0)
 
@@ -204,10 +205,10 @@ class PortfolioTest(unittest.TestCase):
         sec: Security = Security("sec", "SEC", price=10.0)
         ac1: AssetClass = AssetClass("ac1", 0.2)
         ac1.add_security(sec)
-        ac1.add_holding(Holding(sec, 2, 20.0))
+        ac1.add_holding(Holding(sec, 2, 20.0, 10.0))
         ac2: AssetClass = AssetClass("ac2", 0.8)
         ac2.add_security(sec)
-        ac2.add_holding(Holding(sec, 8, 80.0))
+        ac2.add_holding(Holding(sec, 8, 80.0, 10.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
         self.assertEqual(p.get_asset_class_percentage("ac1"), 0.2)
@@ -219,7 +220,7 @@ class PortfolioTest(unittest.TestCase):
         p.add_asset_class(ac)
         sec: Security = Security("sec", "SEC", price=0.0)
         ac.add_security(sec)
-        holding: Holding = Holding(sec, 3, 30.0)
+        holding: Holding = Holding(sec, 3, 30.0, 10.0)
         ac.add_holding(holding)
         self.assertEqual(p.get_security_value("sec"), 30.0)
 
@@ -228,7 +229,7 @@ class PortfolioTest(unittest.TestCase):
         sec: Security = Security("sec", "SEC", price=10.0)
         ac: AssetClass = AssetClass("ac", 0.2)
         ac.add_security(sec)
-        ac.add_holding(Holding(sec, 2, 20.0))
+        ac.add_holding(Holding(sec, 2, 20.0, 10.0))
         p.add_asset_class(ac)
         self.assertEqual(p.get_security_percentage("sec"), 1.0)
 
@@ -237,10 +238,10 @@ class PortfolioTest(unittest.TestCase):
         sec: Security = Security("sec", "SEC", price=10.0)
         ac1: AssetClass = AssetClass("ac1", 0.2)
         ac1.add_security(sec)
-        ac1.add_holding(Holding(sec, 2, 20.0))
+        ac1.add_holding(Holding(sec, 2, 20.0, 10.0))
         ac2: AssetClass = AssetClass("ac2", 0.8)
         ac2.add_security(sec)
-        ac2.add_holding(Holding(sec, 8, 80.0))
+        ac2.add_holding(Holding(sec, 8, 80.0, 10.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
         self.assertEqual(p.get_asset_class_target_value("ac1"), 20.0)
@@ -251,10 +252,10 @@ class PortfolioTest(unittest.TestCase):
         sec: Security = Security("sec", "SEC", price=10.0)
         ac1: AssetClass = AssetClass("ac1", 0.15)
         ac1.add_security(sec)
-        ac1.add_holding(Holding(sec, 2, 20.0))
+        ac1.add_holding(Holding(sec, 2, 20.0, 10.0))
         ac2: AssetClass = AssetClass("ac2", 0.85)
         ac2.add_security(sec)
-        ac2.add_holding(Holding(sec, 8, 80.0))
+        ac2.add_holding(Holding(sec, 8, 80.0, 10.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
         self.assertEqual(p.get_asset_class_target_deviation("ac1"), 5.0)
@@ -265,10 +266,10 @@ class PortfolioTest(unittest.TestCase):
         sec: Security = Security("sec", "SEC", price=10.0)
         ac1: AssetClass = AssetClass("ac1", 0.15)
         ac1.add_security(sec)
-        ac1.add_holding(Holding(sec, 2, 20.0))
+        ac1.add_holding(Holding(sec, 2, 20.0, 10.0))
         ac2: AssetClass = AssetClass("ac2", 0.85)
         ac2.add_security(sec)
-        ac2.add_holding(Holding(sec, 8, 80.0))
+        ac2.add_holding(Holding(sec, 8, 80.0, 10.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
         budgets = p.get_asset_class_budgets(100.0)
@@ -285,38 +286,18 @@ class PortfolioTest(unittest.TestCase):
         ac2.add_security(sec2)
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
-        account_profile = {
-            "margin_balances": {"unallocated_margin_cash": 78.6800}
-        }
+        account_profile = AccountProfile(78.68)
         security_info = {
-            "SEC1": {"name": "sec1_name", "price": 10.0},
-            "SEC2": {"name": "sec2_name", "price": 20.0},
+            "SEC1": SecurityInfo("sec1_name", 10.0),
+            "SEC2": SecurityInfo("sec2_name", 20.0),
         }
         holding_info = {
-            "sec1": {
-                "id": "sec1",
-                "name": "sec1_name",
-                "price": 10.0,
-                "quantity": 1,
-                "average_buy_price": 10.0,
-                "equity": 10.0,
-                "percentage": 0.33,
-                "percent_change": 0.0,
-                "equity_change": 0.0,
-                "holding_type": "etp",
-            },
-            "sec2": {
-                "id": "sec2",
-                "name": "sec2_name",
-                "price": 20.0,
-                "quantity": 1,
-                "average_buy_price": 20.0,
-                "equity": 20.0,
-                "percentage": 0.66,
-                "percent_change": 0.0,
-                "equity_change": 0.0,
-                "holding_type": "etp",
-            },
+            "sec1": HoldingInfo(
+                "sec1", "sec1_name", 10.0, 1, 10.0, 10.0, 0.33, 0.0, 0.0
+            ),
+            "sec2": HoldingInfo(
+                "sec2", "sec2_name", 20.0, 1, 20.0, 20.0, 0.66, 0.0, 0.0
+            ),
         }
         p.update(account_profile, security_info, holding_info)
         self.assertEqual(p.get_cash(), 78.68)
@@ -329,23 +310,12 @@ class PortfolioTest(unittest.TestCase):
         ac1: AssetClass = AssetClass("ac1", 0.4)
         ac1.add_security(sec1)
         p.add_asset_class(ac1)
-        account_profile = {
-            "margin_balances": {"unallocated_margin_cash": 78.6800}
-        }
-        security_info = {"SEC1": {"name": "sec1_name", "price": 10.0}}
+        account_profile = AccountProfile(78.68)
+        security_info = {"SEC1": SecurityInfo("sec1_name", 10.0)}
         holding_info = {
-            "sec1": {
-                "id": "sec1",
-                "name": "sec1_name",
-                "price": 10.0,
-                "quantity": 3,
-                "average_buy_price": 10.0,
-                "equity": 30.0,
-                "percentage": 0.33,
-                "percent_change": 0.0,
-                "equity_change": 0.0,
-                "holding_type": "etp",
-            }
+            "sec1": HoldingInfo(
+                "sec1", "sec1_name", 10.0, 3, 10.0, 30.0, 0.33, 0.0, 0.0
+            )
         }
         p.update(account_profile, security_info, holding_info)
         self.assertEqual(p.get_cash(), 78.68)
@@ -364,8 +334,8 @@ class PortfolioTest(unittest.TestCase):
         ac2: AssetClass = AssetClass("ac2", 0.6)
         ac1.add_security(sec1)
         ac2.add_security(sec2)
-        ac1.add_holding(Holding(sec1, 3, 30.0))
-        ac2.add_holding(Holding(sec2, 2, 40.0))
+        ac1.add_holding(Holding(sec1, 3, 30.0, 10.0))
+        ac2.add_holding(Holding(sec2, 2, 40.0, 20.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
         deposit: Deposit = p.plan_deposit(35.0)

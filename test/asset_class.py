@@ -56,7 +56,7 @@ class AssetClassTest(unittest.TestCase):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 15.0)
         ac.buy(sec, 3, True)
-        self.assertEqual(ac.get_holding("sec"), Holding(sec, 3, 45.0))
+        self.assertEqual(ac.get_holding("sec"), Holding(sec, 3, 45.0, 15.0))
 
     def test_get_holding_not_exists(self):
         # TODO
@@ -106,10 +106,11 @@ class AssetClassTest(unittest.TestCase):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", price=10.0)
         ac.add_security(sec)
-        ac.add_holding(Holding(sec, 3, 30.0))
+        ac.add_holding(Holding(sec, 3, 30.0, 10.0))
         holding: Holding = ac.get_holding("sec")
         self.assertEqual(holding.get_value(), 30.0)
         self.assertEqual(holding.get_num_shares(), 3)
+        self.assertEqual(holding.get_average_buy_price(), 10.0)
 
     def test_add_holding_not_hs_not_hh(self):
         # TODO
@@ -131,16 +132,17 @@ class AssetClassTest(unittest.TestCase):
         )
         ac.add_security(sec)
         ac.buy(sec, 1, True)
-        ac.update_holding("sec", 5, 200.0)
+        ac.update_holding("sec", 2, 82.0, 41.0)
         new_hol: Holding = ac.get_holding("sec")
-        self.assertEqual(new_hol.get_num_shares(), 5)
-        self.assertEqual(new_hol.get_value(), 200.0)
+        self.assertEqual(new_hol.get_num_shares(), 2)
+        self.assertEqual(new_hol.get_value(), 82.0)
+        self.assertEqual(new_hol.get_average_buy_price(), 41.0)
 
     def test_buy_new(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", price=5.0)
         ac.buy(sec, 3, True)
-        self.assertEqual(ac.get_holding("sec"), Holding(sec, 3, 15.0))
+        self.assertEqual(ac.get_holding("sec"), Holding(sec, 3, 15.0, 5.0))
         self.assertEqual(ac.get_value(), 15.0)
 
     def test_buy_update(self):
@@ -149,7 +151,7 @@ class AssetClassTest(unittest.TestCase):
         ac.buy(sec, 3, True)
         sec.set_price(15.0)
         ac.buy(sec, 3, True)
-        self.assertEqual(ac.get_holding("sec"), Holding(sec, 6, 60.0))
+        self.assertEqual(ac.get_holding("sec"), Holding(sec, 6, 60.0, 10.0))
         self.assertEqual(ac.get_value(), 60.0)
 
     def test_plan_purchases_knapsack_test_1(self):

@@ -175,7 +175,11 @@ class AssetClass:
         sec.set_price(price)
 
     def update_holding(
-        self, security_id: str, num_shares: int, value: float
+        self,
+        security_id: str,
+        num_shares: int,
+        value: float,
+        average_buy_price: float,
     ) -> None:
         """
         Updates the given holding with new holding data.
@@ -186,18 +190,21 @@ class AssetClass:
             old_hol_val: float = hol.get_value()
             hol.set_num_shares(num_shares)
             hol.set_value(value)
+            hol.set_average_buy_price(average_buy_price)
             self.add_value(-old_hol_val + value)
         elif self.contains_security(security_id):
             # Don't have holding for this security yet -> add as a new holding
             sec: Security = self.get_security(security_id)
-            self.add_holding(Holding(sec, num_shares, value))
+            self.add_holding(
+                Holding(sec, num_shares, value, average_buy_price)
+            )
         else:
             raise Exception(
                 "update_holding(): {} is not in the '{}' asset "
                 "class's securities.".format(security_id, self.get_name())
             )
 
-    def buy(self, security: Security, num_shares: int, dry_run: bool):
+    def buy(self, security: Security, num_shares: int, dry_run: bool) -> str:
         """
         Adds num_shares of the given security to the holdings of this asset
         class. Returns the state of the buy transaction.
@@ -208,7 +215,7 @@ class AssetClass:
         value: float = num_shares * price
         self.add_value(value)
         sec_id: str = security.get_id()
-        buy_holding: Holding = Holding(security, num_shares, value)
+        buy_holding: Holding = Holding(security, num_shares, value, price)
         if not self.contains_holding(sec_id):
             self.__holdings[sec_id] = buy_holding
         else:
