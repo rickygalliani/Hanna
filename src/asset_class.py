@@ -230,6 +230,7 @@ class AssetClass:
                 t=dollar_str(value),
             )
         )
+        order_state: str = "confirmed"
         if not dry_run:
             # Actually buy the ETFs
             user_choice: str = input("").lower()
@@ -238,11 +239,10 @@ class AssetClass:
                     security.get_symbol(), num_shares, security.get_price()
                 )
                 if resp is None:
-                    return "failed"
+                    order_state = "failed"
                 else:
-                    return resp["state"]
-        else:
-            return "confirmed"
+                    order_state = resp["state"]
+        return order_state
 
     def plan_purchases(self, budget: float) -> Dict[str, Purchase]:
         """
