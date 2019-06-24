@@ -1,3 +1,4 @@
+- Add dividends received into return
 - Consolidate asset_class.update_holding and asset_class.buy() API
 - Display annualized return in output tables
 - Fix flake8 support, breaking with new type-hinted code
