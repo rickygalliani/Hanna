@@ -50,7 +50,7 @@ class Holding:
     def get_average_buy_price(self) -> float:
         return self.__average_buy_price
 
-    def get_percent_change(self) -> float:
+    def get_return(self) -> float:
         value_per_share: float = self.get_value() / self.get_num_shares()
         abp: float = self.get_average_buy_price()
         return (value_per_share - abp) / abp

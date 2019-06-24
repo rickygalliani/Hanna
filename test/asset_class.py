@@ -62,6 +62,42 @@ class AssetClassTest(unittest.TestCase):
         # TODO
         pass
 
+    def test_get_num_shares(self):
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.buy(sec, 3, True)
+        self.assertEqual(ac.get_num_shares(), 3)
+        ac.buy(sec, 7, True)
+        self.assertEqual(ac.get_num_shares(), 10)
+
+    def test_get_cost(self):
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.buy(sec, 3, True)
+        self.assertEqual(ac.get_cost(), 45.0)
+
+    def test_get_return_zero(self):
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.buy(sec, 3, True)
+        self.assertEqual(ac.get_return(), 0.0)
+
+    def test_get_return_positive(self):
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 10.0)
+        ac.buy(sec, 3, True)
+        hol: Holding = ac.get_holding("sec")
+        hol.set_value(33.0)
+        self.assertEqual(ac.get_return(), 0.1)
+
+    def test_get_return_negative(self):
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 10.0)
+        ac.buy(sec, 3, True)
+        hol: Holding = ac.get_holding("sec")
+        hol.set_value(27.0)
+        self.assertEqual(ac.get_return(), -0.1)
+
     def test_contains_security_false(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         self.assertFalse(ac.contains_security("sec"))
@@ -80,10 +116,11 @@ class AssetClassTest(unittest.TestCase):
         ac.buy(Security("sec", "SEC", price=30.0), 1, True)
         self.assertTrue(ac.contains_holding("sec"))
 
-    def test_add_value(self):
+    def test_get_value(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
-        ac.add_value(100.0)
-        self.assertEqual(ac.get_value(), 100.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.buy(sec, 3, True)
+        self.assertEqual(ac.get_value(), 45.0)
 
     def test_add_security_exists(self):
         # TODO

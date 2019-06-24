@@ -24,7 +24,6 @@ class AssetClass:
         self.__securities: Dict[str, Security] = {}
         self.__holdings: Dict[str, Holding] = {}
         self.__purchase_buffer: float = 0.0
-        self.__value: float = 0.0
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, AssetClass):
@@ -60,7 +59,7 @@ class AssetClass:
             return max([s.get_purchase_buffer() for s in secs])
 
     def get_value(self) -> float:
-        return self.__value
+        return sum([h.get_value() for h in self.get_holdings()])
 
     def set_target_percentage(self, target_percentage: float) -> None:
         self.__target_percentage = target_percentage
@@ -76,7 +75,6 @@ class AssetClass:
             "securities": secs,
             "holdings": hols,
             "purchase_buffer": self.get_purchase_buffer(),
-            "value": self.get_value(),
         }
         return ac
 
@@ -102,6 +100,30 @@ class AssetClass:
             m = "get_holding(): {} is not in the '{}' asset class's holdings."
             raise Exception(m.format(security_id, self.get_name()))
 
+    def get_num_shares(self) -> int:
+        """
+        Returns the number of shares in this asset class.
+        """
+        return sum([h.get_num_shares() for h in self.get_holdings()])
+
+    def get_cost(self) -> float:
+        """
+        Computes and returns the cost of all holdings in this asset class.
+        """
+        return sum(
+            [
+                h.get_average_buy_price() * h.get_num_shares()
+                for h in self.get_holdings()
+            ]
+        )
+
+    def get_return(self) -> float:
+        """
+        Computes the percent change for all securities in this asset class.
+        """
+        total_cost: float = self.get_cost()
+        return (self.get_value() - total_cost) / total_cost
+
     def contains_security(self, security_id: str) -> bool:
         """
         Returns True if this asset class contains the given security.
@@ -114,15 +136,6 @@ class AssetClass:
         security.
         """
         return security_id in self.__holdings
-
-    def add_value(self, amount: float) -> None:
-        """
-        Adds the given value to this asset class.
-        """
-        if self.__value:
-            self.__value += amount
-        else:
-            self.__value = amount
 
     def add_security(self, security: Security) -> None:
         """
@@ -152,7 +165,6 @@ class AssetClass:
         has_holding: bool = self.contains_holding(sec_id)
         if has_security and not has_holding:
             self.__holdings[sec_id] = holding
-            self.add_value(holding.get_value())
         elif not has_security:
             raise Exception(
                 "add_holding(): Must add {} to '{}' before adding"
@@ -191,7 +203,6 @@ class AssetClass:
             hol.set_num_shares(num_shares)
             hol.set_value(value)
             hol.set_average_buy_price(average_buy_price)
-            self.add_value(-old_hol_val + value)
         elif self.contains_security(security_id):
             # Don't have holding for this security yet -> add as a new holding
             sec: Security = self.get_security(security_id)
@@ -213,7 +224,6 @@ class AssetClass:
         if price is None:
             raise Exception("Can't buy security with undefined price")
         value: float = num_shares * price
-        self.add_value(value)
         sec_id: str = security.get_id()
         buy_holding: Holding = Holding(security, num_shares, value, price)
         if not self.contains_holding(sec_id):

@@ -33,10 +33,10 @@ class HoldingTest(unittest.TestCase):
         sec: Security = Security("sec", "SEC", price=10.0)
         self.assertRaises(Exception, Holding, sec, 3, -10.0, 10.0)
 
-    def test_get_percent_change(self):
+    def test_get_return(self):
         sec: Security = Security("sec", "SEC", price=10.0)
         hol: Holding = Holding(sec, 3, 33.0, 10.0)
-        self.assertEqual(hol.get_percent_change(), 0.1)
+        self.assertEqual(hol.get_return(), 0.1)
 
     def test_add_security_mismatch_holding(self):
         sec1: Security = Security("sec1", "SEC1", price=10.0)

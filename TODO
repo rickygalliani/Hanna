@@ -1,3 +1,4 @@
+- Move shares to right side of output tables
 - Consolidate asset_class.update_holding and asset_class.buy() API
 - Fix flake8 support, breaking with new type-hinted code
 - Run type and unit tests for all modules under src and test, not hard coded

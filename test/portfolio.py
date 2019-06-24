@@ -153,6 +153,24 @@ class PortfolioTest(unittest.TestCase):
         true_symbols = sorted(p.get_all_security_symbols())
         self.assertEqual(true_symbols, ["SEC1", "SEC2"])
 
+    def test_get_cost(self):
+        p: Portfolio = Portfolio()
+        ac: AssetClass = AssetClass("ac", 1.0)
+        sec: Security = Security("sec", "SEC", price=10.0)
+        ac.buy(sec, 3, True)
+        p.add_asset_class(ac)
+        self.assertEqual(p.get_cost(), 30.0)
+
+    def test_get_return(self):
+        p: Portfolio = Portfolio()
+        ac: AssetClass = AssetClass("ac", 1.0)
+        sec: Security = Security("sec", "SEC", price=10.0)
+        ac.buy(sec, 3, True)
+        p.add_asset_class(ac)
+        hol: Holding = ac.get_holding("sec")
+        hol.set_value(33.0)
+        self.assertEqual(p.get_return(), 0.1)
+
     def test_contains_asset_class_false(self):
         p: Portfolio = Portfolio()
         self.assertFalse(p.contains_asset_class("ac"))
@@ -244,8 +262,9 @@ class PortfolioTest(unittest.TestCase):
         ac2.add_holding(Holding(sec, 8, 80.0, 10.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
-        self.assertEqual(p.get_asset_class_target_value("ac1"), 20.0)
-        self.assertEqual(p.get_asset_class_target_value("ac2"), 80.0)
+        value = p.get_value()
+        self.assertEqual(p.get_asset_class_target_value("ac1", value), 20.0)
+        self.assertEqual(p.get_asset_class_target_value("ac2", value), 80.0)
 
     def test_get_asset_class_target_deviation(self):
         p: Portfolio = Portfolio()
@@ -258,8 +277,11 @@ class PortfolioTest(unittest.TestCase):
         ac2.add_holding(Holding(sec, 8, 80.0, 10.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
-        self.assertEqual(p.get_asset_class_target_deviation("ac1"), 5.0)
-        self.assertEqual(p.get_asset_class_target_deviation("ac2"), -5.0)
+        value = p.get_value()
+        self.assertEqual(p.get_asset_class_target_deviation("ac1", value), 5.0)
+        self.assertEqual(
+            p.get_asset_class_target_deviation("ac2", value), -5.0
+        )
 
     def test_get_asset_class_budgets(self):
         p: Portfolio = Portfolio()
@@ -326,6 +348,9 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(p.get_value(), 108.68)
         self.assertEqual(p.get_num_shares(), 3)
 
+    def test_plan_deposit_restrict_budget(self):
+        pass
+
     def test_plan_deposit(self):
         p: Portfolio = Portfolio()
         sec1: Security = Security("sec1", "SEC1", "sec1_name", 10.0, False)
@@ -338,6 +363,7 @@ class PortfolioTest(unittest.TestCase):
         ac2.add_holding(Holding(sec2, 2, 40.0, 20.0))
         p.add_asset_class(ac1)
         p.add_asset_class(ac2)
+        p.set_cash(35.0)
         deposit: Deposit = p.plan_deposit(35.0)
         p1 = [Purchase(sec1, 1)]
         p2 = [Purchase(sec2, 1)]
@@ -345,12 +371,16 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(deposit.get_purchases_for_asset_class("ac1"), p1)
         self.assertEqual(deposit.get_purchases_for_asset_class("ac2"), p2)
 
-    def test_make_deposit(self):
+    def test_make_depsoit_new_security(self):
+        pass
+
+    def test_make_deposit_existing_security(self):
         p: Portfolio = Portfolio()
         sec: Security = Security("sec", "SEC", "sec_name", 10.0, False)
         ac: AssetClass = AssetClass("ac", 1.0)
         ac.add_security(sec)
         p.add_asset_class(ac)
+        p.set_cash(10.0)
         d: Deposit = Deposit()
         d.add_purchase("ac", Purchase(sec, 1))
         p.make_deposit(d, True)
