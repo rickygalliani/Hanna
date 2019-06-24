@@ -74,7 +74,7 @@ class Holding:
 
     def add(self, other_holding: "Holding") -> None:
         """
-        Adds the given holding to this holding by aggregating the holding data. 
+        Adds the given holding to this holding by aggregating the holding data.
         """
         if self.get_security() != other_holding.get_security():
             raise Exception(

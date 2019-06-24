@@ -444,7 +444,9 @@ class Portfolio:
                     hol_info: HoldingInfo = holdings[sec_id]
                     updated_shares: int = hol_info.get_quantity()
                     updated_value: float = hol_info.get_equity()
-                    updated_average_buy_price: float = hol_info.get_average_buy_price()
+                    updated_average_buy_price: float = (
+                        hol_info.get_average_buy_price()
+                    )
                     contains_hol: bool = ac.contains_holding(sec_id)
                     old_shares: int = (
                         0
