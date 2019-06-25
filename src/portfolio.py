@@ -447,17 +447,6 @@ class Portfolio:
                     updated_average_buy_price: float = (
                         hol_info.get_average_buy_price()
                     )
-                    contains_hol: bool = ac.contains_holding(sec_id)
-                    old_shares: int = (
-                        0
-                        if not contains_hol
-                        else ac.get_holding(sec_id).get_num_shares()
-                    )
-                    old_value: float = (
-                        0.0
-                        if not contains_hol
-                        else ac.get_holding(sec_id).get_value()
-                    )
                     ac.update_holding(
                         sec_id,
                         updated_shares,

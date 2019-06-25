@@ -52,12 +52,11 @@ def run():
         with open(ERR_LOG_FILE, 'r') as err_log_r:
             err_data = err_log_r.read()
             if 'reformatted' in err_data:
-                print("err_data = {}".format(err_data))
                 return BLACK_ERROR
 
         try:         
             log.info("\t\t- Verifying style with flake8")
-            # check_output(["flake8", f])
+            check_output(["python3", "-m", "flake8", f])
         except CalledProcessError as error:
             log.error("flake8 style checker failed: {}".format(error))
             return FLAKE8_ERROR
