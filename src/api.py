@@ -2,7 +2,7 @@
 # Hanna
 # src/api.py
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import os
 import json

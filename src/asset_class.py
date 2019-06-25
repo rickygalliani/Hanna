@@ -199,7 +199,6 @@ class AssetClass:
         if self.contains_holding(security_id):
             # Already have a holding for this security -> update state
             hol: Holding = self.get_holding(security_id)
-            old_hol_val: float = hol.get_value()
             hol.set_num_shares(num_shares)
             hol.set_value(value)
             hol.set_average_buy_price(average_buy_price)
