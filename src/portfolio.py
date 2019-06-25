@@ -427,8 +427,8 @@ class Portfolio:
         holdings: Dict[str, HoldingInfo],
     ) -> None:
         """
-        Private function that updates this portfolio (and its underlying asset
-        classes and securities).
+        Updates this portfolio (and its underlying asset classes and
+        securities).
         """
         cash: float = account_profile.get_buying_power()
         self.set_cash(cash)

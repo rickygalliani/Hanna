@@ -13,7 +13,13 @@ logging.basicConfig(
 log = logging.getLogger("pre-commit")
 
 ERR_LOG_FILE = 'pre-commit-err.log'
-(SUCCESS, GIT_DIFF_ERROR, BLACK_ERROR, FLAKE8_ERROR) = range(4)
+(
+    SUCCESS,
+    GIT_DIFF_ERROR,
+    BLACK_ERROR,
+    BLACK_REFORMATTED_ERROR,
+    FLAKE8_ERROR
+) = range(5)
 
 
 def run():
@@ -52,7 +58,7 @@ def run():
         with open(ERR_LOG_FILE, 'r') as err_log_r:
             err_data = err_log_r.read()
             if 'reformatted' in err_data:
-                return BLACK_ERROR
+                return BLACK_REFORMATTED_ERROR
 
         try:         
             log.info("\t\t- Verifying style with flake8")
@@ -67,4 +73,12 @@ def run():
 
 if __name__ == "__main__":
     run_val = run()
+    if run_val == GIT_DIFF_ERROR:
+        log.error("git diff error")
+    elif run_val == BLACK_ERROR:
+        log.error("black error")
+    elif run_val == BLACK_REFORMATTED_ERROR:
+        log.error("black reformatted")
+    elif run_val == FLAKE8_ERROR:
+        log.error("flake8 error")
     exit(run_val)

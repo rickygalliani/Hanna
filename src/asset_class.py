@@ -194,7 +194,7 @@ class AssetClass:
         average_buy_price: float,
     ) -> None:
         """
-        Updates the given holding with new holding data.
+        Updates this asset class with new holding data.
         """
         if self.contains_holding(security_id):
             # Already have a holding for this security -> update state
@@ -222,13 +222,23 @@ class AssetClass:
         price: Optional[float] = security.get_price()
         if price is None:
             raise Exception("Can't buy security with undefined price")
+        security_id: str = security.get_id()
         value: float = num_shares * price
-        sec_id: str = security.get_id()
-        buy_holding: Holding = Holding(security, num_shares, value, price)
-        if not self.contains_holding(sec_id):
-            self.__holdings[sec_id] = buy_holding
+        if self.contains_holding(security_id):
+            hol: Holding = self.get_holding(security_id)
+            old_num_shares: int = hol.get_num_shares()
+            old_value: float = hol.get_value()
+            old_abp: float = hol.get_average_buy_price()
+            new_num_shares: int = old_num_shares + num_shares
+            new_value: int = old_value + value
+            new_abp: float = (
+                old_abp * old_num_shares + price * num_shares
+            ) / (old_num_shares + num_shares)
+            self.update_holding(
+                security_id, new_num_shares, new_value, new_abp
+            )
         else:
-            self.__holdings[sec_id].add(buy_holding)
+            self.update_holding(security_id, num_shares, value, price)
 
         log.info(
             "Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(

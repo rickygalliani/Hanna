@@ -55,6 +55,7 @@ class AssetClassTest(unittest.TestCase):
     def test_get_holding_exists(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         self.assertEqual(ac.get_holding("sec"), Holding(sec, 3, 45.0, 15.0))
 
@@ -65,6 +66,7 @@ class AssetClassTest(unittest.TestCase):
     def test_get_num_shares(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         self.assertEqual(ac.get_num_shares(), 3)
         ac.buy(sec, 7, True)
@@ -73,18 +75,21 @@ class AssetClassTest(unittest.TestCase):
     def test_get_cost(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         self.assertEqual(ac.get_cost(), 45.0)
 
     def test_get_return_zero(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         self.assertEqual(ac.get_return(), 0.0)
 
     def test_get_return_positive(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 10.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         hol: Holding = ac.get_holding("sec")
         hol.set_value(33.0)
@@ -93,6 +98,7 @@ class AssetClassTest(unittest.TestCase):
     def test_get_return_negative(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 10.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         hol: Holding = ac.get_holding("sec")
         hol.set_value(27.0)
@@ -113,12 +119,15 @@ class AssetClassTest(unittest.TestCase):
 
     def test_contains_holding_true(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
-        ac.buy(Security("sec", "SEC", price=30.0), 1, True)
+        sec = Security("sec", "SEC", price=30.0)
+        ac.add_security(sec)
+        ac.buy(sec, 1, True)
         self.assertTrue(ac.contains_holding("sec"))
 
     def test_get_value(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         self.assertEqual(ac.get_value(), 45.0)
 
@@ -178,6 +187,7 @@ class AssetClassTest(unittest.TestCase):
     def test_buy_new(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", price=5.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         self.assertEqual(ac.get_holding("sec"), Holding(sec, 3, 15.0, 5.0))
         self.assertEqual(ac.get_value(), 15.0)
@@ -185,6 +195,7 @@ class AssetClassTest(unittest.TestCase):
     def test_buy_update(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         sec: Security = Security("sec", "SEC", price=5.0)
+        ac.add_security(sec)
         ac.buy(sec, 3, True)
         sec.set_price(15.0)
         ac.buy(sec, 3, True)

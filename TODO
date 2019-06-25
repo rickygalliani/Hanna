@@ -1,7 +1,8 @@
 - Add dividends received into return
-- Consolidate asset_class.update_holding and asset_class.buy() API
+- Remove value attribute from Holding (extraneous, can compute on the fly)
 - Display annualized return in output tables
-- Fix flake8 support, breaking with new type-hinted code
+- Bunch holdings that aren't in portfolio config in "Other" Asset Class and
+  report return
 - Run type and unit tests for all modules under src and test, not hard coded
   list
 - 400 Client Error: Bad Request for url: https://api.robinhood.com/orders/
