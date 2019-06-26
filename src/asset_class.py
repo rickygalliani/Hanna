@@ -187,11 +187,7 @@ class AssetClass:
         sec.set_price(price)
 
     def update_holding(
-        self,
-        security_id: str,
-        num_shares: int,
-        value: float,
-        average_buy_price: float,
+        self, security_id: str, num_shares: int, average_buy_price: float
     ) -> None:
         """
         Updates this asset class with new holding data.
@@ -200,14 +196,11 @@ class AssetClass:
             # Already have a holding for this security -> update state
             hol: Holding = self.get_holding(security_id)
             hol.set_num_shares(num_shares)
-            hol.set_value(value)
             hol.set_average_buy_price(average_buy_price)
         elif self.contains_security(security_id):
             # Don't have holding for this security yet -> add as a new holding
             sec: Security = self.get_security(security_id)
-            self.add_holding(
-                Holding(sec, num_shares, value, average_buy_price)
-            )
+            self.add_holding(Holding(sec, num_shares, average_buy_price))
         else:
             raise Exception(
                 "update_holding(): {} is not in the '{}' asset "
@@ -223,22 +216,17 @@ class AssetClass:
         if price is None:
             raise Exception("Can't buy security with undefined price")
         security_id: str = security.get_id()
-        value: float = num_shares * price
         if self.contains_holding(security_id):
             hol: Holding = self.get_holding(security_id)
             old_num_shares: int = hol.get_num_shares()
-            old_value: float = hol.get_value()
             old_abp: float = hol.get_average_buy_price()
             new_num_shares: int = old_num_shares + num_shares
-            new_value: int = old_value + value
             new_abp: float = (
                 old_abp * old_num_shares + price * num_shares
             ) / (old_num_shares + num_shares)
-            self.update_holding(
-                security_id, new_num_shares, new_value, new_abp
-            )
+            self.update_holding(security_id, new_num_shares, new_abp)
         else:
-            self.update_holding(security_id, num_shares, value, price)
+            self.update_holding(security_id, num_shares, price)
 
         log.info(
             "Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(
@@ -246,7 +234,7 @@ class AssetClass:
                 s="shares" if num_shares > 1 else "share",
                 c=security.get_symbol(),
                 p=dollar_str(price),
-                t=dollar_str(value),
+                t=dollar_str(price * num_shares),
             )
         )
         order_state: str = "confirmed"

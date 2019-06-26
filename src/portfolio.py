@@ -443,15 +443,11 @@ class Portfolio:
                 if sec_id in holdings:
                     hol_info: HoldingInfo = holdings[sec_id]
                     updated_shares: int = hol_info.get_quantity()
-                    updated_value: float = hol_info.get_equity()
                     updated_average_buy_price: float = (
                         hol_info.get_average_buy_price()
                     )
                     ac.update_holding(
-                        sec_id,
-                        updated_shares,
-                        updated_value,
-                        updated_average_buy_price,
+                        sec_id, updated_shares, updated_average_buy_price
                     )
 
     def plan_deposit(self, amount: float) -> Deposit:

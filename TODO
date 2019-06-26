@@ -1,5 +1,5 @@
+- Conslidate public APIs for each object (try to remove add_security() for AssetClass)
 - Add dividends received into return
-- Remove value attribute from Holding (extraneous, can compute on the fly)
 - Display annualized return in output tables
 - Bunch holdings that aren't in portfolio config in "Other" Asset Class and
   report return
