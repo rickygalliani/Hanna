@@ -12,13 +12,13 @@ logging.basicConfig(
 )
 log = logging.getLogger("pre-commit")
 
-ERR_LOG_FILE = 'pre-commit-err.log'
+ERR_LOG_FILE = "pre-commit-err.log"
 (
     SUCCESS,
     GIT_DIFF_ERROR,
     BLACK_ERROR,
     BLACK_REFORMATTED_ERROR,
-    FLAKE8_ERROR
+    FLAKE8_ERROR,
 ) = range(5)
 
 
@@ -47,26 +47,26 @@ def run():
         try:
             log.info("\t{}".format(f))
             log.info("\t\t- Formatting with black")
-            with open(ERR_LOG_FILE, 'w') as err_log_w:
+            with open(ERR_LOG_FILE, "w") as err_log_w:
                 check_output(["black", f, "-l", "79"], stderr=err_log_w)
         except CalledProcessError as error:
-            with open(ERR_LOG_FILE, 'r') as err_log_r:
+            with open(ERR_LOG_FILE, "r") as err_log_r:
                 err_data = err_log_r.read()
                 log.error(err_data)
             log.error("black formatter failed: {}".format(error))
             return BLACK_ERROR
-        with open(ERR_LOG_FILE, 'r') as err_log_r:
+        with open(ERR_LOG_FILE, "r") as err_log_r:
             err_data = err_log_r.read()
-            if 'reformatted' in err_data:
+            if "reformatted" in err_data:
                 return BLACK_REFORMATTED_ERROR
 
-        try:         
+        try:
             log.info("\t\t- Verifying style with flake8")
             check_output(["python3", "-m", "flake8", f])
         except CalledProcessError as error:
             log.error("flake8 style checker failed: {}".format(error))
             return FLAKE8_ERROR
-    
+
     log.info("Success!")
     return SUCCESS
 

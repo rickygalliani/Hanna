@@ -4,6 +4,7 @@
 from __future__ import print_function
 from subprocess import check_output, CalledProcessError
 from os.path import isfile
+from os import listdir
 
 import logging
 
@@ -19,69 +20,75 @@ def run():
     """
     Run the unit tests for all source code modules.
     """
+    main_type_check_cmd = ["mypy", "--ignore-missing-imports", "main.py"]
+    log.info("Running main module source code type checks")
+    try:
+        type_check = check_output(main_type_check_cmd)
+    except CalledProcessError:
+        log.error(
+            "main source code type checks failed: {}".format(
+                " ".join(main_ype_check_cmd)
+            )
+        )
+        return TYPE_CHECK_ERROR
+
     src_modules = [
-        "security",
-        "holding",
-        "asset_class",
-        "portfolio",
-        "purchase",
-        "deposit",
-        "util",
-        "api"
-    ]
-    test_modules = [
-        "security",
-        "holding",
-        "asset_class",
-        "portfolio",
-        "purchase",
-        "deposit",
-        "util",
+        x.replace(".py", "")
+        for x in listdir("src")
+        if x.endswith(".py") and x != "__init__.py"
     ]
     for mod in src_modules:
-        log.info("Running {} type checks".format(mod))
+        src_type_check_cmd = [
+            "mypy",
+            "--ignore-missing-imports",
+            "src/{}.py".format(mod),
+        ]
+        log.info("Running {} source code type checks".format(mod))
         try:
-            type_check = check_output(
-                [
-                    "mypy",
-                    "--ignore-missing-imports",
-                    "src/{}.py".format(mod)
-                ]
-            )
+            type_check = check_output(src_type_check_cmd)
         except CalledProcessError:
-            log.error("{} type checks failed".format(mod))
-            log.error("mypy --ignore-missing-imports src/{}.py".format(mod))
+            log.error(
+                "{} source code type checks failed: {}".format(
+                    mod, " ".join(src_type_check_cmd)
+                )
+            )
             return TYPE_CHECK_ERROR
 
+    test_modules = [
+        x.replace(".py", "")
+        for x in listdir("test")
+        if x.endswith(".py") and x != "__init__.py"
+    ]
     for mod in test_modules:
+        test_type_check_cmd = [
+            "mypy",
+            "--ignore-missing-imports",
+            "test/{}.py".format(mod),
+        ]
         log.info("Running {} unit test type checks".format(mod))
         try:
-            type_check = check_output(
-                [
-                    "mypy",
-                    "--ignore-missing-imports",
-                    "test/{}.py".format(mod)
-                ]
-            )
+            type_check = check_output(test_type_check_cmd)
         except CalledProcessError:
-            log.error("{} unit test type checks failed".format(mod))
-            log.error("mypy --ignore-missing-imports test/{}.py".format(mod))
+            log.error(
+                "{} unit test type checks failed: {}".format(
+                    mod, " ".join(test_type_check_cmd)
+                )
+            )
             return TYPE_CHECK_ERROR
 
     for mod in test_modules:
+        test_cmd = [
+            "python3",
+            "-m",
+            "unittest",
+            "--verbose",
+            "test.{}".format(mod),
+        ]
         log.info("Running {} unit tests".format(mod))
         try:
-           test_status = check_output(
-                [
-                    "python3",
-                    "-m",
-                    "unittest",
-                    "--verbose",
-                    "test.{}".format(mod),
-                ]
-            )
+            test_status = check_output(test_cmd)
         except CalledProcessError:
-            log.error("{} unit tests failed".format(mod))
+            log.error("{} unit tests failed: {}".format(mod, test_cmd))
             return UNIT_TEST_ERROR
 
     return SUCCESS

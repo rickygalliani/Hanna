@@ -1,10 +1,8 @@
-- Conslidate public APIs for each object (try to remove add_security() for AssetClass)
+- Conslidate public APIs for each object
 - Add dividends received into return
 - Display annualized return in output tables
 - Bunch holdings that aren't in portfolio config in "Other" Asset Class and
   report return
-- Run type and unit tests for all modules under src and test, not hard coded
-  list
 - 400 Client Error: Bad Request for url: https://api.robinhood.com/orders/
 - Support all types of portfolio configuration updates (i.e., security and asset class removals in addition to additions)
 - Handle 400 case where you have to use a limit order
