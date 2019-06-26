@@ -49,8 +49,8 @@ class AssetClassTest(unittest.TestCase):
         self.assertEqual(ac.get_security("sec"), sec)
 
     def test_get_security_not_exists(self):
-        # TODO
-        pass
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        self.assertRaises(Exception, ac.get_security, "sec")
 
     def test_get_holding_exists(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
@@ -60,8 +60,10 @@ class AssetClassTest(unittest.TestCase):
         self.assertEqual(ac.get_holding("sec"), Holding(sec, 3, 15.0))
 
     def test_get_holding_not_exists(self):
-        # TODO
-        pass
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.add_security(sec)
+        self.assertRaises(Exception, ac.get_holding, "sec")
 
     def test_get_num_shares(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
@@ -130,8 +132,10 @@ class AssetClassTest(unittest.TestCase):
         self.assertEqual(ac.get_value(), 45.0)
 
     def test_add_security_exists(self):
-        # TODO
-        pass
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", "sec_name", 15.0)
+        ac.add_security(sec)
+        self.assertRaises(Exception, ac.add_security, sec)
 
     def test_add_security_not_exists(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
@@ -143,8 +147,10 @@ class AssetClassTest(unittest.TestCase):
         pass
 
     def test_add_holding_not_hs_hh(self):
-        # TODO
-        pass
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec: Security = Security("sec", "SEC", price=10.0)
+        hol: Holding = Holding(sec, 3, 10.0)
+        self.assertRaises(Exception, ac.add_holding, hol)
 
     def test_add_holding_hs_not_hh(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
