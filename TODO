@@ -1,4 +1,3 @@
-- Address all TODOs in testing modules
 - Conslidate public APIs for each object
 - Add dividends received into return
 - Display annualized return in output tables
