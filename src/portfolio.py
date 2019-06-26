@@ -112,9 +112,6 @@ class Portfolio:
     def get_num_shares(self) -> int:
         return sum([ac.get_num_shares() for ac in self.get_asset_classes()])
 
-    def subtract_cash(self, amount: float) -> None:
-        self.__cash -= amount
-
     def set_cash(self, amount: float) -> None:
         self.__cash = amount
 
@@ -512,7 +509,7 @@ class Portfolio:
                         state.capitalize()
                     )
                     log.info(m)
-                    self.subtract_cash(p.get_cost())
+                    self.set_cash(self.get_cash() - p.get_cost())
                 else:
                     em: str = "\t- Trade Status: {}\n".format(
                         state.capitalize()

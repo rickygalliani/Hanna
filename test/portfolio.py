@@ -350,7 +350,16 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(p.get_num_shares(), 3)
 
     def test_plan_deposit_restrict_budget(self):
-        pass
+        p: Portfolio = Portfolio()
+        sec: Security = Security("sec1", "SEC1", "sec1_name", 10.0, False)
+        ac: AssetClass = AssetClass("ac", 0.4)
+        ac.add_security(sec)
+        p.add_asset_class(ac)
+        p.set_cash(39.5)
+        deposit: Deposit = p.plan_deposit(100.0)
+        p = [Purchase(sec, 3)]
+        self.assertEqual(deposit.get_total(), 30.0)
+        self.assertEqual(deposit.get_purchases_for_asset_class("ac"), p)
 
     def test_plan_deposit(self):
         p: Portfolio = Portfolio()
@@ -372,21 +381,21 @@ class PortfolioTest(unittest.TestCase):
         self.assertEqual(deposit.get_purchases_for_asset_class("ac1"), p1)
         self.assertEqual(deposit.get_purchases_for_asset_class("ac2"), p2)
 
-    def test_make_depsoit_new_security(self):
-        pass
-
-    def test_make_deposit_existing_security(self):
+    def test_make_deposit(self):
         p: Portfolio = Portfolio()
         sec: Security = Security("sec", "SEC", "sec_name", 10.0, False)
         ac: AssetClass = AssetClass("ac", 1.0)
         ac.add_security(sec)
         p.add_asset_class(ac)
-        p.set_cash(10.0)
-        d: Deposit = Deposit()
-        d.add_purchase("ac", Purchase(sec, 1))
-        p.make_deposit(d, True)
-        self.assertEqual(p.get_value(), 10.0)
-        self.assertEqual(p.get_num_shares(), 1)
+        p.set_cash(24.0)
+        d1: Deposit = Deposit()
+        d1.add_purchase("ac", Purchase(sec, 1))
+        p.make_deposit(d1, True)
+        d2: Deposit = Deposit()
+        d2.add_purchase("ac", Purchase(sec, 1))
+        p.make_deposit(d2, True)
+        self.assertEqual(p.get_value(), 24.0)
+        self.assertEqual(p.get_num_shares(), 2)
 
 
 if __name__ == "__main__":

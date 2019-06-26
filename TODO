@@ -1,4 +1,7 @@
-- Conslidate public APIs for each object
+- Conslidate public APIs for each object (make add_holding() a private method)
+  - Need to think about client use cases across classes and define methods as
+    simply as possible
+  - Only need to test public methods (methods accessible from other classes)
 - Add dividends received into return
 - Display annualized return in output tables
 - Bunch holdings that aren't in portfolio config in "Other" Asset Class and
