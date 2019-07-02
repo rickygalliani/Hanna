@@ -114,16 +114,12 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
     Loads user profile information from Robinhood including total equity,
     cash, and dividend total.
     """
-    account_profile_mock_file: str = "test/data/account_profile.json"
-    resp: Dict[str, Any] = (
-        json.load(open(account_profile_mock_file, "r"))
-        if use_mock_data
-        else r.load_account_profile()
+    resp: Dict[str, Any] = {}
+    account_profile_output_dir: str = os.path.join(
+        "test", "data", "account_profile"
     )
     if not use_mock_data:
-        account_profile_output_dir: str = os.path.join(
-            "test", "data", "account_profile"
-        )
+        resp = r.load_account_profile()
         if not os.path.exists(account_profile_output_dir):
             os.makedirs(account_profile_output_dir)
         account_profile_output_file = os.path.join(
@@ -132,6 +128,20 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
         )
         with open(account_profile_output_file, "w") as f:
             f.write(json.dumps(resp, indent=4))
+    else:
+        latest = sorted(
+            [
+                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
+                for x in os.listdir(account_profile_output_dir)
+            ]
+        )[0]
+        account_profile_latest_file: str = os.path.join(
+            "test",
+            "data",
+            "account_profile",
+            "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        resp = json.load(open(account_profile_latest_file, "r"))
     assert "margin_balances" in resp
     assert "unallocated_margin_cash" in resp["margin_balances"]
     buying_power: float = float(
@@ -147,19 +157,41 @@ def load_security_info(
     Hits the Robinhood API to pull down security information like the latest
     price and the full security name.
     """
-    security_info_resp: Dict[str, Any] = {}
-    if use_mock_data:
-        security_info_resp = json.load(
-            open("test/data/security_info.json", "r")
-        )
-    else:
+    resp: Dict[str, Any] = {}
+    security_info_output_dir: str = os.path.join(
+        "test", "data", "security_info"
+    )
+    resp: Dict[str, Any] = {}
+    if not use_mock_data:
         for sec_sym in security_symbols:
-            security_info_resp[sec_sym] = {
+            resp[sec_sym] = {
                 "name": r.get_name_by_symbol(sec_sym),
                 "price": r.get_latest_price(sec_sym),
             }
+        if not os.path.exists(security_info_output_dir):
+            os.makedirs(security_info_output_dir)
+        security_info_output_file = os.path.join(
+            security_info_output_dir,
+            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        with open(security_info_output_file, "w") as f:
+            f.write(json.dumps(resp, indent=4))
+    else:
+        latest = sorted(
+            [
+                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
+                for x in os.listdir(security_info_output_dir)
+            ]
+        )[0]
+        security_info_latest_file: str = os.path.join(
+            "test",
+            "data",
+            "security_info",
+            "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        resp = json.load(open(security_info_latest_file, "r"))
     security_info: Dict[str, SecurityInfo] = {}
-    for (security, info) in security_info_resp.items():
+    for (security, info) in resp.items():
         security_info[security] = SecurityInfo(
             info["name"], float(info["price"][0])
         )
@@ -172,11 +204,33 @@ def load_holding_info(
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
-    resp: List[Dict[str, Any]] = (
-        json.load(open("test/data/holding_info.json", "r"))
-        if use_mock_data
-        else r.build_holdings().values()
-    )
+    resp: List[Dict[str, Any]] = {}
+    holding_info_output_dir: str = os.path.join("test", "data", "holding_info")
+    if not use_mock_data:
+        resp = r.build_holdings().values()
+        if not os.path.exists(holding_info_output_dir):
+            os.makedirs(holding_info_output_dir)
+        holding_info_output_file = os.path.join(
+            holding_info_output_dir,
+            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        with open(holding_info_output_file, "w") as f:
+            # TODO fix here!
+            f.write(json.dumps(resp.get(), indent=4))
+    else:
+        latest = sorted(
+            [
+                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
+                for x in os.listdir(holding_info_output_dir)
+            ]
+        )[0]
+        holding_info_latest_file: str = os.path.join(
+            "test",
+            "data",
+            "holding_info",
+            "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        resp = json.load(open(holding_info_latest_file, "r"))
     holdings: Dict[str, HoldingInfo] = {}
     for s in resp:
         s_id: str = s["id"]
