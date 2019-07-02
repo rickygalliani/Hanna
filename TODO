@@ -1,3 +1,4 @@
+- Write most recent data to local files when running main
 - Conslidate public APIs for each object (make add_holding() a private method)
   - Need to think about client use cases across classes and define methods as
     simply as possible

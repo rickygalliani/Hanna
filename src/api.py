@@ -2,6 +2,8 @@
 # Hanna
 # src/api.py
 
+from datetime import datetime
+
 from typing import Any, Dict, List
 
 import os
@@ -107,7 +109,7 @@ def load_credentials() -> Credentials:
     return credentials
 
 
-def load_account_profile(use_mock_data: bool) -> AccountProfile:
+def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
     """
     Loads user profile information from Robinhood including total equity,
     cash, and dividend total.
@@ -118,6 +120,18 @@ def load_account_profile(use_mock_data: bool) -> AccountProfile:
         if use_mock_data
         else r.load_account_profile()
     )
+    if not use_mock_data:
+        account_profile_output_dir: str = os.path.join(
+            "test", "data", "account_profile"
+        )
+        if not os.path.exists(account_profile_output_dir):
+            os.makedirs(account_profile_output_dir)
+        account_profile_output_file = os.path.join(
+            account_profile_output_dir,
+            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        with open(account_profile_output_file, "w") as f:
+            f.write(json.dumps(resp, indent=4))
     assert "margin_balances" in resp
     assert "unallocated_margin_cash" in resp["margin_balances"]
     buying_power: float = float(
@@ -127,7 +141,7 @@ def load_account_profile(use_mock_data: bool) -> AccountProfile:
 
 
 def load_security_info(
-    security_symbols: List[str], use_mock_data: bool
+    t: datetime, security_symbols: List[str], use_mock_data: bool
 ) -> Dict[str, SecurityInfo]:
     """
     Hits the Robinhood API to pull down security information like the latest
@@ -152,7 +166,9 @@ def load_security_info(
     return security_info
 
 
-def load_holding_info(use_mock_data: bool) -> Dict[str, HoldingInfo]:
+def load_holding_info(
+    t: datetime, use_mock_data: bool
+) -> Dict[str, HoldingInfo]:
     """
     Hits the Robinhood API to pull down user's holdings data.
     """

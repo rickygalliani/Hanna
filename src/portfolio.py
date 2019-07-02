@@ -405,13 +405,13 @@ class Portfolio:
         Hits the Robinhood API to pull fresh holding data for this portfolio.
         The internal state is changed by the in update() function.
         """
-        s = datetime.now()
-        account_profile: AccountProfile = load_account_profile(dry_run)
+        s: datetime = datetime.now()
+        account_profile: AccountProfile = load_account_profile(s, dry_run)
         security_symbols: List[str] = self.get_all_security_symbols()
         securities: Dict[str, SecurityInfo] = load_security_info(
-            security_symbols, dry_run
+            security_symbols, s, dry_run
         )
-        holdings: Dict[str, HoldingInfo] = load_holding_info(dry_run)
+        holdings: Dict[str, HoldingInfo] = load_holding_info(s, dry_run)
         e: datetime = datetime.now()
         self.update(account_profile, securities, holdings)
         log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))
