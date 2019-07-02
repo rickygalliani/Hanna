@@ -141,7 +141,7 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
 
 
 def load_security_info(
-    t: datetime, security_symbols: List[str], use_mock_data: bool
+    security_symbols: List[str], t: datetime, use_mock_data: bool
 ) -> Dict[str, SecurityInfo]:
     """
     Hits the Robinhood API to pull down security information like the latest

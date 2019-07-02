@@ -27,7 +27,7 @@ def run():
     except CalledProcessError:
         log.error(
             "main source code type checks failed: {}".format(
-                " ".join(main_ype_check_cmd)
+                " ".join(main_type_check_cmd)
             )
         )
         return TYPE_CHECK_ERROR
