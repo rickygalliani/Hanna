@@ -136,9 +136,7 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
             ]
         )[0]
         account_profile_latest_file: str = os.path.join(
-            "test",
-            "data",
-            "account_profile",
+            account_profile_output_dir,
             "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         resp = json.load(open(account_profile_latest_file, "r"))
@@ -184,9 +182,7 @@ def load_security_info(
             ]
         )[0]
         security_info_latest_file: str = os.path.join(
-            "test",
-            "data",
-            "security_info",
+            security_info_output_dir,
             "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         resp = json.load(open(security_info_latest_file, "r"))
@@ -207,7 +203,7 @@ def load_holding_info(
     resp: List[Dict[str, Any]] = {}
     holding_info_output_dir: str = os.path.join("test", "data", "holding_info")
     if not use_mock_data:
-        resp = r.build_holdings().values()
+        resp = list(r.build_holdings().values())
         if not os.path.exists(holding_info_output_dir):
             os.makedirs(holding_info_output_dir)
         holding_info_output_file = os.path.join(
@@ -215,8 +211,7 @@ def load_holding_info(
             "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         with open(holding_info_output_file, "w") as f:
-            # TODO fix here!
-            f.write(json.dumps(resp.get(), indent=4))
+            f.write(json.dumps(resp, indent=4))
     else:
         latest = sorted(
             [
@@ -225,9 +220,7 @@ def load_holding_info(
             ]
         )[0]
         holding_info_latest_file: str = os.path.join(
-            "test",
-            "data",
-            "holding_info",
+            holding_info_output_dir,
             "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         resp = json.load(open(holding_info_latest_file, "r"))
