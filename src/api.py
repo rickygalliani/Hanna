@@ -155,7 +155,6 @@ def load_security_info(
     Hits the Robinhood API to pull down security information like the latest
     price and the full security name.
     """
-    resp: Dict[str, Any] = {}
     security_info_output_dir: str = os.path.join(
         "test", "data", "security_info"
     )
@@ -200,7 +199,7 @@ def load_holding_info(
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
-    resp: List[Dict[str, Any]] = {}
+    resp: List[Dict[str, Any]] = []
     holding_info_output_dir: str = os.path.join("test", "data", "holding_info")
     if not use_mock_data:
         resp = list(r.build_holdings().values())
