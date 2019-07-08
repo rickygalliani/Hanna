@@ -1,8 +1,11 @@
+- Need to pull security ID out of "instrument" URL
+- Add tests for return calculations with dividends
+- Change historical data format to data/YYYY/MM/dd/hh/mm/ss/YYYY-MM-dd-hh-mm-ss.json
+- Consider using get_current_positions() instead of build_holdings()
 - Conslidate public APIs for each object (make add_holding() a private method)
   - Need to think about client use cases across classes and define methods as
     simply as possible
   - Only need to test public methods (methods accessible from other classes)
-- Add dividends received into return
 - Display annualized return in output tables
 - Bunch holdings that aren't in portfolio config in "Other" Asset Class and
   report return

@@ -106,6 +106,13 @@ class AssetClass:
         """
         return sum([h.get_num_shares() for h in self.get_holdings()])
 
+    def get_dividends(self) -> float:
+        """
+        Returns the amount of dividends paid out for holdings in this asset
+        class.
+        """
+        return sum([h.get_dividends() for h in self.get_holdings()])
+
     def get_cost(self) -> float:
         """
         Computes and returns the cost of all holdings in this asset class.
@@ -121,8 +128,10 @@ class AssetClass:
         """
         Computes the percent change for all securities in this asset class.
         """
-        total_cost: float = self.get_cost()
-        return (self.get_value() - total_cost) / total_cost
+        value: float = self.get_value()
+        cost: float = self.get_cost()
+        dividends: float = self.get_dividends()
+        return (value - cost + dividends) / cost
 
     def contains_security(self, security_id: str) -> bool:
         """
@@ -187,7 +196,11 @@ class AssetClass:
         sec.set_price(price)
 
     def update_holding(
-        self, security_id: str, num_shares: int, average_buy_price: float
+        self,
+        security_id: str,
+        num_shares: int,
+        average_buy_price: float,
+        dividends: float,
     ) -> None:
         """
         Updates this asset class with new holding data.
@@ -197,10 +210,13 @@ class AssetClass:
             hol: Holding = self.get_holding(security_id)
             hol.set_num_shares(num_shares)
             hol.set_average_buy_price(average_buy_price)
+            hol.set_dividends(dividends)
         elif self.contains_security(security_id):
             # Don't have holding for this security yet -> add as a new holding
             sec: Security = self.get_security(security_id)
-            self.add_holding(Holding(sec, num_shares, average_buy_price))
+            self.add_holding(
+                Holding(sec, num_shares, average_buy_price, dividends)
+            )
         else:
             raise Exception(
                 "update_holding(): {} is not in the '{}' asset "

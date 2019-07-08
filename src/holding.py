@@ -11,7 +11,11 @@ import json
 
 class Holding:
     def __init__(
-        self, security: Security, num_shares: int, average_buy_price: float
+        self,
+        security: Security,
+        num_shares: int,
+        average_buy_price: float,
+        dividends: float = 0,
     ) -> None:
         if not isinstance(security, Security):
             raise Exception(
@@ -24,6 +28,7 @@ class Holding:
         self.__security: Security = security
         self.__num_shares: int = num_shares
         self.__average_buy_price: float = average_buy_price
+        self.__dividends: float = dividends
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Holding):
@@ -42,6 +47,9 @@ class Holding:
     def get_average_buy_price(self) -> float:
         return self.__average_buy_price
 
+    def get_dividends(self) -> float:
+        return self.__dividends
+
     def get_value(self) -> float:
         price = self.get_security().get_price()
         if price is None:
@@ -59,9 +67,10 @@ class Holding:
                 "security has undefined price"
             )
         num_shares: int = self.get_num_shares()
-        value = sec_price * num_shares
+        value: float = sec_price * num_shares
         cost: float = self.get_average_buy_price() * num_shares
-        return (value - cost) / cost
+        dividends: float = self.get_dividends()
+        return (value - cost + dividends) / cost
 
     def set_num_shares(self, num_shares: int) -> None:
         self.__num_shares = num_shares
@@ -69,9 +78,13 @@ class Holding:
     def set_average_buy_price(self, average_buy_price: float) -> None:
         self.__average_buy_price = average_buy_price
 
+    def set_dividends(self, dividends: float) -> None:
+        self.__dividends = dividends
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "security": self.get_security().to_dict(),
             "num_shares": self.get_num_shares(),
             "average_buy_price": self.get_average_buy_price(),
+            "dividends": self.get_dividends(),
         }

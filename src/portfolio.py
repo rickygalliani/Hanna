@@ -7,9 +7,11 @@ from src.deposit import Deposit
 from src.holding import Holding
 from src.api import (
     AccountProfile,
+    DividendInfo,
     HoldingInfo,
     SecurityInfo,
     load_account_profile,
+    load_dividend_info,
     load_holding_info,
     load_security_info,
 )
@@ -132,6 +134,7 @@ class Portfolio:
             "Percentage",
             "Cost",
             "Value",
+            "Dividends",
             "Return",
         ]
         sec_cols: List[str] = [
@@ -142,6 +145,7 @@ class Portfolio:
             "Average Price",
             "Price",
             "Shares",
+            "Dividends",
             "Value",
             "Percentage",
             "Return",
@@ -162,6 +166,7 @@ class Portfolio:
                     pct_str(self.get_asset_class_percentage(ac_name)),
                     dollar_str(ac.get_cost()),
                     dollar_str(ac_value),
+                    dollar_str(ac.get_dividends()),
                     pct_str(ac.get_return()),
                 ]
             )
@@ -182,6 +187,7 @@ class Portfolio:
                         dollar_str(hol.get_average_buy_price()),
                         price_str,
                         hol.get_num_shares(),
+                        hol.get_dividends(),
                         dollar_str(hol_val),
                         pct_str(self.get_security_percentage(s.get_id())),
                         pct_str(hol.get_return()),
@@ -195,6 +201,7 @@ class Portfolio:
                 pct_str(self.get_cash_percentage()),
                 portfolio_cash,
                 portfolio_cash,
+                dollar_str(0.0),
                 pct_str(0.0),
             ]
         )
@@ -206,6 +213,7 @@ class Portfolio:
                 pct_str(1),
                 dollar_str(self.get_cost()),
                 dollar_str(self.get_value()),
+                dollar_str(self.get_dividends()),
                 portfolio_return_str,
             ]
         )
@@ -219,6 +227,7 @@ class Portfolio:
                 "-",
                 cash_str,
                 "-",
+                dollar_str(0.0),
                 cash_str,
                 pct_str(self.get_cash_percentage()),
                 pct_str(0.0),
@@ -233,6 +242,7 @@ class Portfolio:
                 "-",
                 "-",
                 self.get_num_shares(),
+                dollar_str(self.get_dividends()),
                 dollar_str(self.get_value()),
                 pct_str(1),
                 portfolio_return_str,
@@ -260,13 +270,22 @@ class Portfolio:
             [ac.get_cost() for ac in self.get_asset_classes()]
         )
 
+    def get_dividends(self) -> float:
+        """
+        Returns the amount of dividends paid out for holdings in this
+        portfolio.
+        """
+        return sum([ac.get_dividends() for ac in self.get_asset_classes()])
+
     def get_return(self) -> float:
         """
         Computes and returns the percent change of the investments in this
         portfolio.
         """
-        total_cost: float = self.get_cost()
-        return (self.get_value() - total_cost) / total_cost
+        value: float = self.get_value()
+        cost: float = self.get_cost()
+        dividends: float = self.get_dividends()
+        return (value - cost + dividends) / cost
 
     def contains_asset_class(self, asset_class_name: str) -> bool:
         """
@@ -412,8 +431,9 @@ class Portfolio:
             security_symbols, s, dry_run
         )
         holdings: Dict[str, HoldingInfo] = load_holding_info(s, dry_run)
+        dividends: Dict[str, DividendInfo] = load_dividend_info(s, dry_run)
         e: datetime = datetime.now()
-        self.update(account_profile, securities, holdings)
+        self.update(account_profile, securities, holdings, dividends)
         log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))
         log.info("Portfolio:{}".format(self.for_display()))
 
@@ -422,6 +442,7 @@ class Portfolio:
         account_profile: AccountProfile,
         securities: Dict[str, SecurityInfo],
         holdings: Dict[str, HoldingInfo],
+        dividends: Dict[str, DividendInfo],
     ) -> None:
         """
         Updates this portfolio (and its underlying asset classes and
@@ -429,11 +450,18 @@ class Portfolio:
         """
         cash: float = account_profile.get_buying_power()
         self.set_cash(cash)
+        print("dividends = {}".format(dividends))
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():
                 sec_id: str = sec.get_id()
+                print("sec_id = {}".format(sec_id))
                 sec_symbol: str = sec.get_symbol()
                 sec_info: SecurityInfo = securities[sec_symbol]
+                div_info: DividendInfo = (
+                    DividendInfo(sec_id, 0.0)
+                    if sec_id not in dividends
+                    else dividends[sec_id]
+                )
                 ac.update_security(
                     sec_id, sec_info.get_name(), sec_info.get_price()
                 )
@@ -443,8 +471,13 @@ class Portfolio:
                     updated_average_buy_price: float = (
                         hol_info.get_average_buy_price()
                     )
+                    updated_dividends: float = div_info.get_amount()
+                    print("updated_dividends = {}".format(updated_dividends))
                     ac.update_holding(
-                        sec_id, updated_shares, updated_average_buy_price
+                        sec_id,
+                        updated_shares,
+                        updated_average_buy_price,
+                        updated_dividends,
                     )
 
     def plan_deposit(self, amount: float) -> Deposit:

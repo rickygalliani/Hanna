@@ -98,6 +98,18 @@ class HoldingInfo:
         return self.__equity_change
 
 
+class DividendInfo:
+    def __init__(self, security_id: str, amount: float) -> None:
+        self.__security_id: str = security_id
+        self.__amount: float = amount
+
+    def get_security_id(self) -> str:
+        return self.__security_id
+
+    def get_amount(self) -> float:
+        return self.__amount
+
+
 def load_credentials() -> Credentials:
     """
     Loads the credentials for the Robinhood account.
@@ -238,3 +250,48 @@ def load_holding_info(
             float(s["equity_change"]),
         )
     return holdings
+
+
+def load_dividend_info(
+    t: datetime, use_mock_data: bool
+) -> Dict[str, HoldingInfo]:
+    """
+    Hits the Robinhood API to pull down user's dividend data.
+    """
+    resp: List[Dict[str, Any]] = []
+    dividend_info_output_dir: str = os.path.join(
+        "test", "data", "dividend_info"
+    )
+    if not use_mock_data:
+        resp = list(r.account.get_dividends())
+        if not os.path.exists(dividend_info_output_dir):
+            os.makedirs(dividend_info_output_dir)
+        dividend_info_output_file = os.path.join(
+            dividend_info_output_dir,
+            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        with open(dividend_info_output_file, "w") as f:
+            f.write(json.dumps(resp, indent=4))
+    else:
+        latest = sorted(
+            [
+                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
+                for x in os.listdir(dividend_info_output_dir)
+            ]
+        )[0]
+        dividend_info_latest_file: str = os.path.join(
+            dividend_info_output_dir,
+            "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        resp = json.load(open(dividend_info_latest_file, "r"))
+    dividends: Dict[str, DividendInfo] = {}
+    for s in resp:
+        s_id: str = s["id"]  # TODO: pull id from instrument url
+        amount: float = float(s["amount"])
+        if s_id in dividends:
+            old = dividends[s_id]
+            new = DividendInfo(s_id, old.get_amount() + amount)
+            dividends[s_id] = new
+        else:
+            dividends[s_id] = DividendInfo(s_id, amount)
+    return dividends
