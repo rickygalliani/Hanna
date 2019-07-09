@@ -11,9 +11,9 @@ from src.api import (
     HoldingInfo,
     SecurityInfo,
     load_account_profile,
-    load_dividend_info,
-    load_holding_info,
-    load_security_info,
+    load_dividends,
+    load_holdings,
+    load_securities,
 )
 from src.purchase import Purchase
 from src.security import Security
@@ -427,11 +427,11 @@ class Portfolio:
         s: datetime = datetime.now()
         account_profile: AccountProfile = load_account_profile(s, dry_run)
         security_symbols: List[str] = self.get_all_security_symbols()
-        securities: Dict[str, SecurityInfo] = load_security_info(
+        securities: Dict[str, SecurityInfo] = load_securities(
             security_symbols, s, dry_run
         )
-        holdings: Dict[str, HoldingInfo] = load_holding_info(s, dry_run)
-        dividends: Dict[str, DividendInfo] = load_dividend_info(s, dry_run)
+        holdings: Dict[str, HoldingInfo] = load_holdings(s, dry_run)
+        dividends: Dict[str, DividendInfo] = load_dividends(s, dry_run)
         e: datetime = datetime.now()
         self.update(account_profile, securities, holdings, dividends)
         log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))

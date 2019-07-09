@@ -5,6 +5,8 @@
 
 from datetime import datetime, timedelta
 
+import os
+
 
 def dollar_str(amt: float) -> str:
     """
@@ -44,3 +46,17 @@ def difference_in_millis(start: datetime, end: datetime) -> float:
     millis += diff.seconds * 1000
     millis += diff.microseconds / 1000
     return millis
+
+
+def latest_ds(base_path: str) -> str:
+    """
+    Returns the latest date partitioned string under the base path.
+    """
+    latest = str(max(os.listdir(base_path)))
+    if ".json" in latest:
+        return ""
+    next_component = latest_ds(os.path.join(base_path, latest))
+    if next_component != "":
+        return os.path.join(latest, next_component)
+    else:
+        return latest

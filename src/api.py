@@ -2,6 +2,8 @@
 # Hanna
 # src/api.py
 
+from src.util import latest_ds
+
 from datetime import datetime
 
 from typing import Any, Dict, List
@@ -127,8 +129,15 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
     cash, and dividend total.
     """
     resp: Dict[str, Any] = {}
+    account_profile_base_dir: str = os.path.join("data", "account_profile")
     account_profile_output_dir: str = os.path.join(
-        "test", "data", "account_profile"
+        account_profile_base_dir,
+        t.strftime("%Y"),
+        t.strftime("%m"),
+        t.strftime("%d"),
+        t.strftime("%H"),
+        t.strftime("%M"),
+        t.strftime("%S"),
     )
     if not use_mock_data:
         resp = r.load_account_profile()
@@ -141,14 +150,17 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
         with open(account_profile_output_file, "w") as f:
             f.write(json.dumps(resp, indent=4))
     else:
-        latest = sorted(
-            [
-                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
-                for x in os.listdir(account_profile_output_dir)
-            ]
-        )[0]
+        latest = datetime.strptime(
+            latest_ds(account_profile_base_dir), "%Y/%m/%d/%H/%M/%S"
+        )
         account_profile_latest_file: str = os.path.join(
-            account_profile_output_dir,
+            account_profile_base_dir,
+            latest.strftime("%Y"),
+            latest.strftime("%m"),
+            latest.strftime("%d"),
+            latest.strftime("%H"),
+            latest.strftime("%M"),
+            latest.strftime("%S"),
             "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         resp = json.load(open(account_profile_latest_file, "r"))
@@ -160,15 +172,22 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
     return AccountProfile(buying_power)
 
 
-def load_security_info(
+def load_securities(
     security_symbols: List[str], t: datetime, use_mock_data: bool
 ) -> Dict[str, SecurityInfo]:
     """
     Hits the Robinhood API to pull down security information like the latest
     price and the full security name.
     """
+    security_info_base_dir: str = os.path.join("data", "securities")
     security_info_output_dir: str = os.path.join(
-        "test", "data", "security_info"
+        security_info_base_dir,
+        t.strftime("%Y"),
+        t.strftime("%m"),
+        t.strftime("%d"),
+        t.strftime("%H"),
+        t.strftime("%M"),
+        t.strftime("%S"),
     )
     resp: Dict[str, Any] = {}
     if not use_mock_data:
@@ -186,14 +205,17 @@ def load_security_info(
         with open(security_info_output_file, "w") as f:
             f.write(json.dumps(resp, indent=4))
     else:
-        latest = sorted(
-            [
-                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
-                for x in os.listdir(security_info_output_dir)
-            ]
-        )[0]
+        latest = datetime.strptime(
+            latest_ds(security_info_base_dir), "%Y/%m/%d/%H/%M/%S"
+        )
         security_info_latest_file: str = os.path.join(
-            security_info_output_dir,
+            security_info_base_dir,
+            latest.strftime("%Y"),
+            latest.strftime("%m"),
+            latest.strftime("%d"),
+            latest.strftime("%H"),
+            latest.strftime("%M"),
+            latest.strftime("%S"),
             "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         resp = json.load(open(security_info_latest_file, "r"))
@@ -205,14 +227,21 @@ def load_security_info(
     return security_info
 
 
-def load_holding_info(
-    t: datetime, use_mock_data: bool
-) -> Dict[str, HoldingInfo]:
+def load_holdings(t: datetime, use_mock_data: bool) -> Dict[str, HoldingInfo]:
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
+    holding_info_base_dir: str = os.path.join("data", "holdings")
+    holding_info_output_dir: str = os.path.join(
+        holding_info_base_dir,
+        t.strftime("%Y"),
+        t.strftime("%m"),
+        t.strftime("%d"),
+        t.strftime("%H"),
+        t.strftime("%M"),
+        t.strftime("%S"),
+    )
     resp: List[Dict[str, Any]] = []
-    holding_info_output_dir: str = os.path.join("test", "data", "holding_info")
     if not use_mock_data:
         resp = list(r.build_holdings().values())
         if not os.path.exists(holding_info_output_dir):
@@ -224,14 +253,17 @@ def load_holding_info(
         with open(holding_info_output_file, "w") as f:
             f.write(json.dumps(resp, indent=4))
     else:
-        latest = sorted(
-            [
-                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
-                for x in os.listdir(holding_info_output_dir)
-            ]
-        )[0]
+        latest = datetime.strptime(
+            latest_ds(holding_info_base_dir), "%Y/%m/%d/%H/%M/%S"
+        )
         holding_info_latest_file: str = os.path.join(
-            holding_info_output_dir,
+            holding_info_base_dir,
+            latest.strftime("%Y"),
+            latest.strftime("%m"),
+            latest.strftime("%d"),
+            latest.strftime("%H"),
+            latest.strftime("%M"),
+            latest.strftime("%S"),
             "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         resp = json.load(open(holding_info_latest_file, "r"))
@@ -252,16 +284,23 @@ def load_holding_info(
     return holdings
 
 
-def load_dividend_info(
+def load_dividends(
     t: datetime, use_mock_data: bool
-) -> Dict[str, HoldingInfo]:
+) -> Dict[str, DividendInfo]:
     """
     Hits the Robinhood API to pull down user's dividend data.
     """
-    resp: List[Dict[str, Any]] = []
+    dividend_info_base_dir: str = os.path.join("data", "dividends")
     dividend_info_output_dir: str = os.path.join(
-        "test", "data", "dividend_info"
+        dividend_info_base_dir,
+        t.strftime("%Y"),
+        t.strftime("%m"),
+        t.strftime("%d"),
+        t.strftime("%H"),
+        t.strftime("%M"),
+        t.strftime("%S"),
     )
+    resp: List[Dict[str, Any]] = []
     if not use_mock_data:
         resp = list(r.account.get_dividends())
         if not os.path.exists(dividend_info_output_dir):
@@ -273,14 +312,17 @@ def load_dividend_info(
         with open(dividend_info_output_file, "w") as f:
             f.write(json.dumps(resp, indent=4))
     else:
-        latest = sorted(
-            [
-                datetime.strptime(x.replace(".json", ""), "%Y_%m_%d_%H_%M_%S")
-                for x in os.listdir(dividend_info_output_dir)
-            ]
-        )[0]
+        latest = datetime.strptime(
+            latest_ds(dividend_info_base_dir), "%Y/%m/%d/%H/%M/%S"
+        )
         dividend_info_latest_file: str = os.path.join(
-            dividend_info_output_dir,
+            dividend_info_base_dir,
+            latest.strftime("%Y"),
+            latest.strftime("%m"),
+            latest.strftime("%d"),
+            latest.strftime("%H"),
+            latest.strftime("%M"),
+            latest.strftime("%S"),
             "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
         )
         resp = json.load(open(dividend_info_latest_file, "r"))

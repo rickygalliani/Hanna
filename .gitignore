@@ -123,4 +123,4 @@ dmypy.json
 .pyre/
 
 # Test data files
-test/data/*
+data/*

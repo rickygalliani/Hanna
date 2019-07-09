@@ -1,6 +1,6 @@
-- Need to pull security ID out of "instrument" URL
-- Add tests for return calculations with dividends
-- Change historical data format to data/YYYY/MM/dd/hh/mm/ss/YYYY-MM-dd-hh-mm-ss.json
+- Create online/offline modes and record/don't record modes (get rid of "real")
+- Write unit test for latest_ds()
+- Fix trade rejection logic
 - Consider using get_current_positions() instead of build_holdings()
 - Conslidate public APIs for each object (make add_holding() a private method)
   - Need to think about client use cases across classes and define methods as
