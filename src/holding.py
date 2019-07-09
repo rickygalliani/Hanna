@@ -15,7 +15,7 @@ class Holding:
         security: Security,
         num_shares: int,
         average_buy_price: float,
-        dividends: float = 0,
+        dividends: float = 0.0,
     ) -> None:
         if not isinstance(security, Security):
             raise Exception(

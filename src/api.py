@@ -286,7 +286,7 @@ def load_dividend_info(
         resp = json.load(open(dividend_info_latest_file, "r"))
     dividends: Dict[str, DividendInfo] = {}
     for s in resp:
-        s_id: str = s["id"]  # TODO: pull id from instrument url
+        s_id: str = os.path.basename(s["instrument"][:-1])
         amount: float = float(s["amount"])
         if s_id in dividends:
             old = dividends[s_id]

@@ -187,7 +187,7 @@ class Portfolio:
                         dollar_str(hol.get_average_buy_price()),
                         price_str,
                         hol.get_num_shares(),
-                        hol.get_dividends(),
+                        dollar_str(hol.get_dividends()),
                         dollar_str(hol_val),
                         pct_str(self.get_security_percentage(s.get_id())),
                         pct_str(hol.get_return()),
@@ -450,11 +450,9 @@ class Portfolio:
         """
         cash: float = account_profile.get_buying_power()
         self.set_cash(cash)
-        print("dividends = {}".format(dividends))
         for ac in self.get_asset_classes():
             for sec in ac.get_securities():
                 sec_id: str = sec.get_id()
-                print("sec_id = {}".format(sec_id))
                 sec_symbol: str = sec.get_symbol()
                 sec_info: SecurityInfo = securities[sec_symbol]
                 div_info: DividendInfo = (
@@ -472,7 +470,6 @@ class Portfolio:
                         hol_info.get_average_buy_price()
                     )
                     updated_dividends: float = div_info.get_amount()
-                    print("updated_dividends = {}".format(updated_dividends))
                     ac.update_holding(
                         sec_id,
                         updated_shares,

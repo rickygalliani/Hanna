@@ -104,6 +104,20 @@ class AssetClassTest(unittest.TestCase):
         sec.set_price(9.0)
         self.assertEqual(ac.get_return(), -0.1)
 
+    def test_get_dividends(self):
+        ac: AssetClass = AssetClass("ac", target_percentage=1.0)
+        sec1: Security = Security("sec1", "SEC1", "sec1_name", 10.0)
+        sec2: Security = Security("sec2", "SEC2", "sec2_name", 10.0)
+        ac.add_security(sec1)
+        ac.add_security(sec2)
+        ac.buy(sec1, 3, True)
+        ac.buy(sec2, 3, True)
+        hol1: Holding = ac.get_holding("sec1")
+        hol2: Holding = ac.get_holding("sec2")
+        hol1.set_dividends(1.0)
+        hol2.set_dividends(2.0)
+        self.assertEqual(ac.get_dividends(), 3.0)
+
     def test_contains_security_false(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)
         self.assertFalse(ac.contains_security("sec"))
@@ -188,10 +202,11 @@ class AssetClassTest(unittest.TestCase):
         )
         ac.add_security(sec)
         ac.buy(sec, 3, True)
-        ac.update_holding("sec", 3, 45.0)
+        ac.update_holding("sec", 3, 45.0, 15.0)
         new_hol: Holding = ac.get_holding("sec")
         self.assertEqual(new_hol.get_num_shares(), 3)
         self.assertEqual(new_hol.get_average_buy_price(), 45.0)
+        self.assertEqual(new_hol.get_dividends(), 15.0)
 
     def test_buy_new(self):
         ac: AssetClass = AssetClass("ac", target_percentage=1.0)

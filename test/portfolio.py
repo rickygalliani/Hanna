@@ -3,7 +3,7 @@
 # test/portfolio.py
 
 from src.asset_class import AssetClass
-from src.api import AccountProfile, HoldingInfo, SecurityInfo
+from src.api import AccountProfile, DividendInfo, HoldingInfo, SecurityInfo
 from src.deposit import Deposit
 from src.holding import Holding
 from src.portfolio import Portfolio
@@ -162,6 +162,24 @@ class PortfolioTest(unittest.TestCase):
         ac.buy(sec, 3, True)
         p.add_asset_class(ac)
         self.assertEqual(p.get_cost(), 30.0)
+
+    def get_dividends(self):
+        p: Portfolio = Portfolio()
+        ac1: AssetClass = AssetClass("ac1", 0.5)
+        sec1: Security = Security("sec1", "SEC1", price=10.0)
+        ac1.add_security(sec1)
+        ac1.buy(sec1, 3, True)
+        p.add_asset_class(ac1)
+        hol1: Holding = ac1.get_holding("sec1")
+        hol1.set_dividends(10.0)
+        ac2: AssetClass = AssetClass("ac2", 0.5)
+        sec2: Security = Security("sec2", "SEC2", price=10.0)
+        ac2.add_security(sec2)
+        ac2.buy(sec2, 3, True)
+        p.add_asset_class(ac2)
+        hol2: Holding = ac2.get_holding("sec2")
+        hol2.set_dividends(5.0)
+        self.assertEqual(p.get_dividends(), 15.0)
 
     def test_get_return(self):
         p: Portfolio = Portfolio()
@@ -322,10 +340,15 @@ class PortfolioTest(unittest.TestCase):
                 "sec2", "sec2_name", 20.0, 1, 20.0, 20.0, 0.66, 0.0, 0.0
             ),
         }
-        p.update(account_profile, security_info, holding_info)
+        dividend_info = {
+            "sec1": DividendInfo("sec1", 10.0),
+            "sec2": DividendInfo("sec2", 5.0),
+        }
+        p.update(account_profile, security_info, holding_info, dividend_info)
         self.assertEqual(p.get_cash(), 78.68)
         self.assertEqual(p.get_value(), 108.68)
         self.assertEqual(p.get_num_shares(), 2)
+        self.assertEqual(p.get_dividends(), 15.0)
 
     def test_update_idempotent(self):
         p: Portfolio = Portfolio()
@@ -340,14 +363,17 @@ class PortfolioTest(unittest.TestCase):
                 "sec1", "sec1_name", 10.0, 3, 10.0, 30.0, 0.33, 0.0, 0.0
             )
         }
-        p.update(account_profile, security_info, holding_info)
+        dividend_info = {"sec1": DividendInfo("sec1", 1.0)}
+        p.update(account_profile, security_info, holding_info, dividend_info)
         self.assertEqual(p.get_cash(), 78.68)
         self.assertEqual(p.get_value(), 108.68)
         self.assertEqual(p.get_num_shares(), 3)
-        p.update(account_profile, security_info, holding_info)
+        self.assertEqual(p.get_dividends(), 1.0)
+        p.update(account_profile, security_info, holding_info, dividend_info)
         self.assertEqual(p.get_cash(), 78.68)
         self.assertEqual(p.get_value(), 108.68)
         self.assertEqual(p.get_num_shares(), 3)
+        self.assertEqual(p.get_dividends(), 1.0)
 
     def test_plan_deposit_restrict_budget(self):
         p: Portfolio = Portfolio()

@@ -236,13 +236,14 @@ class AssetClass:
             hol: Holding = self.get_holding(security_id)
             old_num_shares: int = hol.get_num_shares()
             old_abp: float = hol.get_average_buy_price()
+            old_div: float = hol.get_dividends()
             new_num_shares: int = old_num_shares + num_shares
             new_abp: float = (
                 old_abp * old_num_shares + price * num_shares
             ) / (old_num_shares + num_shares)
-            self.update_holding(security_id, new_num_shares, new_abp)
+            self.update_holding(security_id, new_num_shares, new_abp, old_div)
         else:
-            self.update_holding(security_id, num_shares, price)
+            self.update_holding(security_id, num_shares, price, 0.0)
 
         log.info(
             "Buy {n} {s} of {c} at {p} for a total of {t}? (Y/n) ".format(
