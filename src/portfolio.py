@@ -419,19 +419,21 @@ class Portfolio:
             remaining_value -= ac_budget
         return ac_budgets
 
-    def refresh(self, dry_run: bool) -> None:
+    def refresh(self, online: bool, logging: bool) -> None:
         """
         Hits the Robinhood API to pull fresh holding data for this portfolio.
         The internal state is changed by the in update() function.
         """
         s: datetime = datetime.now()
-        account_profile: AccountProfile = load_account_profile(s, dry_run)
+        account_profile: AccountProfile = load_account_profile(
+            s, online, logging
+        )
         security_symbols: List[str] = self.get_all_security_symbols()
         securities: Dict[str, SecurityInfo] = load_securities(
-            security_symbols, s, dry_run
+            security_symbols, s, online, logging
         )
-        holdings: Dict[str, HoldingInfo] = load_holdings(s, dry_run)
-        dividends: Dict[str, DividendInfo] = load_dividends(s, dry_run)
+        holdings: Dict[str, HoldingInfo] = load_holdings(s, online, logging)
+        dividends: Dict[str, DividendInfo] = load_dividends(s, online, logging)
         e: datetime = datetime.now()
         self.update(account_profile, securities, holdings, dividends)
         log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))

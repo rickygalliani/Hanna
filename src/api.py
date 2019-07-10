@@ -123,7 +123,9 @@ def load_credentials() -> Credentials:
     return credentials
 
 
-def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
+def load_account_profile(
+    t: datetime, online: bool, log: bool
+) -> AccountProfile:
     """
     Loads user profile information from Robinhood including total equity,
     cash, and dividend total.
@@ -139,16 +141,17 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
         t.strftime("%M"),
         t.strftime("%S"),
     )
-    if not use_mock_data:
+    if online:
         resp = r.load_account_profile()
-        if not os.path.exists(account_profile_output_dir):
-            os.makedirs(account_profile_output_dir)
-        account_profile_output_file = os.path.join(
-            account_profile_output_dir,
-            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
-        )
-        with open(account_profile_output_file, "w") as f:
-            f.write(json.dumps(resp, indent=4))
+        if log:
+            if not os.path.exists(account_profile_output_dir):
+                os.makedirs(account_profile_output_dir)
+            account_profile_output_file = os.path.join(
+                account_profile_output_dir,
+                "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+            )
+            with open(account_profile_output_file, "w") as f:
+                f.write(json.dumps(resp, indent=4))
     else:
         latest = datetime.strptime(
             latest_ds(account_profile_base_dir), "%Y/%m/%d/%H/%M/%S"
@@ -173,7 +176,7 @@ def load_account_profile(t: datetime, use_mock_data: bool) -> AccountProfile:
 
 
 def load_securities(
-    security_symbols: List[str], t: datetime, use_mock_data: bool
+    security_symbols: List[str], t: datetime, online: bool, log: bool
 ) -> Dict[str, SecurityInfo]:
     """
     Hits the Robinhood API to pull down security information like the latest
@@ -190,20 +193,21 @@ def load_securities(
         t.strftime("%S"),
     )
     resp: Dict[str, Any] = {}
-    if not use_mock_data:
+    if online:
         for sec_sym in security_symbols:
             resp[sec_sym] = {
                 "name": r.get_name_by_symbol(sec_sym),
                 "price": r.get_latest_price(sec_sym),
             }
-        if not os.path.exists(security_info_output_dir):
-            os.makedirs(security_info_output_dir)
-        security_info_output_file = os.path.join(
-            security_info_output_dir,
-            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
-        )
-        with open(security_info_output_file, "w") as f:
-            f.write(json.dumps(resp, indent=4))
+        if log:
+            if not os.path.exists(security_info_output_dir):
+                os.makedirs(security_info_output_dir)
+            security_info_output_file = os.path.join(
+                security_info_output_dir,
+                "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+            )
+            with open(security_info_output_file, "w") as f:
+                f.write(json.dumps(resp, indent=4))
     else:
         latest = datetime.strptime(
             latest_ds(security_info_base_dir), "%Y/%m/%d/%H/%M/%S"
@@ -227,7 +231,9 @@ def load_securities(
     return security_info
 
 
-def load_holdings(t: datetime, use_mock_data: bool) -> Dict[str, HoldingInfo]:
+def load_holdings(
+    t: datetime, online: bool, log: bool
+) -> Dict[str, HoldingInfo]:
     """
     Hits the Robinhood API to pull down user's holdings data.
     """
@@ -242,16 +248,17 @@ def load_holdings(t: datetime, use_mock_data: bool) -> Dict[str, HoldingInfo]:
         t.strftime("%S"),
     )
     resp: List[Dict[str, Any]] = []
-    if not use_mock_data:
+    if online:
         resp = list(r.build_holdings().values())
-        if not os.path.exists(holding_info_output_dir):
-            os.makedirs(holding_info_output_dir)
-        holding_info_output_file = os.path.join(
-            holding_info_output_dir,
-            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
-        )
-        with open(holding_info_output_file, "w") as f:
-            f.write(json.dumps(resp, indent=4))
+        if log:
+            if not os.path.exists(holding_info_output_dir):
+                os.makedirs(holding_info_output_dir)
+            holding_info_output_file = os.path.join(
+                holding_info_output_dir,
+                "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+            )
+            with open(holding_info_output_file, "w") as f:
+                f.write(json.dumps(resp, indent=4))
     else:
         latest = datetime.strptime(
             latest_ds(holding_info_base_dir), "%Y/%m/%d/%H/%M/%S"
@@ -285,7 +292,7 @@ def load_holdings(t: datetime, use_mock_data: bool) -> Dict[str, HoldingInfo]:
 
 
 def load_dividends(
-    t: datetime, use_mock_data: bool
+    t: datetime, online: bool, log: bool
 ) -> Dict[str, DividendInfo]:
     """
     Hits the Robinhood API to pull down user's dividend data.
@@ -301,16 +308,17 @@ def load_dividends(
         t.strftime("%S"),
     )
     resp: List[Dict[str, Any]] = []
-    if not use_mock_data:
+    if online:
         resp = list(r.account.get_dividends())
-        if not os.path.exists(dividend_info_output_dir):
-            os.makedirs(dividend_info_output_dir)
-        dividend_info_output_file = os.path.join(
-            dividend_info_output_dir,
-            "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
-        )
-        with open(dividend_info_output_file, "w") as f:
-            f.write(json.dumps(resp, indent=4))
+        if log:
+            if not os.path.exists(dividend_info_output_dir):
+                os.makedirs(dividend_info_output_dir)
+            dividend_info_output_file = os.path.join(
+                dividend_info_output_dir,
+                "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+            )
+            with open(dividend_info_output_file, "w") as f:
+                f.write(json.dumps(resp, indent=4))
     else:
         latest = datetime.strptime(
             latest_ds(dividend_info_base_dir), "%Y/%m/%d/%H/%M/%S"

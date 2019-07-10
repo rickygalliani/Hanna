@@ -21,22 +21,26 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Hanna main program.")
     parser.add_argument(
-        "--real", required=False, default=False, action="store_true"
+        "--online", required=False, default=False, action="store_true"
     )
+    parser.add_argument(
+        "--logging", required=False, default=False, action="store_true"
+    )
+
     args = parser.parse_args()
 
     portfolio = Portfolio()
     config = os.path.join(os.getcwd(), "config", "portfolio.json")
     portfolio.load_configuration(json.load(open(config, "r")))
 
-    if args.real:
+    if args.online:
         c: Credentials = load_credentials()
         client = r.login(c.get_username(), c.get_password())
 
-    portfolio.refresh(not args.real)
+    portfolio.refresh(args.online, args.logging)
     deposit = portfolio.plan_deposit(portfolio.get_cash())
-    # portfolio.make_deposit(deposit, not args.real)
-    # portfolio.refresh(not args.real)
+    portfolio.make_deposit(deposit, args.online)
+    portfolio.refresh(args.online, args.logging)
 
-    if args.real:
+    if args.online:
         r.logout()
