@@ -56,8 +56,11 @@ class Portfolio:
 
             ac_name: str = a["name"]
             ac_target_pct: float = float(a["target_percentage"])
-            ac_securities: Dict[str, str] = a["securities"]
+            ac_securities: List[str] = a["securities"]
             ac_buy_restrictions: List[str] = a["buy_restrictions"]
+
+            for sec_id in ac_buy_restrictions:
+                assert sec_id in ac_securities
 
             ac: AssetClass = (
                 self.get_asset_class(ac_name)
@@ -67,21 +70,22 @@ class Portfolio:
             ac.set_target_percentage(ac_target_pct)
 
             total_target_pct += ac_target_pct
-            for s_symbol, s_id in ac_securities.items():
-                buy_restricted: int = int(s_symbol in ac_buy_restrictions)
-                s: Security = Security(
-                    s_id, s_symbol, buy_restricted=buy_restricted
-                )
+            for s_id in ac_securities:
+                buy_restricted: int = int(s_id in ac_buy_restrictions)
+                s: Security = Security(s_id, buy_restricted=buy_restricted)
                 if not ac.contains_security(s_id):
                     ac.add_security(s)
                 else:
                     sec: Security = ac.get_security(s_id)
+                    # Potentially update buy restriction status
                     if buy_restricted:
                         sec.restrict_buy()
                     else:
                         sec.enable_buy()
             if not self.contains_asset_class(ac_name):
                 self.add_asset_class(ac)
+
+        self.add_asset_class(AssetClass("Other", 0.0))
 
         if abs(total_target_pct - 1.0) >= 1e-9:
             raise Exception(
@@ -250,6 +254,17 @@ class Portfolio:
         )
         return "\n{}\n{}".format(p_ac, p_sec)
 
+    def get_all_security_ids(self) -> List[str]:
+        """
+        Returns the ids of all securities in the portfolio as a list of
+        strings.
+        """
+        ids: List[str] = []
+        for ac in self.get_asset_classes():
+            for hol in ac.get_holdings():
+                ids.append(hol.get_security().get_id())
+        return ids
+
     def get_all_security_symbols(self) -> List[str]:
         """
         Returns the symbols of all securities in the portfolio as a list of
@@ -257,8 +272,8 @@ class Portfolio:
         """
         symbols: List[str] = []
         for ac in self.get_asset_classes():
-            for sec in ac.get_securities():
-                symbols.append(sec.get_symbol())
+            for hol in ac.get_holdings():
+                symbols.append(hol.get_security().get_symbol())
         return symbols
 
     def get_cost(self) -> float:
@@ -324,9 +339,7 @@ class Portfolio:
         for ac in self.get_asset_classes():
             if ac.contains_security(security_id):
                 return ac
-        raise Exception(
-            "Portfolio does not contain security {}.".format(security_id)
-        )
+        return self.get_asset_class("Other")
 
     def get_asset_class_value(self, asset_class_name: str) -> float:
         """
@@ -428,12 +441,14 @@ class Portfolio:
         account_profile: AccountProfile = load_account_profile(
             s, online, logging
         )
-        security_symbols: List[str] = self.get_all_security_symbols()
-        securities: Dict[str, SecurityInfo] = load_securities(
-            security_symbols, s, online, logging
-        )
         holdings: Dict[str, HoldingInfo] = load_holdings(s, online, logging)
-        dividends: Dict[str, DividendInfo] = load_dividends(s, online, logging)
+        security_ids: List[str] = holdings.keys()
+        securities: Dict[str, SecurityInfo] = load_securities(
+            security_ids, s, online, logging
+        )
+        dividends: Dict[str, DividendInfo] = load_dividends(
+            security_ids, s, online, logging
+        )
         e: datetime = datetime.now()
         self.update(account_profile, securities, holdings, dividends)
         log.info("Refreshed portfolio data. ({})".format(latency_str(s, e)))
@@ -452,32 +467,35 @@ class Portfolio:
         """
         cash: float = account_profile.get_buying_power()
         self.set_cash(cash)
-        for ac in self.get_asset_classes():
-            for sec in ac.get_securities():
-                sec_id: str = sec.get_id()
-                sec_symbol: str = sec.get_symbol()
-                sec_info: SecurityInfo = securities[sec_symbol]
-                div_info: DividendInfo = (
-                    DividendInfo(sec_id, 0.0)
-                    if sec_id not in dividends
-                    else dividends[sec_id]
-                )
-                ac.update_security(
-                    sec_id, sec_info.get_name(), sec_info.get_price()
-                )
-                if sec_id in holdings:
-                    hol_info: HoldingInfo = holdings[sec_id]
-                    updated_shares: int = hol_info.get_quantity()
-                    updated_average_buy_price: float = (
-                        hol_info.get_average_buy_price()
-                    )
-                    updated_dividends: float = div_info.get_amount()
-                    ac.update_holding(
-                        sec_id,
-                        updated_shares,
-                        updated_average_buy_price,
-                        updated_dividends,
-                    )
+        # Group securities that aren't defined in portfolio configuration in
+        # "Other" asset class
+        for sec_id in holdings.keys():
+            # Extract refreshed data for this security
+            hol_info: HoldingInfo = holdings[sec_id]
+            sec_info: SecurityInfo = securities[sec_id]
+            div_info: DividendInfo = dividends[sec_id]
+            updated_shares: int = hol_info.get_quantity()
+            updated_average_buy_price: float = (
+                hol_info.get_average_buy_price()
+            )
+            updated_name: str = sec_info.get_name()
+            updated_symbol: str = sec_info.get_symbol()
+            updated_price: float = sec_info.get_price()
+            updated_dividends: float = div_info.get_amount()
+
+            # Update the state for this security
+            ac: AssetClass = self.get_asset_class_for_security(sec_id)
+            if not ac.contains_security(sec_id):
+                ac.add_security(Security(sec_id))
+            ac.update_security(
+                sec_id, updated_symbol, updated_name, updated_price
+            )
+            ac.update_holding(
+                sec_id,
+                updated_shares,
+                updated_average_buy_price,
+                updated_dividends,
+            )
 
     def plan_deposit(self, amount: float) -> Deposit:
         """

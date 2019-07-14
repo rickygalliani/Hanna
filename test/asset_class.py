@@ -190,7 +190,7 @@ class AssetClassTest(unittest.TestCase):
         ac: AssetClass = AssetClass("ac", target_percentage=0.5)
         sec: Security = Security("sec", "SEC")
         ac.add_security(sec)
-        ac.update_security("sec", "Security A", 100.0)
+        ac.update_security("sec", "SEC", "Security A", 100.0)
         new_sec: Security = ac.get_security("sec")
         self.assertEqual(new_sec.get_name(), "Security A")
         self.assertEqual(new_sec.get_price(), 100.0)

@@ -1,4 +1,3 @@
-- Create online/offline modes and record/don't record modes (get rid of "real")
 - Write unit test for latest_ds()
 - Fix trade rejection logic
 - Consider using get_current_positions() instead of build_holdings()
@@ -6,9 +5,6 @@
   - Need to think about client use cases across classes and define methods as
     simply as possible
   - Only need to test public methods (methods accessible from other classes)
-- Display annualized return in output tables
-- Bunch holdings that aren't in portfolio config in "Other" Asset Class and
-  report return
 - 400 Client Error: Bad Request for url: https://api.robinhood.com/orders/
 - Support all types of portfolio configuration updates (i.e., security and asset class removals in addition to additions)
 - Handle 400 case where you have to use a limit order

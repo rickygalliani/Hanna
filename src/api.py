@@ -37,18 +37,6 @@ class AccountProfile:
         return self.__buying_power
 
 
-class SecurityInfo:
-    def __init__(self, name: str, price: float) -> None:
-        self.__name: str = name
-        self.__price: float = price
-
-    def get_name(self) -> str:
-        return self.__name
-
-    def get_price(self) -> float:
-        return self.__price
-
-
 class HoldingInfo:
     def __init__(
         self,
@@ -98,6 +86,22 @@ class HoldingInfo:
 
     def get_equity_change(self) -> float:
         return self.__equity_change
+
+
+class SecurityInfo:
+    def __init__(self, name: str, symbol: str, price: float) -> None:
+        self.__name: str = name
+        self.__symbol: str = symbol
+        self.__price: float = price
+
+    def get_name(self) -> str:
+        return self.__name
+
+    def get_symbol(self) -> str:
+        return self.__symbol
+
+    def get_price(self) -> float:
+        return self.__price
 
 
 class DividendInfo:
@@ -175,62 +179,6 @@ def load_account_profile(
     return AccountProfile(buying_power)
 
 
-def load_securities(
-    security_symbols: List[str], t: datetime, online: bool, log: bool
-) -> Dict[str, SecurityInfo]:
-    """
-    Hits the Robinhood API to pull down security information like the latest
-    price and the full security name.
-    """
-    security_info_base_dir: str = os.path.join("data", "securities")
-    security_info_output_dir: str = os.path.join(
-        security_info_base_dir,
-        t.strftime("%Y"),
-        t.strftime("%m"),
-        t.strftime("%d"),
-        t.strftime("%H"),
-        t.strftime("%M"),
-        t.strftime("%S"),
-    )
-    resp: Dict[str, Any] = {}
-    if online:
-        for sec_sym in security_symbols:
-            resp[sec_sym] = {
-                "name": r.get_name_by_symbol(sec_sym),
-                "price": r.get_latest_price(sec_sym),
-            }
-        if log:
-            if not os.path.exists(security_info_output_dir):
-                os.makedirs(security_info_output_dir)
-            security_info_output_file = os.path.join(
-                security_info_output_dir,
-                "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
-            )
-            with open(security_info_output_file, "w") as f:
-                f.write(json.dumps(resp, indent=4))
-    else:
-        latest = datetime.strptime(
-            latest_ds(security_info_base_dir), "%Y/%m/%d/%H/%M/%S"
-        )
-        security_info_latest_file: str = os.path.join(
-            security_info_base_dir,
-            latest.strftime("%Y"),
-            latest.strftime("%m"),
-            latest.strftime("%d"),
-            latest.strftime("%H"),
-            latest.strftime("%M"),
-            latest.strftime("%S"),
-            "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
-        )
-        resp = json.load(open(security_info_latest_file, "r"))
-    security_info: Dict[str, SecurityInfo] = {}
-    for (security, info) in resp.items():
-        security_info[security] = SecurityInfo(
-            info["name"], float(info["price"][0])
-        )
-    return security_info
-
-
 def load_holdings(
     t: datetime, online: bool, log: bool
 ) -> Dict[str, HoldingInfo]:
@@ -291,8 +239,72 @@ def load_holdings(
     return holdings
 
 
+def load_securities(
+    security_ids: List[str], t: datetime, online: bool, log: bool
+) -> Dict[str, SecurityInfo]:
+    """
+    Hits the Robinhood API to pull down security information like the latest
+    price and the full security name.
+    """
+    security_info_base_dir: str = os.path.join("data", "securities")
+    security_info_output_dir: str = os.path.join(
+        security_info_base_dir,
+        t.strftime("%Y"),
+        t.strftime("%m"),
+        t.strftime("%d"),
+        t.strftime("%H"),
+        t.strftime("%M"),
+        t.strftime("%S"),
+    )
+    resp: Dict[str, Any] = {}
+    if online:
+        for sec_id in security_ids:
+            sec_url = os.path.join(
+                "https://api.robinhood.com", "instruments", sec_id
+            )
+            sec_meta = r.get_instrument_by_url(sec_url)
+            sec_name = sec_meta["name"]
+            sec_sym = sec_meta["symbol"]
+            sec_price = r.get_latest_price(sec_sym)
+            resp[sec_id] = {
+                "name": sec_name,
+                "symbol": sec_sym,
+                "price": sec_price,
+            }
+        if log:
+            if not os.path.exists(security_info_output_dir):
+                os.makedirs(security_info_output_dir)
+            security_info_output_file = os.path.join(
+                security_info_output_dir,
+                "{}.json".format(t.strftime("%Y_%m_%d_%H_%M_%S")),
+            )
+            with open(security_info_output_file, "w") as f:
+                f.write(json.dumps(resp, indent=4))
+    else:
+        latest = datetime.strptime(
+            latest_ds(security_info_base_dir), "%Y/%m/%d/%H/%M/%S"
+        )
+        security_info_latest_file: str = os.path.join(
+            security_info_base_dir,
+            latest.strftime("%Y"),
+            latest.strftime("%m"),
+            latest.strftime("%d"),
+            latest.strftime("%H"),
+            latest.strftime("%M"),
+            latest.strftime("%S"),
+            "{}.json".format(latest.strftime("%Y_%m_%d_%H_%M_%S")),
+        )
+        resp = json.load(open(security_info_latest_file, "r"))
+    security_info: Dict[str, SecurityInfo] = {}
+    for (sec_id, info) in resp.items():
+        security_info[sec_id] = SecurityInfo(
+            info["name"], info["symbol"], float(info["price"][0])
+        )
+    return security_info
+
+
 def load_dividends(
-    t: datetime, online: bool, log: bool
+    security_ids: List[str], t: datetime, online: bool, log: bool
 ) -> Dict[str, DividendInfo]:
     """
     Hits the Robinhood API to pull down user's dividend data.
@@ -344,4 +356,9 @@ def load_dividends(
             dividends[s_id] = new
         else:
             dividends[s_id] = DividendInfo(s_id, amount)
+    no_dividend_securities = list(
+        set(security_ids).difference(set(dividends.keys()))
+    )
+    for s_id in no_dividend_securities:
+        dividends[s_id] = DividendInfo(s_id, 0.0)
     return dividends

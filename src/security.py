@@ -11,7 +11,7 @@ class Security:
     def __init__(
         self,
         security_id: str,
-        symbol: str,
+        symbol: Optional[str] = None,
         name: Optional[str] = None,
         price: Optional[float] = None,
         buy_restricted: int = 1,
@@ -58,6 +58,9 @@ class Security:
 
     def set_name(self, name: str) -> None:
         self.__name = name
+
+    def set_symbol(self, symbol: str) -> None:
+        self.__symbol = symbol
 
     def set_price(self, price: float) -> None:
         if price <= 0:

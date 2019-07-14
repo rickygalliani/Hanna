@@ -128,8 +128,10 @@ class AssetClass:
         """
         Computes the percent change for all securities in this asset class.
         """
-        value: float = self.get_value()
         cost: float = self.get_cost()
+        if cost <= 10e-7:
+            return 0.0
+        value: float = self.get_value()
         dividends: float = self.get_dividends()
         return (value - cost + dividends) / cost
 
@@ -186,12 +188,13 @@ class AssetClass:
             )
 
     def update_security(
-        self, security_id: str, name: str, price: float
+        self, security_id: str, symbol: str, name: str, price: float
     ) -> None:
         """
         Updates the given security with name and latest price data.
         """
         sec = self.get_security(security_id)
+        sec.set_symbol(symbol)
         sec.set_name(name)
         sec.set_price(price)
 

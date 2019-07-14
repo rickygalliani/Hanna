@@ -45,29 +45,31 @@ class PortfolioTest(unittest.TestCase):
             {
                 "name": "Asset Class 1",
                 "target_percentage": 0.5,
-                "securities": {"SEC1": "sec1id"},
+                "securities": ["sec1id"],
                 "buy_restrictions": [],
             },
             {
                 "name": "Asset Class 2",
                 "target_percentage": 0.5,
-                "securities": {"SEC2": "sec2id", "SEC3": "sec3id"},
-                "buy_restrictions": ["SEC3"],
+                "securities": ["sec2id", "sec3id"],
+                "buy_restrictions": ["sec3id"],
             },
         ]
         p_load: Portfolio = Portfolio()
         p_load.load_configuration(portfolio_config)
         p_test: Portfolio = Portfolio()
-        sec1: Security = Security("sec1id", "SEC1", buy_restricted=0)
-        sec2: Security = Security("sec2id", "SEC2", buy_restricted=0)
-        sec3: Security = Security("sec3id", "SEC3")
+        sec1: Security = Security("sec1id", buy_restricted=0)
+        sec2: Security = Security("sec2id", buy_restricted=0)
+        sec3: Security = Security("sec3id")
         ac1: AssetClass = AssetClass("Asset Class 1", 0.5)
         ac2: AssetClass = AssetClass("Asset Class 2", 0.5)
+        ac_other: AssetClass = AssetClass("Other", 0.0)
         ac1.add_security(sec1)
         ac2.add_security(sec2)
         ac2.add_security(sec3)
         p_test.add_asset_class(ac1)
         p_test.add_asset_class(ac2)
+        p_test.add_asset_class(ac_other)
         self.assertEqual(p_load, p_test)
 
     def test_load_configuration_idempotent(self):
@@ -75,30 +77,32 @@ class PortfolioTest(unittest.TestCase):
             {
                 "name": "Asset Class 1",
                 "target_percentage": 0.5,
-                "securities": {"SEC1": "sec1id"},
+                "securities": ["sec1id"],
                 "buy_restrictions": [],
             },
             {
                 "name": "Asset Class 2",
                 "target_percentage": 0.5,
-                "securities": {"SEC2": "sec2id", "SEC3": "sec3id"},
-                "buy_restrictions": ["SEC3"],
+                "securities": ["sec2id", "sec3id"],
+                "buy_restrictions": ["sec3id"],
             },
         ]
         p_load: Portfolio = Portfolio()
         p_load.load_configuration(portfolio_config)
         p_load.load_configuration(portfolio_config)
         p_test: Portfolio = Portfolio()
-        sec1: Security = Security("sec1id", "SEC1", buy_restricted=0)
-        sec2: Security = Security("sec2id", "SEC2", buy_restricted=0)
-        sec3: Security = Security("sec3id", "SEC3")
+        sec1: Security = Security("sec1id", buy_restricted=0)
+        sec2: Security = Security("sec2id", buy_restricted=0)
+        sec3: Security = Security("sec3id")
         ac1: AssetClass = AssetClass("Asset Class 1", 0.5)
         ac2: AssetClass = AssetClass("Asset Class 2", 0.5)
+        ac_other: AssetClass = AssetClass("Other", 0.0)
         ac1.add_security(sec1)
         ac2.add_security(sec2)
         ac2.add_security(sec3)
         p_test.add_asset_class(ac1)
         p_test.add_asset_class(ac2)
+        p_test.add_asset_class(ac_other)
         self.assertEqual(p_load, p_test)
 
     def test_load_configuration_add(self):
@@ -146,13 +150,15 @@ class PortfolioTest(unittest.TestCase):
     def test_get_all_security_symbols(self):
         p: Portfolio = Portfolio()
         ac: AssetClass = AssetClass("ac", 1.0)
-        sec1: Security = Security("sec1", "SEC1", price=10.0)
-        sec2: Security = Security("sec2", "SEC2", price=15.0)
+        sec1: Security = Security("sec1", symbol="SEC1", price=10.0)
+        sec2: Security = Security("sec2", symbol="SEC2", price=15.0)
         ac.add_security(sec1)
         ac.add_security(sec2)
+        ac.buy(sec1, 1, True)
+        ac.buy(sec2, 1, True)
         p.add_asset_class(ac)
-        true_symbols = sorted(p.get_all_security_symbols())
-        self.assertEqual(true_symbols, ["SEC1", "SEC2"])
+        symbols = sorted(p.get_all_security_symbols())
+        self.assertEqual(symbols, ["SEC1", "SEC2"])
 
     def test_get_cost(self):
         p: Portfolio = Portfolio()
@@ -329,8 +335,8 @@ class PortfolioTest(unittest.TestCase):
         p.add_asset_class(ac2)
         account_profile = AccountProfile(78.68)
         security_info = {
-            "SEC1": SecurityInfo("sec1_name", 10.0),
-            "SEC2": SecurityInfo("sec2_name", 20.0),
+            "sec1": SecurityInfo("SEC1", "sec1_name", 10.0),
+            "sec2": SecurityInfo("SEC2", "sec2_name", 20.0),
         }
         holding_info = {
             "sec1": HoldingInfo(
@@ -357,7 +363,7 @@ class PortfolioTest(unittest.TestCase):
         ac1.add_security(sec1)
         p.add_asset_class(ac1)
         account_profile = AccountProfile(78.68)
-        security_info = {"SEC1": SecurityInfo("sec1_name", 10.0)}
+        security_info = {"sec1": SecurityInfo("SEC1", "sec1_name", 10.0)}
         holding_info = {
             "sec1": HoldingInfo(
                 "sec1", "sec1_name", 10.0, 3, 10.0, 30.0, 0.33, 0.0, 0.0
