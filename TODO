@@ -1,3 +1,4 @@
+- Add checking of all .py files in home directory in pre-push
 - Add onboarding for new users (portfolio config/credentials setup)
     - Add sanity checking and retry capability for user responses in onboard.py
     - Allow adding multiple asset classes
