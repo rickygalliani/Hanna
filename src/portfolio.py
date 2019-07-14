@@ -442,7 +442,7 @@ class Portfolio:
             s, online, logging
         )
         holdings: Dict[str, HoldingInfo] = load_holdings(s, online, logging)
-        security_ids: List[str] = holdings.keys()
+        security_ids: List[str] = list(holdings.keys())
         securities: Dict[str, SecurityInfo] = load_securities(
             security_ids, s, online, logging
         )

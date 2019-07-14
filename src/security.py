@@ -21,7 +21,7 @@ class Security:
                 "Must pass positive price (or None) to instantiate a Security"
             )
         self.__id: str = security_id
-        self.__symbol: str = symbol
+        self.__symbol: Optional[str] = symbol
         self.__name: Optional[str] = name
         self.__price: Optional[float] = price
         self.__buy_restricted: int = buy_restricted
@@ -41,7 +41,7 @@ class Security:
     def get_id(self) -> str:
         return self.__id
 
-    def get_symbol(self) -> str:
+    def get_symbol(self) -> Optional[str]:
         return self.__symbol
 
     def get_name(self) -> Optional[str]:

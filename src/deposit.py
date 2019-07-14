@@ -71,7 +71,7 @@ class Deposit:
             for p, p_cost in sorted_ps:
                 sec: Security = p.get_security()
                 name: Optional[str] = sec.get_name()
-                sym: str = sec.get_symbol()
+                sym: Optional[str] = sec.get_symbol()
                 shares: int = p.get_num_shares()
                 price: Optional[float] = sec.get_price()
                 price_str: str = dollar_str(price) if price is not None else ""
