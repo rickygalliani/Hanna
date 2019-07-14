@@ -1,6 +1,13 @@
+- Add onboarding for new users (portfolio config/credentials setup)
+    - Add sanity checking and retry capability for user responses in onboard.py
+    - Allow adding multiple asset classes
+    - Validate functionality by creating personal portfolio config with
+      onboard.py
+- Build UI that shows the two tables - single refresh button that calls
+  refresh()
+- Buy "unknown" security and verify behavior of "Other" asset class
 - Write unit test for latest_ds()
 - Fix trade rejection logic
-- Consider using get_current_positions() instead of build_holdings()
 - Conslidate public APIs for each object (make add_holding() a private method)
   - Need to think about client use cases across classes and define methods as
     simply as possible
