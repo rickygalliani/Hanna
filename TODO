@@ -1,3 +1,5 @@
+- Fix bug: Biocept return is -0.3% even though cost and value are both $1.05
+- Fix bug: trades being bought automatically without waiting for user confirmation
 - "Asset Class" -> "Security Group"
 - Add onboarding for new users (portfolio config/credentials setup)
     - Add sanity checking and retry capability for user responses in onboard.py
