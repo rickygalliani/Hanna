@@ -26,7 +26,7 @@ def setup_security(sec_num: int) -> Tuple[str, bool]:
         confirm_security_str.lower() == "y" or confirm_security_str == ""
     )
     if not confirm_security:
-        setup_security()
+        setup_security(sec_num)
     allow_purchase_str: str = input(
         "\t\t\tAllow purchase: [Y/n] ".format(security_name)
     )
