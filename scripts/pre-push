@@ -20,17 +20,26 @@ def run():
     """
     Run the unit tests for all source code modules.
     """
-    main_type_check_cmd = ["mypy", "--ignore-missing-imports", "main.py"]
-    log.info("Running main module source code type checks")
-    try:
-        type_check = check_output(main_type_check_cmd)
-    except CalledProcessError:
-        log.error(
-            "main source code type checks failed: {}".format(
-                " ".join(main_type_check_cmd)
+    main_modules = [
+        x.replace(".py", "") for x in listdir(".")
+        if x.endswith(".py") and x != "__init__.py"
+    ]
+    for mod in main_modules:
+        src_type_check_cmd = [
+            "mypy",
+            "--ignore-missing-imports",
+            "{}.py".format(mod),
+        ]
+        log.info("Running {} source code type checks".format(mod))
+        try:
+            type_check = check_output(src_type_check_cmd)
+        except CalledProcessError:
+            log.error(
+                "{} source code type checks failed: {}".format(
+                    mod, " ".join(src_type_check_cmd)
+                )
             )
-        )
-        return TYPE_CHECK_ERROR
+            return TYPE_CHECK_ERROR
 
     src_modules = [
         x.replace(".py", "")
