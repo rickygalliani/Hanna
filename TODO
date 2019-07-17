@@ -2,11 +2,10 @@
 - Add onboarding for new users (portfolio config/credentials setup)
     - Add sanity checking and retry capability for user responses in onboard.py
     - Validate functionality by creating personal portfolio config with
-      onboard.py
+      onboard.py and adding unit test suite
     - Add credentials into onboard script
 - Build UI that shows the two tables - single refresh button that calls
   refresh()
-- Buy "unknown" security and verify behavior of "Other" asset class
 - Write unit test for latest_ds()
 - Fix trade rejection logic
 - Conslidate public APIs for each object (make add_holding() a private method)
@@ -15,8 +14,6 @@
   - Only need to test public methods (methods accessible from other classes)
 - 400 Client Error: Bad Request for url: https://api.robinhood.com/orders/
 - Support all types of portfolio configuration updates (i.e., security and asset class removals in addition to additions)
-- Handle 400 case where you have to use a limit order
-- Tie data closer to API responses and less from simulated data
 - Handle various responses from order_buy_market(). Look into changing it to buy limit order
 - Look into test coverage library and implement on this project, need more testing
 - Clean up code style in AssetClass.plan_purchases() (don't have to use cents)
