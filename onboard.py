@@ -118,7 +118,7 @@ def setup_asset_class(
 
     # Get securities and buy restrictions
     asset_class["securities"] = []
-    asset_class["buy_restrctions"] = []
+    asset_class["buy_restrictions"] = []
     add_sec: bool = True
     while add_sec:
         security: Tuple[str, bool] = setup_security(ac_name)
@@ -126,7 +126,7 @@ def setup_asset_class(
         allow_purchase: bool = security[1]
         asset_class["securities"].append(security_id)
         if not allow_purchase:
-            asset_class["buy_restrctions"].append(security_id)
+            asset_class["buy_restrictions"].append(security_id)
         add_sec_str: str = ask_user_input(
             "\tAdd another security to {}? [Y/n] ".format(ac_name)
         )
@@ -141,17 +141,35 @@ if __name__ == "__main__":
     )
     log = logging.getLogger("onboard")
 
-    config_file = os.path.join(os.getcwd(), "config", "test_portfolio.json")
-    config: List[Dict[str, Any]] = []
-
+    # Get portfolio configuration from user
+    portfolio_config_file = os.path.join(
+        os.getcwd(), "config", "test_portfolio.json"
+    )
+    portfolio_config: List[Dict[str, Any]] = []
     first: bool = True
     total_pct: float = 0.0
     while total_pct < 1:
         ac: Dict[str, Any] = setup_asset_class(first, total_pct)
-        config.append(ac)
+        portfolio_config.append(ac)
         total_pct += ac["target_percentage"]
         first = False
 
-    with open(config_file, "w") as f:
-        f.write(json.dumps(config, indent=4))
-    print("\nPortfolio config written to {}".format(config_file))
+    # Get Robinhood credentials from user (only to store locally)
+    credentials_config_file = os.path.join(
+        os.getcwd(), "config", "test_credentials.json"
+    )
+    credentials_config: Dict[str, str] = {}
+    credentials_config["username"] = ask_user_input(
+        "Enter Robinhood username/email: "
+    )
+    credentials_config["password"] = ask_user_input(
+        "Enter Robinhood password: "
+    )
+
+    # Write config data to local machine
+    with open(portfolio_config_file, "w") as f:
+        f.write(json.dumps(portfolio_config, indent=4))
+    print("\nPortfolio config written to {}".format(portfolio_config_file))
+    with open(credentials_config_file, "w") as f:
+        f.write(json.dumps(credentials_config, indent=4))
+    print("\nCredentials written to {}".format(credentials_config_file))
