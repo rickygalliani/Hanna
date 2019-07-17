@@ -149,9 +149,10 @@ class Portfolio:
             "Average Price",
             "Price",
             "Shares",
-            "Dividends",
-            "Value",
             "Percentage",
+            "Cost",
+            "Value",
+            "Dividends",
             "Return",
         ]
         p_ac: PrettyTable = PrettyTable(ac_cols)
@@ -191,9 +192,10 @@ class Portfolio:
                         dollar_str(hol.get_average_buy_price()),
                         price_str,
                         hol.get_num_shares(),
-                        dollar_str(hol.get_dividends()),
-                        dollar_str(hol_val),
                         pct_str(self.get_security_percentage(s.get_id())),
+                        dollar_str(hol.get_cost()),
+                        dollar_str(hol_val),
+                        dollar_str(hol.get_dividends()),
                         pct_str(hol.get_return()),
                     ]
                 )
@@ -231,9 +233,10 @@ class Portfolio:
                 "-",
                 cash_str,
                 "-",
-                dollar_str(0.0),
-                cash_str,
                 pct_str(self.get_cash_percentage()),
+                cash_str,
+                cash_str,
+                dollar_str(0.0),
                 pct_str(0.0),
             ]
         )
@@ -246,9 +249,10 @@ class Portfolio:
                 "-",
                 "-",
                 self.get_num_shares(),
-                dollar_str(self.get_dividends()),
-                dollar_str(self.get_value()),
                 pct_str(1),
+                dollar_str(self.get_cost()),
+                dollar_str(self.get_value()),
+                dollar_str(self.get_dividends()),
                 portfolio_return_str,
             ]
         )

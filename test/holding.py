@@ -36,6 +36,11 @@ class HoldingTest(unittest.TestCase):
         hol.set_dividends(5.0)
         self.assertEqual(hol.get_dividends(), 5.0)
 
+    def test_get_cost(self):
+        sec: Security = Security("sec", "SEC", price=10.0)
+        hol: Holding = Holding(sec, 3, 10.0)
+        self.assertEqual(hol.get_cost(), 30.0)
+
     def test_get_return(self):
         sec: Security = Security("sec", "SEC", price=11.0)
         hol: Holding = Holding(sec, 3, 10.0)

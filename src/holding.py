@@ -51,7 +51,7 @@ class Holding:
         return self.__dividends
 
     def get_value(self) -> float:
-        price = self.get_security().get_price()
+        price: Optional[float] = self.get_security().get_price()
         if price is None:
             raise Exception(
                 "Can't compute holding value, underlying "
@@ -59,15 +59,20 @@ class Holding:
             )
         return self.get_num_shares() * price
 
+    def get_cost(self) -> float:
+        abp: float = self.get_average_buy_price()
+        num_shares: int = self.get_num_shares()
+        return abp * num_shares
+
     def get_return(self) -> float:
-        sec_price: Optional[float] = self.get_security().get_price()
-        if sec_price is None:
+        price: Optional[float] = self.get_security().get_price()
+        if price is None:
             raise Exception(
                 "Can't compute holding return, underlying "
                 "security has undefined price"
             )
         num_shares: int = self.get_num_shares()
-        value: float = sec_price * num_shares
+        value: float = price * num_shares
         cost: float = self.get_average_buy_price() * num_shares
         dividends: float = self.get_dividends()
         return (value - cost + dividends) / cost
