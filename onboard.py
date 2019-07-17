@@ -78,7 +78,7 @@ def ask_target_pct(ac_name: str, pct_left: float) -> float:
     return ac_target_pct
 
 
-def setup_security(ac_name: int) -> Tuple[str, bool]:
+def setup_security(ac_name: str) -> Tuple[str, bool]:
     """
     Collects user input to set up a security".
     """
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     first: bool = True
     total_pct: float = 0.0
     while total_pct < 1:
-        ac: Dict[str, str] = setup_asset_class(first, total_pct)
+        ac: Dict[str, Any] = setup_asset_class(first, total_pct)
         config.append(ac)
         total_pct += ac["target_percentage"]
         first = False
