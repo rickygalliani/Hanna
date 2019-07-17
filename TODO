@@ -2,7 +2,7 @@
 - Add onboarding for new users (portfolio config/credentials setup)
     - Add sanity checking and retry capability for user responses in onboard.py
     - Validate functionality by creating personal portfolio config with
-      onboard.py and adding unit test suite
+      onboard.py
     - Add credentials into onboard script
 - Build UI that shows the two tables - single refresh button that calls
   refresh()

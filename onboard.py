@@ -10,12 +10,19 @@ import json
 import robin_stocks as r
 
 
+def ask_user_input(prompt: str) -> str:
+    """
+    Asks the user the prompt and returns the response.
+    """
+    return input(prompt)
+
+
 def ask_security(ac_name: str) -> Tuple[str, str]:
     """
     Asks the user for the symbol of a security to add and returns the
     security's id and name.
     """
-    sec_sym: str = input(
+    sec_sym: str = ask_user_input(
         "\t\tEnter the symbol for the new {} security: ".format(ac_name)
     )
     instrument: Dict[str, Any] = r.get_instruments_by_symbols([sec_sym])[0]
@@ -27,7 +34,7 @@ def ask_confirm_security(sec_name: str) -> bool:
     Asks the user to confirm the name of a security. Returns True if the user
     confirms and False otherwise.
     """
-    confirm_security_str: str = input(
+    confirm_security_str: str = ask_user_input(
         "\t\t\tConfirm {}: [Y/n] ".format(sec_name)
     )
     return confirm_security_str.lower() == "y" or confirm_security_str == ""
@@ -38,15 +45,15 @@ def ask_allow_purchase() -> bool:
     Asks the user whether to allow purchasing (of a previously displayed
     security). Returns True if the user confirms and False otherwise.
     """
-    allow_purchase_str: str = input("\t\t\tAllow purchase: [Y/n] ")
+    allow_purchase_str: str = ask_user_input("\t\t\tAllow purchase: [Y/n] ")
     return allow_purchase_str.lower() == "y" or allow_purchase_str == ""
 
 
-def ask_asset_class_name():
+def ask_asset_class_name(first: bool) -> str:
     """
     Asks the user for an asset class name and returns the user's response.
     """
-    ac_name: str = input(
+    ac_name: str = ask_user_input(
         "Enter the name of {} asset class: ".format(
             "an" if first else "the next"
         )
@@ -61,7 +68,7 @@ def ask_target_pct(ac_name: str, pct_left: float) -> float:
     Asks the user for a target percentage for an asset class and returns the
     user's response.
     """
-    ac_target_pct_str: str = input(
+    ac_target_pct_str: str = ask_user_input(
         "\tEnter target percentage of the {} (min: 0.0, max: {}): ".format(
             ac_name, pct_left
         )
@@ -101,7 +108,7 @@ def setup_asset_class(
     asset_class: Dict[str, Any] = {}
 
     # Get name
-    ac_name: str = ask_asset_class_name()
+    ac_name: str = ask_asset_class_name(first)
     asset_class["name"] = ac_name
 
     # Get target percentage
@@ -120,7 +127,7 @@ def setup_asset_class(
         asset_class["securities"].append(security_id)
         if not allow_purchase:
             asset_class["buy_restrctions"].append(security_id)
-        add_sec_str: str = input(
+        add_sec_str: str = ask_user_input(
             "\tAdd another security to {}? [Y/n] ".format(ac_name)
         )
         add_sec = add_sec_str.lower() == "y" or add_sec_str == ""
