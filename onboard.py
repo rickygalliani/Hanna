@@ -59,7 +59,7 @@ def ask_asset_class_name(first: bool) -> str:
         )
     )
     if ac_name == "":
-        ask_asset_class_name()
+        ask_asset_class_name(first)
     return ac_name
 
 
