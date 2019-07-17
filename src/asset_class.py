@@ -226,7 +226,7 @@ class AssetClass:
                 "class's securities.".format(security_id, self.get_name())
             )
 
-    def buy(self, security: Security, num_shares: int, dry_run: bool) -> str:
+    def buy(self, security: Security, num_shares: int, online: bool) -> str:
         """
         Adds num_shares of the given security to the holdings of this asset
         class. Returns the state of the buy transaction.
@@ -258,7 +258,7 @@ class AssetClass:
             )
         )
         order_state: str = "confirmed"
-        if not dry_run:
+        if online:
             # Actually buy the ETFs
             user_choice: str = input("").lower()
             if user_choice in ["", "y"]:

@@ -529,7 +529,7 @@ class Portfolio:
         log.info("Planned deposit. ({})".format(latency_str(s, e)))
         return deposit
 
-    def make_deposit(self, deposit: Deposit, dry_run: bool) -> None:
+    def make_deposit(self, deposit: Deposit, online: bool) -> None:
         """
         Makes all the purchases in the given deposit, updating the state of
         this portfolio.
@@ -552,7 +552,7 @@ class Portfolio:
             )
             for p in purchases:
                 state: str = ac.buy(
-                    p.get_security(), p.get_num_shares(), dry_run
+                    p.get_security(), p.get_num_shares(), online
                 )
                 if state != "failed":
                     m: str = "\t- Trade Status: {}\n".format(
