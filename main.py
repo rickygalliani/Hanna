@@ -38,9 +38,9 @@ if __name__ == "__main__":
         client = r.login(c.get_username(), c.get_password())
 
     portfolio.refresh(args.online, args.logging)
-    deposit = portfolio.plan_deposit(portfolio.get_cash())
-    portfolio.make_deposit(deposit, args.online)
-    portfolio.refresh(args.online, args.logging)
+    # deposit = portfolio.plan_deposit(portfolio.get_cash())
+    # portfolio.make_deposit(deposit, args.online)
+    # portfolio.refresh(args.online, args.logging)
 
     if args.online:
         r.logout()

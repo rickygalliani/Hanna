@@ -318,7 +318,10 @@ class AssetClass:
             for (j_id, j_price_cents) in zip(sec_ids, prices_in_cents):
                 # If buying security j brought us to optimal expenditures at
                 # budget i
-                if T[exp_i - j_price_cents] + j_price_cents == exp_i:
+                if (
+                    exp_i - j_price_cents >= 0
+                    and T[exp_i - j_price_cents] + j_price_cents == exp_i
+                ):
                     if j_id in purchases:
                         purchases[j_id].add_shares(1)
                     else:
